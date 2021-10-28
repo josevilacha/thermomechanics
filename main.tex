@@ -1,0 +1,368 @@
+\documentclass[a4paper, openright, twoside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[american]{babel}
+\usepackage{hyphenat}
+\usepackage[activate={true,nocompatibility}, final, tracking=true, kerning=true, factor=1100, stretch=10, shrink=10]{microtype}
+% Prevent hyphenization
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\usepackage[hmarginratio=1:1,textwidth=360pt,textheight=595.8pt]{geometry}
+% Packages
+\usepackage{import}
+
+% Math
+\newcommand\hmmax{0}
+\newcommand\bmmax{0}
+\usepackage{bm}
+\usepackage{amsmath, amsfonts, amssymb, mathrsfs,extarrows}
+\usepackage{commath}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\usepackage{siunitx}
+\usepackage{multirow}
+\usepackage[widespace]{fourier}
+
+% Tables
+\usepackage{array}
+\usepackage{caption}
+\usepackage[figuresright]{rotating}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{footnote}
+\makesavenoteenv{tabular}
+
+% Algorithm
+\usepackage[chapter]{algorithm}
+\usepackage{algpseudocode}
+
+%% Citations
+\usepackage[numbers]{natbib}
+\bibliographystyle{humannat}
+\citestyle{egu}
+\usepackage[hyphens]{url}
+% Bibliography showing in TOC
+% \usepackage[nottoc,numbib]{tocbibind}
+\usepackage[nottoc]{tocbibind}
+\usepackage{scrlayer}
+\DeclareNewLayer[
+    foreground,
+    %textarea,% use only the textarea
+    contents={%
+      \parbox[b][\layerheight][c]{\layerwidth}
+        {\centering Page intentionally left blank.}%
+    }
+  ]{blankpage.fg}
+\DeclarePageStyleByLayers{blank}{blankpage.fg}
+
+% Control structures
+\usepackage{ifthen}
+
+% Listing
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+
+% Review notes:
+\usepackage{xargs}
+\usepackage[textwidth=30mm,textsize=footnotesize]{todonotes} % to create comments (useful to your advisor!)
+\newcommandx{\bpf}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}} % Bernardo notes
+
+% Equation color background
+\usepackage{mdframed}
+
+\newmdenv[
+    hidealllines=true,
+    backgroundcolor=black!20,
+    skipbelow=\baselineskip,
+    skipabove=\baselineskip
+]{highlight}
+
+\newcounter{problem}[chapter]\setcounter{problem}{1}
+\renewcommand{\theproblem}{\arabic{chapter}.\arabic{problem}}
+\newenvironment{problem}[2][]{%
+    \refstepcounter{problem}
+
+    \mdfsetup{hidealllines=true,
+    backgroundcolor=black!20,
+    skipbelow=\baselineskip,
+    skipabove=\baselineskip,
+    frametitle={Problem~\theproblem~|~#1}}
+
+\begin{mdframed}[]\relax}{%
+\end{mdframed}}
+
+% Enumeration
+\usepackage{enumerate}
+
+
+% Images
+\usepackage[labelformat=simple]{subcaption}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+\renewcommand\thesubtable{(\alph{subtable})}
+\usepackage{graphicx}
+\graphicspath{ {figures/} }
+\usepackage{array}
+\usepackage[section]{placeins}
+\usepackage{color}
+% \usepackage{subcaption}
+% \usepackage{subfig}
+
+
+
+% Images SVG
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+\newcommand{\incfig}[1]{
+    \def\svgwidth{0.3\columnwidth}
+    \import{images/studies/minkowski/fundamental_forms_2D/}{#1.pdf_tex}}
+
+
+% Floating environment for listings
+\floatstyle{plain}
+\newfloat{lstfloat}{htbp}{lop}[chapter]
+\floatname{lstfloat}{Listing}
+\def\lstfloatautorefname{Listing} % needed for hyperref/auroref
+
+% Listing style
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\fontsize{7}{10}\selectfont,
+    breakatwhitespace=false,
+    breaklines=false,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\makeatletter
+\newcommand*{\shifttext}[2]{%
+  \settowidth{\@tempdima}{#2}%
+  \makebox[\@tempdima]{\hspace*{#1}#2}%
+}
+\makeatother
+
+\usepackage{pythonhighlight}
+
+% Appendices
+\usepackage[toc,page]{appendix}
+
+% Headers and footers
+
+
+
+\usepackage{fancyhdr}
+% \renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+% \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+
+% \fancypagestyle{plain}{
+% \fancyhf{}
+% \fancyhead{}% remove default header entries
+% \fancyhead[RE]{a\textsc{\leftmark}}
+% \fancyhead[LE]{\thepage}
+% \fancyhead[LO]{\textsc{\rightmark}}
+% \fancyhead[RO]{\thepage}
+% \renewcommand{\headrulewidth}{0.1pt} }
+% \pagestyle{plain}
+
+\fancypagestyle{firststyle}
+{
+   \fancyhf{}
+    \fancyhead{}% remove default header entries
+   \fancyfoot[C]{Porto, September 2021}
+   \renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.1pt}
+    \fancyfootoffset{-0.25\textwidth}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\fancyhead{}% remove default header entries
+\fancyhead[RE]{\nouppercase\leftmark}
+\fancyhead[LE]{\thepage}
+\fancyhead[LO]{\nouppercase\rightmark}
+\fancyhead[RO]{\thepage}
+\renewcommand{\headrulewidth}{0.1pt}
+
+\newenvironment{dedication}
+  {%\clearpage           % we want a new page          %% I commented this
+   \thispagestyle{empty}% no header and footer
+   \vspace*{\stretch{1}}% some space at the top
+   \itshape             % the text is in italics
+   \raggedleft          % flush to the right margin
+  }
+  {\par % end the paragraph
+   \vspace{\stretch{3}} % space at bottom is three times that at the top
+   \clearpage           % finish off the page
+  }
+
+
+%Custom FramedBox Environment
+%%Loading 'float' package
+\usepackage{float}
+%%Customize 'boxed' float style (caption above the body)
+\makeatletter
+\newcommand\fs@boxedtop
+ {\fs@boxed
+  \def\@fs@mid{\vspace\abovecaptionskip\relax}%
+  \let\@fs@iftopcapt\iftrue
+ }
+\makeatother
+%%Defining float commands
+\floatstyle{boxedtop}
+\floatname{framedbox}{Box}
+\newfloat{framedbox}{hbt}{lob}[chapter]
+
+% Symbols
+%% Differential Upright "d"
+\newcommand{\ud}{\,\mathrm{d}}
+%% Assemble operator
+\DeclareMathOperator*{\assemble}{\text{\Large $ \mathsf{A} $}}
+%% Matrices and vectors
+\newcommand{\vect}[1]{\bm{#1}}
+\newcommand{\mat}[1]{\bm{#1}}
+\newcommand{\boldsf}[1]{\boldsymbol{\mathsf{#1}}}
+
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+
+\title{Numerical Methods}
+\author{José Luís Passos Vila-Chã}
+\date{May 2021}
+
+
+\pagenumbering{roman}
+
+%Hypertext marks
+\usepackage[pdftitle={NLMFEA_assignment},
+			pdfauthor={JoseVila-Cha},
+			pdfdisplaydoctitle=true,
+			colorlinks=true,
+			% Eletronic Version
+             linkcolor=orange,
+             citecolor=teal,
+            % Print Version
+            % linkcolor=black,
+            % citecolor=black,
+            bookmarks=true,
+            bookmarksopen=false,
+            bookmarksnumbered=true]{hyperref}
+
+\usepackage[intoc]{nomencl}
+\usepackage{xstring}
+\usepackage{xpatch}
+\patchcmd{\thenomenclature}
+  {\leftmargin\labelwidth}
+  {\leftmargin\labelwidth\itemindent 1em }
+  {}{}
+
+% Nomenclature
+
+\makenomenclature
+\renewcommand{\nomname}{Notation}
+%% This code creates the groups
+% -----------------------------------------
+\usepackage{etoolbox}
+\newcommand{\nomenclheader}[1]{%
+  \item[\hspace*{-\itemindent}\bfseries\LARGE#1\vphantom{$\Bigg \vert $}]}
+\renewcommand\nomgroup[1]{%
+  \IfStrEqCase{#1}{%
+   {A}{\nomenclheader{General abbreviations}}%      A - Acronyms
+   {N}{\nomenclheader{General notation}}% R - Roman
+   {O}{\nomenclheader{Operators and symbols}}% G - Greek
+   {D}{\nomenclheader{Sets, domains and boundaries}}% G - Greek
+   {S}{\nomenclheader{Subscripts and superscripts}}%  S - Superscripts
+   {C}{\nomenclheader{Accents}}%    U - Subscripts
+   {V}{\nomenclheader{Variables}}% X - Other Symbols
+  }%
+  \vspace{20pt}
+}
+\setlength{\nomitemsep}{-1pt}
+% -----------------------------------------
+
+
+
+\begin{document}
+\begin{titlepage}
+\thispagestyle{firststyle}
+\begin{center}
+   \begin{minipage}[c][10cm][l]{0.9\textwidth}
+
+        \includegraphics[width=0.6\textwidth]{figures/university}
+
+        \vspace{3.5cm}
+        \huge
+       \textbf{FFT-based Homogenization Methods}
+
+       \vspace{1.5cm}
+        \small
+       \textit{Professor:}\\
+       \normalsize
+       Francisco Manuel Andrade Pires 	\\
+
+       \vspace{0.5cm}
+
+
+         \small
+        \textit{Student:}\\
+        \vspace{0.5cm}
+       \normalsize
+       \!José Luís Passos Vila-Chã
+       \vspace{8cm}
+
+
+        \centering
+       \small
+       Report presented under the scope of the\\ Doctoral Program in Mechanical Engineering
+
+   \end{minipage}
+   \end{center}
+\end{titlepage}
+
+\newpage\null\thispagestyle{blank}\newpage
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+
+\listoffigures
+
+
+\listoftables
+
+\newpage\null\thispagestyle{blank}\newpage
+
+\pagenumbering{gobble}
+\pagenumbering{arabic}
+\pagestyle{fancy}
+% \include{introduction}
+\include{thermomechanics}
+\include{solvers_for_coupled_fields}
+% \include{conclusions}
+\appendix
+% \include{annex}
+
+\bibliography{mybibliography.bib}
+
+\end{document}
