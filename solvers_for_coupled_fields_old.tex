@@ -1,0 +1,183 @@
+
+\chapter{Solution procedures for coupled fields}
+
+This chapter presents an overview of solution procedures for coupled fields.
+It includes techniques applied to various coupled field problems, such as thermomechanical coupling, fluid-structure interaction, and aeroelasticity.
+Its goal is to support the choice of solution techniques for thermo-plastic problems, which are accurate, stable, efficient, both in terms of memory and computational time, and easy to implement and extend later to further couplings, e.g., electro\--thermomechanical problems.
+
+\section{Problem domains}
+
+\section{Context field elimination}
+
+Field elimination achieves the solution of a coupled problem by eliminating the variables of the first field and introducing them into the second field.
+This second field is then solved. \citep{danowski_computational_2014}
+
+The main advantage of this procedure is the reduction of the number of state variables.
+Which in turn, leads to smaller systems of equations, which are presumably easier to solve.
+Furthermore, the analyst can choose the remaining variables such that they are the variables of interest.
+In this way, the variables eliminated do not need to be recovered. \citep{felippa_staggered_1980}
+
+On the other hand \cite{felippa_staggered_1980} cite as disadvantages
+\begin{itemize}
+  \item only possible for problems allowing explicit (and well-conditioned) variable eliminations;
+  \item sparseness and symmetry attributes of matrices associated with the original coupled system can be adversely affected by the eliminations process; and
+  \item available software modules for the isolated fields are not likely to be of much use for processing the reduced system.
+\end{itemize}
+Given these disadvantages, the remainder of the chapter disregards these procedures, including in the comparison section.
+
+\section{Monolithic}
+
+Monolithic algorithms solve the coupled nonlinear multi-physics system simultaneously.
+Predominantly, implicit schemes are applied to achieve good stability properties.
+In turn, the nonlinear residual equations are often solved using the Newton-Raphson method.
+Compared to partitioned approaches, standard and unmodified single field solvers, e.g., in the form of commercial software packages, cannot be used in most cases.
+A particular challenge for monolithic algorithms is the efficient solution of the large system of equations, including potential nonlinearities or lack of symmetry.
+Even the units chosen can contribute to the ill-conditioning of the system matrix.
+One essential aspect for efficient solvers for large-scale problems is a good preconditioning technique. \citep{danowski_computational_2014}
+
+\subsection{Numerical considerations}
+
+For the solution of a large system of equations, iterative methods are preferable to direct methods, in part, due to memory footprint considerations.
+The Newton-Krylov methods such as GMRES and the BiCGStab are among the most commonly used in multi-physics problems \citep{hron_monolithic_2006}.
+However, their use does not suffice for an efficient and robust solution procedure for a multi-physics problem.
+In addition, the use of preconditioners alleviates the possible large condition numbers of the system matrix.
+There are several preconditioning techniques for the solution of large systems of equations, e.g., ILU preconditioners, domain decomposition, including multigrid approaches; multilevel recursive Schur complements preconditioners (see \cite{smith_domain_2004} and \cite{chen_matrix_2005}).
+
+\cite{heil_efficient_2004} is concerned with the fully coupled solution of large-displacement fluid-structure interaction problems by Newton's method.
+They use block-triangular approximations of the Jacobian matrix, obtained by neglecting selected fluid-structure interaction blocks, and show that they provide suitable preconditioners for the solution of the linear systems with GMRES.
+The efficient approximate implementation of the preconditioners is based on a Schur complement approximation for the Navier-Stokes block and the use of multigrid approximations for the solution of the computationally most expensive operations.
+
+\cite{hron_monolithic_2006} propose a method based on a fully implicit, monolithic formulation of the problem in the arbitrary Lagrangian-Eulerian framework  to solve the problem of fluid-structure interaction of an incompressible elastic object in laminar incompressible viscous flow
+They utilize the standard geometric multigrid approach based on a hierarchy of grids obtained by successive regular refinement of a given coarse mesh.
+The complete multigrid iteration is performed in the standard defect-correction setup with the V or F-type cycle.
+
+\cite{tezduyar2006space} show how preconditioning techniques more sophisticated than diagonal preconditioning can be used in iterative solutions of the linear equation systems in fluid-structure interaction problems.
+
+In \cite{gee_truly_2011}, the authors focus on the strong coupling fluid-structure interaction employing monolithic solution schemes.
+Therein, a Newton-Krylov method is applied to the monolithic set of nonlinear equations.
+They propose two preconditioners that apply algebraic multigrid techniques to the entire fluid-structure interaction system of equations.
+As the first option, the authors employ a standard block Gauss-Seidel approach, where approximate inverses of the individual field blocks are based on an algebraic multigrid hierarchy tailored for the type of the underlying physical problem.
+A monolithic coarsening scheme for the coupled system that uses prolongation and restriction projections constructed for the individual fields provides the basis for the second preconditioner.
+The resulting nonsymmetric monolithic algebraic multigrid method involves coupling the fields on coarse approximations to the problem yielding significantly enhanced performance, claim the authors.
+
+In the context of multi-physics problems, \cite{https://doi.org/10.1002/fld.2402} propose a fully coupled algebraic multilevel preconditioner for Newton-Krylov solution methods.
+A set of multi-physics partial differential equation (PDE) applications attests its performance: a drift-diffusion approximation for semiconductor devices,
+a low Mach number formulation for the simulation of coupled flow, transport, and non-equilibrium chemical reactions,
+a low Mach number formulation for visco-resistive magnetohydrodynamics (MHD) systems.
+An aggressive-coarsening graph-partitioning of the non-zero block structure of the Jacobian matrix provides the basis for the algebraic multilevel preconditioner.
+Using a different approach \cite{badia_block_2014} employ a new family of recursive block LU preconditioners to solve the thermally coupled induction less magnetohydrodynamics problem equations, which model the flow of an electrically charged fluid under the influence of an external electromagnetic field with thermal coupling.
+
+\cite{netz_high-order_2013} addresses a thermo-mechanically coupled problem of thermo-viscoelasticity at finite strains using a monolithic approach.
+The authors solve the system of nonlinear algebraic equations obtained from the spatial (FEM) and temporal (diagonally-implicit Runge-Kutta methods) discretization of the problem monolithically.
+They employ the Multilevel-Newton algorithm to obtain a high-order result in the space and the time domain.
+The numerical concept is applied to a constitutive model of finite strain thermo-viscoelasticity.
+\cite{rothe_monolithic_2015} also employ in the context of thermo-viscoelasticity, the multilevel Newton algorithm to solve the system of algebraic equations describing the discretized problem.
+
+\cite{danowski_monolithic_2013} presents a monolithic solution scheme for thermo-structure interaction problem, using right preconditioning and a GMRES.
+The preconditioner "sub-problem" is solved using a Richardson iteration scheme and a relaxed block Gauss-Seidel method, which uncouples the mechanical and thermal problems.
+This procedure tackles each problem using an independent algebraic multigrid (AMG) preconditioner.
+\cite{verdugo_unified_2016} also considers the procedure just mentioned, as well as a preconditioner based on a semi-implicit method for pressure-linked equations, extended to deal with an arbitrary number of fields.
+This technique also results in uncoupled problems that can be solved with standard AMG.
+They also introduce a more sophisticated preconditioner that enforces the coupling at all AMG levels, unlike the other two techniques, which resolve the coupling only at the finest level.
+These techniques are applied successfully to three different coupled problems: thermo-structure interaction, fluid-structure interaction, and a complex model of the human lung.
+
+\cite{mayr_hybrid_2020} propose a hybrid interface preconditioner for the monolithic solution of surface-coupled problems.
+They combine physics-based block preconditioners with an additional additive Schwarz preconditioner, whose subdomains span across the interface on purpose.
+This approach is motivated by the error assessment of physics-based block preconditioners, revealing an accumulation of the error at the coupling surface, despite their overall efficiency.
+
+\newpage
+
+
+\subsection{Usage examples}
+
+\paragraph{Thermo-mechanical coupling}
+
+In the following paragraph, a small overview of the literature is presented regarding the application of monolithic solvers to the thermo-mechanical coupled problem.
+\cite{carter_finite_1989} suggests a monolithic approach to the thermoelastic problem at small strains.
+The constitutive laws considered do not acknowledge the dependence of the mechanical properties on the temperature and are not deduced from a Helmholz energy function.
+\cite{glaser_gekoppelte_1992} uses monolithic algorithms for the calculation of thin-walled structures using shell elements and an arc-length method for the TSI solution.
+While all coupling terms were considered, only a simplified mechanical dissipation was included where the hardening power was neglected (according to \cite{danowski_computational_2014}).
+\cite{ibrahimbegovic_covariant_2002} presents a thermoplasticity covariant formulation within the framework of the principal axis methodology, which the authors claim, leads to a very efficient numerical implementation.
+The paper contains several numerical simulations dealing with the fully coupled thermomechanical response at large viscoplastic strains, including strain localization and cyclic loading cases, to illustrate the performance of the proposed methodology.
+The authors consider the von Mises thermoplasticity yield criterion and strain energy depending on logarithmic stretches, a hardening variable, and temperature.
+A monolithic solver achieves the solution to the coupled problem, but no details about it are given.
+\cite{danowski_computational_2014} proposes a volume-coupled TSI model based on the finite element method for the structural and thermal field.
+Various temperature-dependent, isotropic, elastic, and elastoplastic material models for small and finite strains are employed, incorporating the effect of the highly elevated temperatures predominating in rocket nozzles, the practical application focused in the Ph.D. thesis.
+The author considers both monolithic and partitioned coupling algorithms to solve fully coupled thermomechanical systems.
+Regarding the former,  a novel monolithic Newton-Krylov scheme with problem-specific block Gauss-Seidel preconditioner and algebraic multigrid methods is introduced.
+Concerning the latter, loosely and strongly coupled partitioned schemes are examined, possibly including acceleration techniques, as, e.g., the Aitken \(\Delta^2\) method.
+\cite{netz_high-order_2013} and \cite{rothe_monolithic_2015} both present monolithic approaches, based on the multi-Newton method, for the solution of the thermo-mechanical problem.
+In both contributions, thermo-visco-plastic materials are successfully analyzed.
+
+The thermo-mechanical coupling has also been studied in the more specific domain of contact mechanics.
+\cite{zavarise_real_1992} present one of the earliest contributions in this direction.
+They propose a FEM formulation of frictionless contact, accounting for full thermo-elastic coupling.
+The penalty method is used to enforce the non-penetration conditions.
+Another contribution, \cite{hansen_jacobian-free_2011}, advances a standard mortar discretization with Lagrange multipliers to solve the small strain thermo-elasticity problem.
+The authors consider the heat equation coupled to linear mechanics through a thermal expansion term in their formulation.
+The solution approach employed is based on a preconditioned Jacobian-free Newton Krylov solution method, and the use case under analysis is a light water reactor nuclear fuel rod.
+\cite{dittmann_isogeometric_2014} investigate thermomechanical mortar contact algorithms and their application to NURBS-based Isogeometric Analysis in the context of nonlinear elasticity.
+Mortar methods are applied to both the mechanical field and the thermal field to model frictional contact, the energy transfer between the surfaces, and frictional heating.
+A monolithic approach is pursued in solving the nonlinear algebraic equations found after the discretization in time and space.
+In the Ph.D. thesis by the same first author, \cite{dittmann_isogeometric_2017}, this approach is further pursued multi-field contact problems.
+More recently, \cite{seitz_computational_2018, seitz_computational_2019} tackles the numerical treatment of contact problems considering inelastic deformation and thermomechanical coupling.
+It accounts for a plastic spin, visco-plasticity, and thermo-plastic coupling where plastic work is converted to heat and material parameters are temperature dependent.
+The authors also opt for a monolithic solver, although no further details are supplied.
+See also, in the context of contact mechanics, \cite{oancea_finite_1997, pantuso_finite_2000, hueber_thermo-mechanical_2009, hesch_energy-momentum_2011, gitterle_dual_2012} and \cite{novascone_evaluation_2015}.
+
+\paragraph{Others}
+
+In the context of fluid-structure interaction, the monolithic approach seems to be more widely used than in thermo-mechanically coupled problems.
+A few contributions in this domain using a monolith approach are \cite{blom_efficient_2017, heil_efficient_2004, hubner_monolithic_2004, michler_monolithic_2004, zhangStudiesStrongCoupling2004, dettmer_computational_2006, hron_monolithic_2006, tezduyar2006space, kuttler_coupling_2010,gee_truly_2011, kloppel_fluidstructure_2011, mayr_temporal_2015} and \cite{mayr_hybrid_2020}.
+The use of a monolithic approach can also be found in the domain of saturated soils (e.g., \cite{lewis_finite_1993}, \cite{borja_elastoplastic_1998}, \cite{jha_locally_2007}, \cite{white_stabilized_2008}).
+Monolithic solvers are also used in the context of magnetohydrodynamics (e.g., \cite{SHADID20107649} and \cite{badia_block_2014}).
+
+
+% \[
+% \left.\left[\begin{array}{ll}
+% \mathbf{K}_{\mathrm{uu}} & \mathbf{K}_{\mathrm{uT}} \\
+% \mathbf{K}_{\mathrm{Tu}} & \mathbf{K}_{\mathrm{TT}}
+% \end{array}\right]\right|_{n+1} ^{i}\left[\begin{array}{c}
+% \Delta \mathbf{d}^{i} \\
+% \Delta \mathbf{T}^{i}
+% \end{array}\right]=-\left.\left[\begin{array}{l}
+% \boldsymbol{r}_{\mathrm{u}} \\
+% \boldsymbol{r}_{\mathrm{T}}
+% \end{array}\right]\right|_{n+1} ^{i}
+% \]
+% for increments of discrete nodal displacements \(\Delta \mathbf{d}^{i}\) and \(\Delta \mathbf{T}^{i}\). The right-hand side thereby consists of blocks containing the structural and thermal residual and the tangent matrix \(\mathbf{K}\), containing the respective partial derivatives of the structural and thermal residual, viz.
+% \[
+% \begin{array}{l}
+% {\left.\left[\begin{array}{c}
+% \boldsymbol{r}_{\mathrm{u}} \\
+% \boldsymbol{r}_{\mathrm{T}}
+% \end{array}\right]\right|_{n+1} ^{i}=\left[\begin{array}{l}
+% \boldsymbol{r}_{\mathrm{u}}\left(\mathbf{d}_{n+1}^{i}, \mathbf{T}_{n+1}^{i}\right) \\
+% \boldsymbol{r}_{\mathrm{T}}\left(\mathbf{d}_{n+1}^{i}, \mathbf{T}_{n+1}^{i}\right)
+% \end{array}\right]} \\
+% {\left.\left[\begin{array}{ll}
+% \mathbf{K}_{\mathrm{uu}} & \mathbf{K}_{\mathrm{uT}} \\
+% \mathbf{K}_{\mathrm{Tu}} & \mathbf{K}_{\mathrm{TT}}
+% \end{array}\right]\right|_{n+1} ^{i}=\left[\begin{array}{ll}
+% \frac{\partial r_{u}\left(\mathbf{d}_{n+1}^{i}, \mathbf{T}_{n+1}^{i}\right)}{\partial \mathbf{d}} & \frac{\partial r_{u}\left(\mathbf{d}_{n+1}^{i}, \mathbf{T}_{n+1}^{i}\right)}{\partial \boldsymbol{T}} \\
+% \frac{\partial r_{\mathrm{T}}\left(\mathbf{d}_{n+1}^{i}, \mathbf{T}_{n+1}^{i}\right)}{\partial \mathbf{d}} & \frac{\partial r_{\mathrm{T}}\left(\mathbf{d}_{n+1}^{i}, \mathbf{T}_{n+1}^{i}\right)}{\partial \mathbf{T}}
+% \end{array}\right]}
+% \end{array}
+% \]
+% After each step \(i\) displacements and temperatures are updated \(\left(\mathbf{d}_{n+1}^{i+1}=\mathbf{d}_{n+1}^{i}+\Delta \mathbf{d}^{i}, \mathbf{T}_{n+1}^{i+1}=\right.\) \(\left.\mathbf{T}_{n+1}^{i}+\Delta \mathbf{T}^{i}, i \leftarrow i+1\right)\) until convergence is achieved. In the presence of internal variables of state, as it is the case for elasto-plasticity (see Section 2.3.4), the derivatives in (2.167) are to be understood as generic operators, since the exact algorithmic treatment of the internal variables of state has not yet been specified, but is the topic of the following chapter.
+
+\section{Partitioned}
+
+\subsection{Weakly coupled}
+
+\cite{tanakaApplicationBoundaryElement1995} presents a boundary element method for analysis of quasistatic problems in coupled thermoelasticity.
+The authors transform the heat conduction equation into a simpler form, similar to the uncoupled-type equation, which includes a modified thermal conductivity responsible for the coupling effects.
+This procedure assumes a few simplifying hypotheses.
+Hence the coupled thermoelastic problems are treated as an uncoupled ones, solving first for the temperatures and then for the displacements.
+Also, the BEM procedure can only be used straightforwardly for linear homogeneous media.
+
+\cite{}
+
+\subsection{Strongly coupled}
+
+\subsection{Comparison of solution techniques}

@@ -1,0 +1,431 @@
+
+\chapter{Solution procedures for coupled fields}
+
+This chapter presents an overview of solution procedures for coupled fields.
+It includes techniques applied to various coupled field problems, such as thermomechanical coupling, fluid-structure interaction, and aeroelasticity.
+Its goal is to support the choice of solution techniques for thermo-plastic problems, which are accurate, stable, efficient, both in terms of memory and computational time, and easy to implement and extend later to further couplings, e.g., electro\--thermomechanical problems.
+
+\section{Context field elimination}
+
+Field elimination achieves the solution of a coupled problem by eliminating the variables of the first field and introducing them into the second field.
+This second field is then solved.
+
+The main advantage of this procedure is the reduction of the number of state variables.
+Which in turn, leads to smaller systems of equations, which are presumably easier to solve.
+Furthermore, the analyst can choose the remaining variables such that they are the variables of interest.
+In this way, the variables eliminated do not need to be recovered. \citep{felippa_staggered_1980}
+
+On the other hand \cite{felippa_staggered_1980} cite as disadvantages
+\begin{itemize}
+  \item only possible for problems allowing explicit (and well-conditioned) variable eliminations;
+  \item sparseness and symmetry attributes of matrices associated with the original coupled system can be adversely affected by the eliminations process; and
+  \item available software modules for the isolated fields are not likely to be of much use for processing the reduced system.
+\end{itemize}
+The remainder of the chapter disregards these procedures, including in Section~\ref{} where the comparison of the different schemes is discussed.
+
+\section{Monolithic}
+
+Monolithic algorithms solve the coupled nonlinear multi-physics system simultaneously.
+Predominantly, implicit schemes are applied to achieve good stability properties.
+In turn, the nonlinear residual equations are often solved using the Newton-Raphson method.
+A particular challenge for monolithic algorithms is the efficient solution of the large system of equations, including potential nonlinearities or lack of symmetry.
+Even the units chosen can contribute to the ill-conditioning of the system matrix.
+One essential aspect for efficient solvers for large-scale problems is a good preconditioning technique.
+
+\subsection{Numerical considerations}
+
+For the solution of a large system of equations, iterative methods are preferable to direct methods, in part, due to memory footprint considerations.
+The Newton-Krylov methods such as GMRES and the BiCGStab are among the most commonly used in multi-physics problems \citep{hron_monolithic_2006}.
+However, their use does not suffice for an efficient and robust solution procedure for a multi-physics problem.
+In addition, the use of preconditioners alleviates the possible large condition numbers of the system matrix.
+There are several preconditioning techniques for the solution of large systems of equations, e.g., ILU preconditioners, domain decomposition, including multigrid approaches; multilevel recursive Schur complements preconditioners (see \cite{smith_domain_2004} and \cite{chen_matrix_2005}).
+
+\cite{heil_efficient_2004} is concerned with the fully coupled solution of large-displacement fluid-structure interaction problems by Newton's method.
+They use block-triangular approximations of the Jacobian matrix, obtained by neglecting selected fluid-structure interaction blocks, and show that they provide suitable preconditioners for the solution of the linear systems with GMRES.
+A Schur complement approximation for the Navier-Stokes block and multigrid approximations for the solution of the computationally most expensive operations is the basis for the efficient approximate implementation of the preconditioners.
+
+\cite{hron_monolithic_2006} propose a method based on a fully implicit, monolithic formulation of the problem in the arbitrary Lagrangian-Eulerian framework  to solve the problem of fluid-structure interaction of an incompressible elastic object in laminar incompressible viscous flow
+They utilize the standard geometric multigrid approach based on a hierarchy of grids obtained by successive regular refinement of a given coarse mesh.
+The complete multigrid iteration is performed in the standard defect-correction setup with the V or F-type cycle.
+
+\cite{tezduyar2006space} show how preconditioning techniques more sophisticated than diagonal preconditioning can be used in iterative solutions of the linear equation systems in fluid-structure interaction problems.
+
+In \cite{gee_truly_2011}, the authors focus on the strong coupling fluid-structure interaction employing monolithic solution schemes.
+Therein, a Newton-Krylov method is applied to the monolithic set of nonlinear equations.
+They propose two preconditioners that apply algebraic multigrid techniques to the entire fluid-structure interaction system of equations.
+As the first option, the authors employ a standard block Gauss-Seidel approach, where approximate inverses of the individual field blocks are based on an algebraic multigrid hierarchy tailored for the type of the underlying physical problem.
+A monolithic coarsening scheme for the coupled system that uses prolongation and restriction projections constructed for the individual fields provides the basis for the second preconditioner.
+The resulting nonsymmetric monolithic algebraic multigrid method involves coupling the fields on coarse approximations to the problem yielding significantly enhanced performance, claim the authors.
+
+In the context of multi-physics problems, \cite{https://doi.org/10.1002/fld.2402} propose a fully coupled algebraic multilevel preconditioner for Newton-Krylov solution methods.
+A set of multi-physics partial differential equation (PDE) applications attests its performance: a drift-diffusion approximation for semiconductor devices,
+a low Mach number formulation for the simulation of coupled flow, transport, and non-equilibrium chemical reactions,
+a low Mach number formulation for visco-resistive magnetohydrodynamics (MHD) systems.
+An aggressive-coarsening graph-partitioning of the non-zero block structure of the Jacobian matrix provides the basis for the algebraic multilevel preconditioner.
+Using a different approach \cite{badia_block_2014} employ a new family of recursive block LU preconditioners to solve the thermally coupled induction less magnetohydrodynamics problem equations, which model the flow of an electrically charged fluid under the influence of an external electromagnetic field with thermal coupling.
+
+\cite{netz_high-order_2013} addresses a thermo-mechanically coupled problem of thermo-viscoelasticity at finite strains using a monolithic approach.
+The authors solve the system of nonlinear algebraic equations obtained from the spatial (FEM) and temporal (diagonally-implicit Runge-Kutta methods) discretization of the problem monolithically.
+They employ the Multilevel-Newton algorithm to obtain a high-order result in the space and the time domain.
+The numerical concept is applied to a constitutive model of finite strain thermo-viscoelasticity.
+\cite{rothe_monolithic_2015} also employ in the context of thermo-viscoelasticity, the multilevel Newton algorithm to solve the system of algebraic equations describing the discretized problem.
+
+\cite{danowski_monolithic_2013} presents a monolithic solution scheme for thermo-structure interaction problem, using right preconditioning and a GMRES.
+The preconditioner "sub-problem" is solved using a Richardson iteration scheme and a relaxed block Gauss-Seidel method, which uncouples the mechanical and thermal problems.
+This procedure tackles each problem using an independent algebraic multigrid (AMG) preconditioner.
+\cite{verdugo_unified_2016} also considers the procedure just mentioned, as well as a preconditioner based on a semi-implicit method for pressure-linked equations, extended to deal with an arbitrary number of fields.
+This technique also results in uncoupled problems that can be solved with standard AMG.
+They also introduce a more sophisticated preconditioner that enforces the coupling at all AMG levels, unlike the other two techniques, which resolve the coupling only at the finest level.
+These techniques are applied successfully to three different coupled problems: thermo-structure interaction, fluid-structure interaction, and a complex model of the human lung.
+
+\cite{mayr_hybrid_2020} propose a hybrid interface preconditioner for the monolithic solution of surface-coupled problems.
+They combine physics-based block preconditioners with an additional additive Schwarz preconditioner, whose subdomains span across the interface on purpose.
+This approach is motivated by the error assessment of physics-based block preconditioners, revealing an accumulation of the error at the coupling surface, despite their overall efficiency.
+
+\newpage
+
+
+\subsection{Usage examples}
+
+\paragraph{Thermo-mechanical coupling}
+
+In the following paragraph, a small overview of the literature is presented regarding the application of monolithic solvers to the thermo-mechanical coupled problem.
+\cite{carter_finite_1989} suggests a monolithic approach to the thermoelastic problem at small strains.
+The constitutive laws considered do not acknowledge the dependence of the mechanical properties on the temperature and are not deduced from a Helmholz energy function.
+\cite{glaser_gekoppelte_1992} uses monolithic algorithms for the calculation of thin-walled structures using shell elements and an arc-length method for the TSI solution.
+While all coupling terms were considered, only a simplified mechanical dissipation was included where the hardening power was neglected (according to \cite{danowski_computational_2014}).
+\cite{ibrahimbegovic_covariant_2002} presents a thermoplasticity covariant formulation within the framework of the principal axis methodology, which the authors claim, leads to a very efficient numerical implementation.
+The paper contains several numerical simulations dealing with the fully coupled thermomechanical response at large viscoplastic strains, including strain localization and cyclic loading cases, to illustrate the performance of the proposed methodology.
+The authors consider the von Mises thermoplasticity yield criterion and strain energy depending on logarithmic stretches, a hardening variable, and temperature.
+A monolithic solver achieves the solution to the coupled problem, but no details about it are given.
+\cite{danowski_computational_2014} proposes a volume-coupled TSI model based on the finite element method for the structural and thermal field.
+Various temperature-dependent, isotropic, elastic, and elastoplastic material models for small and finite strains are employed, incorporating the effect of the highly elevated temperatures predominating in rocket nozzles, the practical application focused in the Ph.D. thesis.
+The author considers both monolithic and partitioned coupling algorithms to solve fully coupled thermomechanical systems.
+Regarding the former,  a novel monolithic Newton-Krylov scheme with problem-specific block Gauss-Seidel preconditioner and algebraic multigrid methods is introduced.
+Concerning the latter, loosely and strongly coupled partitioned schemes are examined, possibly including acceleration techniques, as, e.g., the Aitken \(\Delta^2\) method.
+\cite{netz_high-order_2013} and \cite{rothe_monolithic_2015} both present monolithic approaches, based on the multilevel Newton method, for the solution of the thermo-mechanical problem.
+In both contributions, thermo-visco-plastic materials are successfully analyzed.
+Recently, \cite{felder_thermo-mechanically_2021} have presented a finite strain thermo-mechanically coupled two-surface damage-plasticity theory.
+The authors obtain the solution for the three coupled fields, displacement, nonlocal damage variable, and temperature, employing an implicit and monolithic solution scheme.
+
+The thermo-mechanical coupling has also been studied in the more specific domain of contact mechanics.
+\cite{zavarise_real_1992} present one of the earliest contributions in this direction.
+They propose a FEM formulation of frictionless contact, accounting for full thermo-elastic coupling.
+The penalty method is used to enforce the non-penetration conditions.
+Another contribution, \cite{hansen_jacobian-free_2011}, advances a standard mortar discretization with Lagrange multipliers to solve the small strain thermo-elasticity problem.
+The authors consider the heat equation coupled to linear mechanics through a thermal expansion term in their formulation.
+The solution approach is based on a preconditioned Jacobian-free Newton Krylov solution method, and the use case under analysis is a light water reactor nuclear fuel rod.
+\cite{dittmann_isogeometric_2014} investigate thermomechanical mortar contact algorithms and their application to NURBS-based Isogeometric Analysis in the context of nonlinear elasticity.
+Mortar methods are applied to both the mechanical and thermal fields to model frictional contact, the energy transfer between the surfaces, and frictional heating.
+A monolithic approach is pursued in solving the nonlinear algebraic equations found after the discretization in time and space.
+In the Ph.D. thesis by the same first author, \cite{dittmann_isogeometric_2017}, this approach is further pursued in multi-field contact problems.
+More recently, \cite{seitz_computational_2018, seitz_computational_2019} tackles the numerical treatment of contact problems considering inelastic deformation and thermomechanical coupling.
+It accounts for plastic spin, visco-plasticity, and thermo-plastic coupling, as well as temperature-dependent material parameters.
+The authors also opt for a monolithic solver, although no further details are supplied.
+See also, in the context of contact mechanics, \cite{oancea_finite_1997, pantuso_finite_2000, hueber_thermo-mechanical_2009, hesch_energy-momentum_2011, gitterle_dual_2012} and \cite{novascone_evaluation_2015}.
+
+\paragraph{Others}
+
+In the context of fluid-structure interaction, the monolithic approach seems to be more widely used than in thermo-mechanically coupled problems.
+A few contributions in this domain using a monolith approach are \cite{blom_monolithical_1998, heil_efficient_2004, hubner_monolithic_2004, michler_monolithic_2004, zhangStudiesStrongCoupling2004, dettmer_computational_2006, hron_monolithic_2006, tezduyar2006space, kuttler_coupling_2010,gee_truly_2011, kloppel_fluidstructure_2011, mayr_temporal_2015} and \cite{mayr_hybrid_2020}.
+The use of a monolithic approach can also be found in the domain of saturated soils (e.g., \cite{lewis_finite_1993}, \cite{borja_elastoplastic_1998}, \cite{jha_locally_2007}, \cite{white_stabilized_2008}).
+Monolithic solvers are also used in the context of magnetohydrodynamics (e.g., \cite{SHADID20107649} and \cite{badia_block_2014}).
+
+
+
+\section{Partitioned}
+
+The following Section presents the partitioned time-stepping algorithms.
+For a detailed comparison with the monolithic approach and between themselves, see Section~\ref{}.
+
+A field partition is a field-by-field decomposition of the space discretization.
+Partitioning may be algebraic or differential.
+In algebraic partitioning, the complete coupled system is spatially discretized first and then decomposed.
+In differential partitioning, the decomposition is done first, and each field is then discretized separately.
+Differential partitioning often leads to non-matched meshes, as typical of fluid-structure interaction.
+Algebraic partitioning was initially developed for matched meshes and substructuring \citep{felippa_partitioned_2001}.
+
+The earliest contributions regarding the partitioned treatment of coupled systems emerged the mid 1970s, involving structure-structure interactions and fluid-structure interactions (see e.g. \cite{belytschko_mesh_1976}, \cite{park_stabilization_1977}, \cite{belytschko_stability_1978}, \cite{hughes_implicit-explicit_1978} and \cite{belytschko_mixed_1979}).
+
+% ``What are partitioned time-stepping algorithms?''
+
+Given a complex system, there are usually many ways of partitioning it into subsystems or fields.
+\cite{felippa_staggered_1980} provide a very pragmatic and helpful criterion to select the fields to be considered.
+According to their definition, a field is characterized by computational considerations.
+It is a segment of the overall problem for which a separable software module is either available or readily prepared if the interaction terms are suppressed.
+As such, a partitioned approach to the solution of multi-physics problems employs field analyzers specific to each field separately stepped in time.
+The coupling between the fields is achieved through proper communication between the individual components using prediction, substitution, and synchronization techniques.
+
+% ``What is the difference between operator splits, fractional step, partitioned and staggered?''
+
+Before moving on, it may be helpful to clear up the difference between partitioned schemes, staggered schemes, operator splits, and fractional-step methods.
+The first is probably the most general term and includes the others.
+Its definition has already been given.
+A staggered scheme is a term most often used for the partitioned schemes where the solution concerning each field is sequential and obtained only once per time step as in the loosely coupled schemes to be introduced.
+However, it may also include the strongly coupled schemes, as well.
+An operator split is obtained through the decomposition of the fully coupled problem into subproblems.
+The structure of the problem is the same, as well as the unknowns considered.
+The only difference between the subproblems is the physical effects considered.
+The equation terms concerning each physical effect must be divided exclusively and exhaustively between the subproblems.
+Finally, according to \cite{armero_new_1992} staggered algorithms for coupled problems can be viewed as fractional steps methods, in the sense of \cite{holt_method_2012}, arising from an operator split of the coupled problem of evolution.
+
+\subsection{Operator splits}
+
+% ``What are operator splits?''
+The most common operator splits into thermomechanical problems are the isothermic and adiabatic split.
+
+\paragraph{Isothermic}
+
+The isothermic split is perhaps the most straightforward and natural approach, as noted by \cite{argyris_natural_1981}, one of the earliest contributions on the topic.
+The scheme achieves the solution of the thermo-mechanical problem, first solving the mechanical problem at a constant temperature, then a purely thermal phase is considered at a fixed configuration.
+
+\paragraph{Adiabatic}
+
+The adiabatic split is proposed in \cite{armero_new_1992}.
+It consists of a first phase where constant entropy is enforced and the second phase of purely thermal conduction at a fixed reference.
+In terms of implementation complexity, it is comparable to the isothermal split.
+This is possible because the constant entropy phase can be cast as a mechanical phase, where the stiffness and the external force are adjusted as a function of an intermediate temperature.
+This temperature is computed considering the strong form of the temperature evolution equation to retain the computational efficiency of the isothermal split, despite the momentum equation being enforced in its weak form.
+The advantage of this split is that when used in a staggered scheme, it is unconditionally stable (see Section~\ref{}).
+
+
+\subsection{Loosely vs. Strongly coupled schemes}
+
+% ``What are the techniques used in partitioned schemes?''
+
+According to \cite{felippa_partitioned_2001} there are several basic techniques associated with partitioned schemes (see Figure~\ref{fig:devices_of_partitioned_analysis_time_stepping}).
+These are
+\begin{itemize}
+  \item preditction;
+  \item substitution;
+  \item interfield iteration;
+  \item full step correction;
+  \item lockstep advancing;
+  \item midpoint correction;
+  \item subcycling;
+  \item augmentation.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \includegraphics[width=\textwidth]{devices_of_partitioned_analysis_time_stepping.png}
+  \caption{Devices of partitioned analysis time-stepping \citep{felippa_partitioned_2001}.}
+\label{fig:devices_of_partitioned_analysis_time_stepping}
+\end{figure}
+
+Inter-field iterations are the primary criterion distinguishing loosely or one-way staggered coupled schemes and strongly or iterative staggered coupled schemes.
+In the loosely coupled schemes, the integration algorithm proceeds sequentially, solving the problem in each field only once per time step.
+On the other hand, for strongly coupled schemes, inter-field iterations are present, such that the problems are solved multiple times at the same time instant.
+This inner loop is repeated until a given tolerance is reached for the unknowns in each field.
+
+The remainder of the techniques listed will be mentioned and explained in the discussion below.
+
+\subsection{Loosely coupled}
+
+
+
+The solution for the fully coupled problem is found in loosely coupled schemes by solving each field sequentially.
+For the thermomechanical problem, the two available schemes are the isothermal split (see e.g. \cite{simo_recent_1992}, \cite{agelet_de_saracibar_numerical_1998}) and the adiabatic split (see e.g. \cite{armero_new_1992} and \cite{armero_priori_1993}), as mentioned above.
+
+According to \cite{felippa_partitioned_2001}, in linear problems, the first concern with partitioning is the degradation of time-stepping stability.
+After the analyst has ensured stability, an accuracy analysis of the method should be performed.
+In strongly nonlinear problems, such as fluid flow, stability and accuracy tend to be intertwined since numerical stability is harder to define.
+As such, they are usually considered together in method design.
+The expectation is for a method that operates well at a reasonable timestep.
+
+\cite{felippa_partitioned_1988} presents a detailed explanation about how to design from scratch a loosely coupled time-stepping algorithm applicable to linear systems of equations.
+It includes implementation details, such as the choice of the predictor formula, and the design steps, from the formulation of the original field equations and temporal discretization to the stability and accuracy analysis.
+Other contributions focused mainly on linear systems are \cite{neishlos_finite-element_1983}, \cite{zienkiewicz_unconditionally_1988} and \cite{combescure_numerical_2002},
+
+Because the loosely coupled schemes are explicit, they are also often only conditionally stable.
+The isothermic split is such an example \citep{armero_new_1992}.
+On the other hand, the adiabatic split proposed in \cite{armero_new_1992} is unconditionally stable, despite being explicit.
+\cite{farhat_unconditionally_1991} also propose a stable staggered scheme, achieved through semi-algebraic augmentation, which, however, is limited to linearized thermoelasticity.
+In the context of coupled flow and geomechanics, \cite{kim_stability_2011-2} show that when the mechanical problem is solved first, the drained split combined with a backward Euler discretization is conditionally stable, and the undrained split is unconditionally stable when combined with midpoint rule.
+When instead the flow problem is solved, \cite{kim_stability_2011-1} show that the fixed-stress split is conditionally and the fixed-strain split is unconditionally stable for appropriate choices of the generalized midpoint rule.
+
+Moreover, in the domain of fluid-structure interactions, it can be shown that staggered methods are inherently non-conservative.
+As time progresses in the simulation, these schemes introduce parasitic energy at the boundary, which contributes to their poor numerical stability \citep{michler_relevance_2003}.
+A further problem appears when solving these coupled physical problems, the so-called artificial added-mass effect, which manifests itself when a slender structure and fluid have similar densities, and the latter is modeled as an incompressible fluid leads to instability \citep{causin_added-mass_2005, forster_robust_2007}.
+It can even be shown that for every sequentially staggered scheme and spatial discretization of a problem, a mass ratio between the fluid and structural mass density can be found at which the coupled system becomes unstable \citep{forster_artificial_2007}.
+
+Despite this, some contributions detail strategies allowing for the unconditional stability of these schemes.
+As part of the development loop of commercial tire designs, \cite{gillard_efficient_2019} tackles the problem of tire hydroplaning.
+The author presents a robust explicit coupling scheme that relies on rigorous control of the energy artificially introduced at the interface by the staggering process through a dynamic adaptation of the coupling time step size.
+Regarding the artificial added-mass effect, \cite{farhat_robust_2010} demonstrates that even for fluid-structure applications with strong added mass effects, a carefully designed staggered and sub-iteration-free time-integrator can achieve numerical stability and robustness concerning the slenderness of the structure, as long as the fluid is justifiably modeled as a compressible medium.
+
+Another technique available to improve the stability of loosely coupled schemes is (algebraic) augmentation.
+It rests on the injection of one of the coupled equations into the other, after discretization in space, to 'soften' the system, either by reducing the large eigenvalues of the uncoupled stiff equation or by introducing some damping into it.
+Some examples of this approach include \cite{park_stabilization_1977} and \cite{park_stabilization_1983}.
+
+Yet another technique to ensure stability in the context of fluid-structure interactions is presented in \cite{fernandez_projection_2006}.
+Stability is achieved employing a semi-implicit coupling scheme, splitting the added-mass, viscous effects, and geometrical/convective nonlinearities, through a Chorin-Temam projection scheme within the fluid.
+
+Regarding accuracy, the loosely coupled schemes do not necessarily inherit the accuracy order of the schemes used in the integration of the separate fields, often being just of the first order in time \citep{farhat_provably_2006}.
+However, some contributions detail approaches that are second-order time-accurate.
+In the context of thermo-elasticity, \cite{armero_new_1992} show that a double-pass approach using the adiabatic split yields such a second-order accurate time-stepping algorithm.
+A few approaches yield similar results in the domain of fluid-structure interaction (see \cite{piperno_explicitimplicit_1997}, \cite{farhat_provably_2006} and \cite{farhat_robust_2010}).
+In any case, whatever the theoretical convergence order of the loosely coupled method, at a given time instant, the fully coupled discretized equations of the problem will never be exactly satisfied by the solutions found.
+There is a lag between the fields considered, e.g., the mechanical and thermal fields in a thermomechanical problem.
+In the context of strong coupling, this lag can be conceived as a numerical evaluation error.
+Solving approximately the exact (i.e., aggregated) equations can be reinterpreted as exactly solving a set of approximate (i.e., segregated) equations.
+Thus, one can construe loosely-coupled methods as solving a set of segregated equations instead of aggregated equations.
+Accordingly, the incurred numerical evaluation error can be reinterpreted as a discretization error.
+Loosely-coupled methods, therefore, satisfy conservation only in an asymptotic sense, i.e., for vanishing mesh width; this is a basic consistency requirement \cite{michler_efficient_2005}.
+
+Prediction techniques can improve the order of the numerical evaluation error incurred by loosely-coupled partitioned methods.
+For the sake of explanation, consider the thermo-mechanical problem being solved using the isothermic split.
+When using predictors, instead of integrating the mechanical equations based on the structure's temperature in the previous time instant, a prediction can be used for the temperature of the structure boundary in the current time instant.
+Such predictions are generally based on an extrapolation of the solution from the previous time step.
+Prediction techniques improve the solution accuracy and stability of loosely-coupled methods \citep{piperno_explicitimplicit_1997, piperno_partitioned_2001, michler_efficient_2005, farhat_provably_2006}.
+
+Another technique available to improve the accuracy of the loosely coupled methods is subcycling.
+It involves solving each field's problems using different time steps since the fields present in a multi-physics problem often have different time scales.
+In the context of aeroelasticity, \cite{piperno_partitioned_1995} claims that it can offer substantial computational advantages, including savings in the simulation CPU time because the structural field will be advanced fewer times.
+\cite{farhat_high_1997} and \cite{piperno_explicitimplicit_1997} also argue for this technique along the same lines.
+
+\paragraph{Usage examples}
+
+The loosely coupled scheme has been used in the context of thermoelasticity \citep{argyris_natural_1981, armero_new_1992, johansson_thermoelastic_1993, miehe_entropic_1995, miehe_theory_1995, holzapfel_entropy_1996}, thermo-plasticity \citep{armero_new_1992, armero_priori_1993, simo_associative_1992, wriggers_coupled_1992, agelet_de_saracibar_numerical_1998, agelet_de_saracibar_formulation_1999} and thermo-viscoplasticity \citep{adam_numerical_2002, adam_numerical_2002-1}.
+
+For examples in aeroelasticity see e.g., \cite{piperno_partitioned_1995, farhat_two_2000} and \cite{farhat_application_2003}, and in fluid-structure interaction more broadly see e.g. \cite{tezduyar2006space} and \cite{miller_loosely_2015}
+Other applications include fluid-soil interaction analysis \citep{saetta_unconditionally_1992, armero_formulation_1999, mikelic_convergence_2013}.
+
+
+\subsection{Strongly coupled}
+
+In the strongly coupled scheme, inter-field iterations are performed until a given tolerance for the unknowns of each field is reached.
+They converge to the solution of the monolithic scheme and are thus able to satisfy discrete versions of the coupled problem exactly \citep{forster_robust_2007, danowski_computational_2014}.
+In principle, regarding thermomechanics, either the isothermal or the adiabatic slit can be used, but there seems to be no example of the latter.
+In contrast to the staggered schemes, there is no problem of conditional stability, but the scheme may converge very slowly or not at all.
+As an example coming from fluid-structure interactions, it has been shown that the number of coupling iterations increases when the time step decreases or when the structure becomes more flexible \citep{degroote_stability_2008}.
+This can place a severe restriction on the use of these schemes.
+Several acceleration techniques are available in the literature to speed up convergence.
+
+A straightforward way to improve the convergence behavior of the strongly coupled schemes is using predictors, in contrast to the values found in the last step.
+Thus, the initial guesses can be improved using well-chosen predictors \cite{michler_efficient_2005}.
+Along these lines, \cite{erbts_accelerated_2012} employs polynomial prediction methods, and \cite{wendt_partitioned_2015} uses a line extrapolation method to improve the first guess of the unknown and thus decrease the number of iterations needed to achieve convergence.
+
+Another approach that is well established for series acceleration is the Aitken delta-squared process.
+It uses previously computed values to obtain more accurate estimates for the unknown.
+\cite{irons_version_1969} is an early contribution detailing this low-memory convergence acceleration scheme.
+In the context of thermomechanics, \cite{danowski_computational_2014}, \cite{erbts_partitioned_2015} and \cite{wendt_partitioned_2015} use this technique, with the last authors also employing a quasi-Newton least squares method.
+Some examples of contributions in the domain of fluid-structure interactions taking advantage of this approach are \cite{degroote_stability_2008}, \cite{kuttler_fixed-point_2008} and \cite{kuttler_vector_2009}.
+The last authors also introduce a vector extrapolation approach that includes more than three previous values of the iteration scheme in the improved estimate.
+
+The strongly coupled approach lends itself to an interpretation as a nonlinear block Jacobi or Gauss-Seidel scheme, whose convergence is conditional and at most linear \citep{matthies_strong_2003, joosten_analysis_2009}.
+\cite{cervera_computational_1996} provides an in-depth analysis of block Jacobi and Gauss-Seidel schemes applied to coupled problems, including considerations regarding efficiency, complexity, and parallelization.
+\cite{matthies_partitioned_2003, matthies_strong_2003} suggests a block-Newton method instead, with the Jacobian of the system being approximate by a finite difference method.
+Under some assumptions on the subsystem solvers, this approach converges quadratically.
+\cite{michler_interface_2005} propose a solution method based on the conjugation of sub-iterations via a Newton-Krylov method, which confines the GMRES acceleration to the interface degrees-of-freedom.
+The latter renders storage requirements for the Krylov space and computational cost of the least-squares
+problem low.
+The nesting of Newton and GMRES iterations lends itself to the reuse of Krylov vectors in subsequent linear system solutions.
+\cite{kuttler_vector_2009} claims that the approach proposed by the last authors should not be regarded as a Newton-based solver but as a Krylov-based vector extrapolation scheme
+
+One can also improve the convergence speed of the strongly coupled scheme using reduced-order models to produce a more accurate first guess and thus decrease the number of iterations needed for the method to converge.
+\cite{vierendeels_implicit_2007} presents a technique that uses the Jacobian from reduced-order models that are built up during the coupling iterations.
+The reduced-order model is built for each step and approximates an arbitrary interface displacement fitting a linear regression to the previous displacement-stress points.
+\cite{degroote_stability_2008} follows the same technique, coupling it with an Aitken delta-squared process.
+
+\cite{blom_efficient_2017} proposes a manifold mapping technique to decrease the number of sub-iterations of a high-fidelity fluid-structure interaction model.
+The idea is to perform many sub-iterations with a low-fidelity model instead of the high-fidelity flow and structure models.
+
+
+\paragraph{Usage examples}
+
+Regarding the use of strongly coupled schemes in the context of thermo-mechanics, there are a few contributions.
+\cite{erbts_accelerated_2012} present results concerning thermo-elasticity at finite strains, \cite{netz_high-order_2013} concerning thermo-viscoelasticity, \cite{danowski_computational_2014} includes results on thermo-elasticity and thermo-elasto-plasticity.
+In field of fluid-structure interaction, a few examples of the use of strongly coupled schemes are \cite{torii2006computer}, \cite{wall_strong_2007} and \cite{blom_efficient_2017}.
+Including more than two fields, \cite{erbts_partitioned_2015} tackles electro-thermo-mechanical problems, as does \cite{wendt_partitioned_2015}, which also considers radiative heat transfer.
+In \cite{lenarda_geometrical_2016}, the strongly coupled scheme is used to solve coupled hygro-thermo-mechanical problems in photovoltaic laminates.
+
+\section{Comparison of solution techniques}
+
+According to \cite{felippa_partitioned_1988}, the desirable properties of a time-stepping algorithm for solving coupled problems are:
+\begin{itemize}
+  \item enjoys unconditional stability;
+  \item is highly accurate;
+  \item is easy to implement;
+  \item is not memory intensive;
+  \item requires low CPU time;
+  \item satisfies software modularity constraints.
+  \end{itemize}
+In the following, the time-stepping schemes presented above are compared with these criteria in mind.
+The application in view is thermomechanics.
+
+\paragraph{Stability}
+
+Regarding stability, the loosely coupled using an isothermal split is conditionally stable \citep{armero_new_1992}.
+Despite this, the limitation is not significant for metals plasticity, according to \cite{simo_associative_1992}.
+However, examples where the scheme diverges, can be found in \cite{armero_new_1992}.
+In this last contribution, the adiabatic split is introduced and shown to be unconditionally stable in the context of thermo-elasticity.
+\cite{armero_priori_1993} show that these properties extend to thermo-plasticity.
+The strongly coupled schemes are unconditionally stable because no critical time step leads to numerical instabilities in the results.
+Despite this, the inner loop of the scheme may converge slowly or not at all \cite{matthies_strong_2003}.
+It depends on the spectral radius of the matrices involved \citep{cervera_computational_1996}.
+There are, however, acceleration techniques that can mitigate this problem, including predictors and Aitken \(\Delta^2\) methods (see Section~\ref{}).
+\cite{danowski_computational_2014} presents a numerical example concerning an internal pressurized thick-walled cylinder, whose material is viscoplastic, for which the strongly coupled scheme employed diverged, despite the use of an Aitken method.
+On the other hand, the monolithic scheme, as long as appropriately preconditioned, is unconditionally stable \citep{danowski_computational_2014}.
+
+\paragraph{Accuracy}
+
+Regarding accuracy, the solution found from the loosely coupled method will never exactly satisfy the fully coupled discretized equations of the problem.
+There will be a time lag between the thermal and the mechanical field.
+Loosely-coupled methods, therefore, satisfy conservation only in an asymptotic sense, i.e., for vanishing mesh width \citep{michler_efficient_2005}.
+As long as it does not diverge, the monolithic and strongly coupled satisfy the coupled discretized equations exactly.
+
+\paragraph{Ease of implementation}
+
+The partitioned schemes are much easier to implement as most of them can work with the field analyzers as black boxes, concerning themselves only with communication between the solvers, initial guesses, and acceleration schemes using previously computed values.
+The monolithic scheme requires the computation of the full stiffness matrix, including the mixed terms and appropriate preconditioning that varies widely with the specific multi-physics problem to be solved.
+
+\paragraph{Memory requirements}
+
+When it comes to memory requirements, the partitioned schemes often require only the diagonal blocks of the stiffness matrix found in the linearization process.
+Previous values also need to be saved from one iteration to the next, increasing the memory cost for some acceleration techniques.
+In contrast, the fully coupled monolithic scheme requires the full stiffness matrix of the coupled problem.
+
+\paragraph{CPU time}
+
+According to \cite{michler_efficient_2005}, solving a fluid-structure interaction problem with the same accuracy using a loosely and strongly coupled scheme, the latter is more efficient than the former.
+For the same total number of iterations, the difference in the accuracy reached ranges from one to three orders of magnitude.
+These results run counter to a claim in \cite{felippa_partitioned_2001}. However, this is not supported by any numerical results from the last authors.
+In the numerical examples presented in \cite{danowski_computational_2014}, the monolithic solver is in most cases faster than a strongly coupled scheme employing an Aitken method for problems in thermomechanics.
+The differences range from 120\% to 140\% in favor of the monolithic scheme.
+Supporting evidence for these conclusions can also be found in \cite{novascone_evaluation_2015}.
+The authors report  CPU time ratios between the strongly coupled and monolithic approaches, ranging from 0.635 to 3.75 on the magnitude of the coupling.
+
+\paragraph{Software modularity}
+
+The partitioned approaches can take full advantage of software, including closed source commercial solvers.
+There is little to no software reuse for the monolithic approach, save for routines that solve linear systems and the like.
+
+\paragraph{Conclusions}
+
+Lastly, it may be helpful to reproduce the recommendations given in \cite{felippa_partitioned_2001} regarding the choice between partitioned and monolithic approaches.
+According to the authors, the circumstances that favor the partitioned approach for tackling a coupled problem are a research environment with few delivery constraints, access to existing software, localized interaction effects (e.g., surface versus volume), and widespread spatial/temporal component characteristics.
+The opposite circumstances:        commercial environment,        rigid deliverable timetable,        massive software development resources,        global interaction effects, and comparable length/time scales favors a monolithic approach.
+
+Putting it all together, the most appropriate choice for the present use case is the strongly coupled schemes with appropriate acceleration techniques.
+They can take advantage of already existing software, provide accurate results that agree with a monolithic approach, are not memory intensive, are easy to implement, and with the use of convergence acceleration techniques, are competitive from the computational efficiency standpoint.
+The only drawback seems to be the possibility of divergence in the inner loop, stalling the progress of the simulation.
+
+\begin{table}[htbp]
+  \caption{Summary of the comparison between the FFT-Galerkin method.}
+\label{tab:comparison_fft_galerkin_fem}
+\small
+  \setlength{\tabcolsep}{1pt}
+  \centering
+    \begin{tabular}{l ccc}
+    & \multicolumn{2}{c}{Partitioned schemes} & \multirow{2}{*}{Monolithic} \\ \cline{2-3}
+    & \vphantom{\Big |}Loosely coupled & Strongly coupled & \\
+    \hline  \hline
+    \vphantom{\Big |}Stability & \makecell[l]{Isothermic split:\\\ \textcolor{red!70!black}{conditionally stable}\\Adiabatic split:\\\ \textcolor{green!50!black}{unconditionally stable}} & \textcolor{green!50!black}{\makecell[c]{unconditionally\\stable\textsuperscript{*}}} & \textcolor{green!50!black}{\makecell[c]{unconditionally\\stable}}\\ \hline
+    Accuracy & \textcolor{red!70!black}{\makecell[c]{Coupled discretized\\ equations not\\ satisfied exactly}} & \textcolor{green!50!black}{\makecell[c]{Coupled discretized\\ equations satisfied}} & \textcolor{green!50!black}{\makecell[c]{Coupled discretized\\ equations satisfied}} \\ \hline
+    \makecell[l]{Ease of\\ implementation} & \multicolumn{2}{c}{\textcolor{green!50!black}{\makecell[c]{Only communication between field\\ analyzers stricly needed}}} & \makecell[l]{\textcolor{red!70!black}{Full coupling needed:}\\\ \textcolor{red!70!black}{\textbullet\ Computation of mixed}\\\ \textcolor{red!70!black}{terms of the Jacobian}\\\ \textcolor{red!70!black}{\textbullet\ Preconditioning needed}} \\ \hline
+    \makecell[l]{Memory\\ requirements} & \multicolumn{2}{c}{\textcolor{green!50!black}{\makecell[c]{Only diagonal blocks of\\ the full stiffness matrix needed}}} & \textcolor{red!70!black}{Full stiffness matrix needed}\\ \hline
+    \makecell[l]{Software modularity\\ constraints} & \multicolumn{2}{c}{\textcolor{green!50!black}{Full software modularity}} & \textcolor{red!70!black}{\makecell[c]{Poor or no\\ software modularity}}\\
+  \hline\hline
+  \multicolumn{4}{l}{\vphantom{\Huge |}\parbox{\textwidth}{\footnotesize{${}^*$ The inner loop of the strongly coupled scheme may converge very slowly or even diverge.}}}
+  \end{tabular}
+\end{table}

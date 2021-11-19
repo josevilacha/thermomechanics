@@ -168,9 +168,6 @@
 \usepackage[toc,page]{appendix}
 
 % Headers and footers
-
-
-
 \usepackage{fancyhdr}
 % \renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
 % \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
@@ -218,6 +215,10 @@
    \clearpage           % finish off the page
   }
 
+
+% landscape
+% \usepackage{lscape}
+\usepackage{pdflscape}
 
 %Custom FramedBox Environment
 %%Loading 'float' package
@@ -358,11 +359,12 @@
 \pagestyle{fancy}
 % \include{introduction}
 \include{thermomechanics}
+\include{continuum_mechanics_and_finite_element_method}
 \include{solvers_for_coupled_fields}
 % \include{conclusions}
 \appendix
 % \include{annex}
 
-\bibliography{mybibliography.bib}
+\bibliography{Thermomechanics.bib}
 
 \end{document}
