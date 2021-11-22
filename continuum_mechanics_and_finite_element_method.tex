@@ -377,38 +377,6 @@ Equation \eqref{eq:clasius_duhem_eq} can also be written as
 \end{equation}
 multiplying it by $J$ and attending to the definition of the Kirchhoff stress tensor, where the left hand side represents now the energy dissipation per unit reference volume.
 
-\section{Weak equilibrium equations}
-
-From a practical standpoint, finding the exact solution to the strong equilibrium equations in the context of real engineering problems is most often nearly or completely impossible.
-To circumvent this problem most numerical methods are formulated to obtain approximate solutions to the so-called weak equilibrium equations.
-These result from relaxing the strong equilibrium equations, so that the solutions need only satisfy the equilibrium equations in an average sense as result of an integration over the body volume, instead of satisfy the equilibrium equations pointwise.
-The weak equilibrium equations can be found making use of several energetic and weighted residual methods, such as the Virtual Work Principle used here.
-
-\subsubsection{Spatial description}
-
-For a quasi-static motion, such that the inertial terms can be neglected, the Virtual Work Principle states, in a spatial description, that the body is in equilibrium if and only if the Cauchy stress field satisfies
-\begin{highlight}
-    \begin{equation}
-        \int_\Omega [\mat \sigma:\nabla \vect \eta - \vect b\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud da = 0,\quad \forall \vect \eta \in \mathscr{V},
-    \end{equation}
-\end{highlight}
- where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
- \begin{equation}
-     \vect \eta\colon \Omega\to , \mathscr{U}
- \end{equation}
- where $\mathscr{U}$ is the $n$-dimension vector associated with $\mathscr{E}$.
-
- \subsubsection{Spatial description}
-
-Likewise, in a material description, the Virtual Work Principle states that the body is in equilibrium if and only if the First Piola-Kirchhoff stress field satisfies
-    \begin{equation}
-        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - \vect b_0\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud da = 0,\quad \forall \vect \eta \in \mathscr{V},
-    \end{equation}
- where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
- \begin{equation}
-     \vect \eta\colon \Omega\to , \mathscr{U}.
- \end{equation}
-
 
 \section{Mechanical constitutive initial value problem}
 

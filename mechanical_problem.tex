@@ -1,27 +1,29 @@
 \chapter{Mechanical problem}
 
+In the following chapter, the general framework presented in the previous chapter is applied to a purely mechanical analysis, neglecting the thermal terms.
+
 \subsection{Mechanical constitutive initial value problem}
 
-In the purely mechanical case, with all the quantities related to the thermal domain can removed, a constitutive model based on internal variables can be established by the following set of equations
+In the purely mechanical case, with all the quantities related to the thermal domain removed, a constitutive model based on internal variables is established by the following set of equations
     \begin{gather}
         \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
         \psi = \psi(\mat F,\mat \alpha),\\
         \dot{\vect \alpha} = f(\mat F, \vect \alpha).
     \end{gather}
-    Thus, the spatial mechanical constitutive initial value problem can be stated as follows
-    \begin{problem}[Spatial mechanical constitutive intial value problem.]
-    GGiven the initial values of the internal variables, $\vect \alpha(t_0)$, and the history of the deformation gradient
-    \begin{equation}
-        \mat F(t),\quad t\in[t_0,t_\text{end}],
-    \end{equation}
-    find the functions for $\mat sigma(t)$ and $\vect \alpha(t)$ such that the constitutive equations
-    \begin{gather}
-        \mat \sigma = \rho \frac{\partial \psi}{\partial \mat F} \mat F^T,\\
-        \psi = \psi(\mat F, \vect \alpha),\\
-        \dot{\vect \alpha} = f(\mat F, \vect \alpha).
-    \end{gather}
-    are satisfied for every $t\in [t_0, t_\text{end}]$.
-    \end{problem}
+  Thus, the spatial mechanical constitutive initial value problem can be stated as follows
+  \begin{problem}[Spatial mechanical constitutive initial value problem.]
+  GGiven the initial values of the internal variables, $\vect \alpha(t_0)$, and the history of the deformation gradient
+  \begin{equation}
+      \mat F(t),\quad t\in[t_0,t_\text{end}],
+  \end{equation}
+  find the functions for $\mat \sigma(t)$ and $\vect \alpha(t)$ such that the constitutive equations
+  \begin{gather}
+      \mat \sigma = \rho \frac{\partial \psi}{\partial \mat F} \mat F^T,\\
+      \psi = \psi(\mat F, \vect \alpha),\\
+      \dot{\vect \alpha} = f(\mat F, \vect \alpha).
+  \end{gather}
+  are satisfied for every $t\in [t_0, t_\text{end}]$.
+  \end{problem}
 
 Likewise, in a material description it can be stated as
     \begin{problem}[Material mechanical constitutive intial value problem.]
@@ -37,10 +39,49 @@ Likewise, in a material description it can be stated as
     \end{gather}
     are satisfied for every $t\in [t_0, t_\text{end}]$.
     \end{problem}
-\enlargethispage{3\baselineskip}
-It is now possible to pose the quasi-static mechanical constitutive initial value problem in its weak form.
-To do it one assumes that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive models, whose internal variables are known at the initial time, as presented in Figure \ref{}.
-In addition, it is assumed that the interior of the body was subjected to a prescribed history of body forces, $\vect b(\vec X, t)$, $t\in[t_0, t_\text{end}$, and to the following boundary conditions:
+
+\subsection{Weak equilibrium. The principle of virtual work}
+
+The strong equations that enforce the equilirium of a body can be writen using the spatial description as
+\begin{equation}
+  \rho \ddot{\bm u} = \operatorname{div}\bm \sigma + \bm b\quad \text{in $\Omega.$}
+\end{equation}
+From a practical standpoint, finding the exact solution to the strong equilibrium equations in the context of real engineering problems is most often nearly or entirely impossible.
+Most numerical methods obtain only approximate solutions to the so-called weak equilibrium equations to circumvent this problem.
+These result from relaxing the strong equilibrium equations so that the solutions need only satisfy the equilibrium equations in an average sense instead of satisfying them pointwise.
+This is achieved through an integration over the body volume.
+The weak equilibrium equations can be found making use of several energetic and weighted residual methods, such as the Virtual Work Principle used here.
+\enlargethispage{\baselineskip}
+\begin{problem}[Principle of virtual work (spatial version).]
+TThe Virtual Work Principle states, in a spatial description, that the body is in equilibrium if and only if the Cauchy stress field satisfies
+    \begin{equation}
+        \int_\Omega [\mat \sigma:\nabla \vect \eta - (\vect b -\rho \ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+    \end{equation}
+ where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
+ \begin{equation}
+     \vect \eta\colon \Omega\to  \mathscr{U}
+ \end{equation}
+ where $\mathscr{U}$ is the $n$-dimension vector associated with $\mathscr{E}$.
+ \end{problem}
+
+
+The principle of virtual work can be expressed in a completly equivalent way using a material description.
+\begin{problem}[Principle of virtual work (material version).]
+TThe Virtual Work Principle states, in a material description, that the body is in equilibrium if and only if the First Piola-Kirchhoff stress field satisfies
+    \begin{equation}
+        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - (\vect b_0 - \rho_0 \ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud da = 0,\quad \forall \vect \eta \in \mathscr{V},
+    \end{equation}
+ where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
+ \begin{equation}
+     \vect \eta\colon \Omega\to \mathscr{U}.
+ \end{equation}
+\end{problem}
+
+\subsection{Mechanical constitutive initial boundary value problem}
+
+It is now possible to pose the mechanical constitutive initial value problem in its weak form.
+Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time, as presented in Figure \ref{}.
+In addition, it is assumed that the interior of the body was subjected to a prescribed history of body forces, $\vect b(\bm X, t)$, $t\in[t_0, t_\text{end}]$, and to the following boundary conditions:
 \begin{itemize}
     \item \textbf{Natural (or Neumann) boundary condition:}
     The boundary portion $\Omega_\text{traction, 0}$ of $\mathscr{B}$ is subjected to a prescribed history of traction forces, $\vect t_\text{presc}(\vect X, t)$, $\vect X\in \partial \Omega_\text{traction,0}$, $t\in[t_0, t_\text{end}]$,\\
@@ -56,10 +97,10 @@ It is also convenient to define the set of kinematically admissible displacement
 \end{highlight}
 
 So the weak form of the quasi-static mechanical constitutive initial boundary value problem can be stated in a spatial description as follows
-\begin{problem}[Spatial quasi-static mechanical initial BVP.]
-    Find a kinematically admissible displacement function, $\vect u\in \mathscr{K}$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
+\begin{problem}[Spatial mechanical initial BVP.]
+    FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
         \begin{equation}
-        \int_\Omega [\mat \sigma:\nabla \vect \eta - \vect b\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_\Omega [\mat \sigma:\nabla \vect \eta - (\vect b-\rho\ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
     \end{equation}
     where the space of virtual displacements at time $t$ is defined by
     \begin{equation}
@@ -68,10 +109,10 @@ So the weak form of the quasi-static mechanical constitutive initial boundary va
     and at each point of $\mathscr{B}$, the Cauchy stress tensor is the solution of spatial mechanical constitutive initial values problem.
 \end{problem}
 and in the material description as
-\begin{problem}[Material quasi-static mechanical initial BVP.]
-    Find a kinematically admissible displacement function, $\vect u\in \mathscr{K}$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
+\begin{problem}[Material mechanical initial BVP.]
+    FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
         \begin{equation}
-        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - \vect b_0\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - (\vect b_0-\rho_0\ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
     \end{equation}
     where the space of virtual displacements at time $t$ is defined by
     \begin{equation}
@@ -80,16 +121,14 @@ and in the material description as
     and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material mechanical constitutive initial values problem.
 \end{problem}
 
-\newpage
 \section{Time descretization} \label{sec:time_discretization}
 
-Given a generic path-dependent model, i.e. a model in which the stress state does not depend only on the instantaneous deformation state but also on the deformation history, the solution of the constitutive initial value problem for a given set of initial conditions is usually not known for complex strain paths $\mat F(t)$.
-Thus, there is a need to use an appropriate numerical algorithm for integration of the rate constitutive equations.
+Given a generic path-dependent model, i.e., a model in which the stress state does not depend only on the instantaneous deformation state but also on the deformation history, the solution of the constitutive initial value problem for a given set of initial conditions is usually not known for complex strain paths $\mat F(t)$.
+Thus, there is a need to use an appropriate numerical algorithm to integrate the rate constitutive equations.
 
-In general, the algorithms for the integration of rate constitutive equations are obtained adopting some kind of time (or pseudo-time) discretisation along with some hypothesis on the deformation path between adjacent time stations.
-
-In the present document, it is adopted an algorithm based on approximated incremental constitutive functions.
-Attending to the mechanical constitutive initial boundary value problem and considering the time increment $[t_n, t_{n+1}]$, this approach is comprised by the following two requeriments:
+In general, the algorithms for integrating rate constitutive equations are obtained adopting some time (or pseudo-time) discretization and some hypothesis on the deformation path between adjacent time stations.
+In the present document, an algorithm is adopted based on approximated incremental constitutive functions.
+Attending to the mechanical constitutive initial boundary value problem and considering the time increment $[t_n, t_{n+1}]$, this approach is comprised by the following two requirements:
 \begin{itemize}
     \item \textbf{Cauchy and First Piola-Kirchhoff stress tensors.}   Considering a time increment $[t_n, t_{n+1}]$ and given the set $\vect \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ at time $t_{n+1}$ determines the stress $\mat \sigma_{n+1}$ uniquely through
     \begin{highlight}
@@ -101,7 +140,7 @@ Attending to the mechanical constitutive initial boundary value problem and cons
 
     Similarly, the First Piola-Kirchhoff stress tensor $\mat P_{n+1}$ must be uniquely determined by the prescribed deformation gradient $\mat F_{n+1}$ prescribed at $t_{n+1}$ as
     \begin{equation}
-        \mat P_{n+1} = \hat{\mat P}(\mat F_{n+1}, \mat \alpha_n),
+        \mat P_{n+1} = \hat{\mat P}(\mat \alpha_n, \mat F_{n+1}),
     \end{equation}
     where $\hat{\mat P}$ is the incremental constitutive function for the First Piola-Kirchhoff stress tensor.
     \item \textbf{Set of internal variables.} Assuming that the set of internal variables $\vect \alpha_n$ is known at $t_n$, the set of internal variables must be uniquely determined by the prescribed deformationgradient $\mat F_{n+1}$ prescribed at $t_{n+1}$ as
@@ -113,13 +152,14 @@ Attending to the mechanical constitutive initial boundary value problem and cons
     where $\hat{\vect \alpha}$ is the incremental constitutive function for the set of internal variables.
 \end{itemize}
 
-Generally, the numerical constitutive laws are nonlinear and path-independent within one increment, that is, within each increment, $\mat \sigma_{n+1}$ and $\vect \alpha_{n+1}$ are  functions of $\mat F_{n+1}$ alone with the argument $\vect \alpha_n$ constant within the same time interval.
+Generally, the numerical constitutive laws are nonlinear and path-independent within one increment.
+In other words, within each increment, $\mat \sigma_{n+1}$ and $\vect \alpha_{n+1}$, they are functions of $\mat F_{n+1}$ alone with the argument $\vect \alpha_n$ constant within the same time interval.
 
-Making use of the aforementioned time discretization, the weak form of the quasi-static mechanical constitutive initial boundary value problem can then be stated in the spatial description as
-\begin{problem}[Spatial incremental quasi-static mechanical initial BVP.]
+Making use of the aforementioned time discretization, one can state the weak form of the mechanical constitutive initial boundary value problem in the spatial description as
+\begin{problem}[Spatial incremental mechanical initial BVP.]
     GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{n+1}$ and $\vect t_{n+1}$ at $t_{n+1}$, and the prescribed deformating gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{n+1}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the virtual Work Principle
             \begin{equation}
-        \int_{\Omega_{n+1}} [\hat{\mat \sigma}(\mat F_{n+1}, \vect \alpha_n):\nabla \vect \eta - \vect b_{n+1}\cdot \vect \eta]\ud v - \int_{\partial\Omega_{n+1}} \vect t_{n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_{n+1}} [\hat{\mat \sigma}(\mat F_{n+1}, \vect \alpha_n):\nabla \vect \eta - (\vect b_{n+1}-\rho\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v - \int_{\partial\Omega_{n+1}} \vect t_{n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
     \end{equation}
     where the space of kinematically admissible displacement fields $\mathscr{K}_{n+1}$ is defined by
     \begin{equation}
@@ -127,10 +167,10 @@ Making use of the aforementioned time discretization, the weak form of the quasi
     \end{equation}
 \end{problem}
 and in the material description as
-\begin{problem}[Material incremental quasi-static mechanical initial BVP.]
+\begin{problem}[Material incremental mechanical initial BVP.]
     GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$ at $t_{n+1}$, and the prescribed deformating gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{n+1}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the virtual Work Principle
             \begin{equation}
-        \int_{\Omega_{n+1}} [\hat{\mat P}(\mat F_{n+1}, \vect \alpha_n):\nabla_0 \vect \eta - \vect b_{0,n+1}\cdot \vect \eta]\ud v - \int_{\partial\Omega_{n+1}} \vect t_{0,n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_{n+1}} [\hat{\mat P}(\mat F_{n+1}, \vect \alpha_n):\nabla_0 \vect \eta - (\vect b_{0,n+1}-\rho_0\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v - \int_{\partial\Omega_{n+1}} \vect t_{0,n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
     \end{equation}
     where the space of kinematically admissible displacement fields $\mathscr{K}_{n+1}$ is defined by
     \begin{equation}
@@ -140,7 +180,7 @@ and in the material description as
 
 \section{Finite Element Method} \label{sec:fem}
 
-With the incremental weak form of the quasi-static mechanical constitutive initial boundary value problem now established, an approximated solution can be found making use of the Finite Elment Method.
+With the incremental weak form of the mechanical constitutive initial boundary value problem now established, an approximated solution can be found using the Finite Element Method.
 
 \subsection{Finite element concept}
 
@@ -179,7 +219,7 @@ The discretized spaces $^h \mathscr{V}$ and $^h\mathscr{K}$ can now be defined a
 
 The global shape functions can be conveniently assembled in the so-called global interpolation matrix as
 \begin{equation}
-    \mat N^g(\vect x) \equiv \left[\text{diag}[N_1^g(\vect x)]\; \text{diag}[N_2^g(\vect x)]\;\cdots\; \text{diag}[N_{n_\text{points}}^g(\vect x)]\right],
+    \mathbf N^g(\vect x) \equiv \left[\text{diag}[N_1^g(\vect x)]\; \text{diag}[N_2^g(\vect x)]\;\cdots\; \text{diag}[N_{n_\text{points}}^g(\vect x)]\right],
 \end{equation}
 where $\text{diag}[N_i^g]$ is a diagonal matriz $n_\text{dim} \times n_\text{dim}$
 \begin{equation}
@@ -196,26 +236,26 @@ where $n_\text{dim}$ is the number of degrees of freedom per node.
 
 Defining the global vector of nodal displacements as
 \begin{equation}
-    \vect u = \Big[ u_1^1,\dots,u^1_{n_\text{dim}},\dots, u_1^{n_\text{points}},\dots,u^{n_\text{points}}_{n_\text{dim}}\Big]^T,
+    \mathbf u = \Big[ u_1^1,\dots,u^1_{n_\text{dim}},\dots, u_1^{n_\text{points}},\dots,u^{n_\text{points}}_{n_\text{dim}}\Big]^T,
 \end{equation}
 the displacement field $\vec u(\vect x)$m defined over the global domain $\Omega$, can be found from Equation \eqref{eq:interpol_global} at any point $\vect x$ as
 \begin{highlight}
     \begin{equation}
-        ^h\vect u(\vect x) \equiv \mat N^g(\vect x)\vect u,\quad ^h\vect u\in ^h\mathscr{K}.
+        ^h\vect u(\vect x) \equiv \mathbf N^g(\vect x)\mathbf u,\quad ^h\vect u\in {}^h\mathscr{K}.
     \end{equation}
 \end{highlight}
 
 \subsection{Spatial discretization} \label{sec:spatial_discretization}
 
-Applying the aforementioned finite element discretization to the incremental quasi-static mechanical constitutive initial boundary value problem, we can then write in the spatial description
+Applying the aforementioned finite element discretization to the incremental mechanical constitutive initial boundary value problem, we can then write in the spatial description
 \begin{highlight}
     \begin{equation}
-        \int_{^h\Omega}\left[\hat{\mat \sigma}^T\mat B^g\vect \eta - \vect b_{n+1} \cdot \mat N^g \vect \eta \right]\ud v -\int_{\partial ^h\Omega_\text{traction}} \vect t_{n+1}\cdot \mat N^g\vect \eta \ud a = 0,\quad \forall \vect \eta \in ^h\mathscr{V},  \label{eq:forma_fraca_disc}
+        \int_{^h\Omega}\left[\hat{\mat \sigma}^T\mathbf B^g\vect \eta - (\mathbf b_{n+1} - \rho\ddot{\mathbf u}_{n+1}) \cdot \mathbf N^g \vect \eta \right]\ud v -\int_{\partial ^h\Omega_\text{traction}} \mathbf t_{n+1}\cdot \mathbf N^g\vect \eta \ud a = 0,\quad \forall \vect \eta \in ^h\mathscr{V},  \label{eq:forma_fraca_disc}
     \end{equation}
 \end{highlight}
-where $\mat B^g$ is the discrete symmetric global gradient operator, defined for a 2D problem in cartesian coordinates as
+where $\mathbf B^g$ is the discrete symmetric global gradient operator, defined for a 2D problem in cartesian coordinates as
 \begin{equation}
-    \mat B^g\equiv \left[
+    \mathbf B^g\equiv \left[
     \begin{array}{ccccccc}
          \displaystyle{\frac{\partial N_1^g}{\partial x}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial x}} & 0 & \cdots &
          \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial x}} & 0\\
@@ -229,27 +269,31 @@ where $\mat B^g$ is the discrete symmetric global gradient operator, defined for
 
 Equation \eqref{eq:forma_fraca_disc} can be rewritten as
 \begin{multline}
-    \left\{  \int_{^h\Omega}\left[{\mat B^g}^T \hat{\mat \sigma}(\vect \alpha_n, \vect F_{n+1})-{\mat N^g}^T\vect b_{n+1} \right]\ud v \right. \\ \left. -\int_{\partial ^h\Omega_\text{traction}} {\mat N^g}^T \vect t_{n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V}, \label{eq:eq_forças}
+    \left\{  \int_{^h\Omega}\left[{\mathbf B^g}^T \hat{\mat \sigma}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T\mathbf b_{n+1} +{\mathbf N^g}^T\rho\ddot{\mathbf u}_{n+1} \right]\ud v \right. \\ \left. -\int_{\partial ^h\Omega_\text{traction}} {\mathbf N^g}^T \mathbf t_{n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V}, \label{eq:eq_forças}
 \end{multline}
-and, since it must be satisfied for any $\vect \eta \in ^h \mathscr{V}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the spatial description as
-\begin{problem}[Spatial incremental discretized quasi-static mechanical initial BVP.]
+and, since it must be satisfied for any $\vect \eta \in {}^h \mathscr{V}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the spatial description as
+\begin{problem}[Spatial incremental discretized mechanical initial BVP.]
 GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{n+1}$ and $\vect t_{n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible nodal displacement field $\vect u_{n+1}\in {^h\mathscr{K}_{n+1}}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
 \begin{equation}
-    \vect r(\vect u_{n+1})\equiv \vect f^\text{int}(\vect u_{n+1})-\vect f^\text{ext}_{n+1}=\vect 0, \label{eq:equilibrium_spatial}
+    \mathbf M \ddot{\mathbf u}_{n+1} + \mathbf f^\text{\;int}(\mathbf u_{n+1})-\mathbf f^\text{\;ext}_{n+1}=\mathbf 0, \label{eq:equilibrium_spatial}
 \end{equation}
-where $\vect f^\text{int}$ e $\vect f^\text{ext}_{n+1}$ are the global vectors of internal and external forces defined as
+where $\mathbf f^\text{int}$ e $\mathbf f^\text{ext}_{n+1}$ are the global vectors of internal and external forces defined as
 \begin{align}
-    \vect f^\text{int} &\equiv \int_{^h\Omega_0}{\mat B^g}^T \hat{\mat \sigma}(\mat F_{n+1}, \vect \alpha_n)\ud v,\\
-    \vect f^\text{ext}_{n+1} &\equiv \int_{^h\Omega_0}{\mat N^g}^T \vect b_{n+1}\ud v + \int_{\partial^h\Omega_\text{traction}}{\mat N^g}^T \vect t_{n+1}\ud a.
+    \mathbf f^\text{\;int} &\equiv \int_{^h\Omega}{\mathbf B^g}^T \hat{\mat \sigma}(\mat F_{n+1}, \vect \alpha_n)\ud v,\\
+    \mathbf f^\text{\;ext}_{n+1} &\equiv \int_{^h\Omega}{\mathbf N^g}^T \mathbf b_{n+1}\ud v + \int_{\partial^h\Omega_\text{traction}}{\mathbf N^g}^T \mathbf t_{n+1}\ud a,
 \end{align}
+and $\mathbf M$ is the mass matrix defined as
+\begin{equation}
+  \mathbf M = \int_{{}^h\Omega} \rho {\mathbf{N}^g}^T \ud v.
+\end{equation}
 \end{problem}
 In a material description, Equation \eqref{eq:eq_forças} is written as
 \begin{multline}
-     \left\{  \int_{^h\Omega}\left[{\mat G^g}^T \hat{\mat P}(\vect \alpha_n, \vect F_{n+1})-{\mat N^g}^T \vect b_{0,n+1} \right]\ud v \right.\\ \left.   -\int_{\partial ^h\Omega_\text{traction,0}} {\mat N^g}^T \vect t_{0,n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V},
+     \left\{  \int_{^h\Omega_0}\left[{\mathbf G^g}^T \hat{\mat P}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T \mathbf b_{0,n+1} + {\mathbf N^g}^T \rho_0\ddot{\mathbf u}_{n+1} \right]\ud v \right.\\ \left.   -\int_{\partial ^h\Omega_\text{traction,0}} {\mathbf N^g}^T \mathbf t_{0,n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V},
 \end{multline}
-where $\mat G^g$ is the discrete global gradient operator, defined for a 2D problem in cartesian coordinates as
+where $\mathbf G^g$ is the discrete global gradient operator, defined for a 2D problem in cartesian coordinates as
 \begin{equation}
-    \mat G^g\equiv \left[
+    \mathbf G^g\equiv \left[
     \begin{array}{ccccccc}
          \displaystyle{\frac{\partial N_1^g}{\partial x}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial x}} & 0 & \cdots &
          \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial x}} & 0\\
@@ -263,42 +307,55 @@ where $\mat G^g$ is the discrete global gradient operator, defined for a 2D prob
     \right],
 \end{equation}
 and, as for the spatial description, it must  be satisfied for any $\vect \eta \in ^h \mathscr{V}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the material description as
-\begin{problem}[Material incremental discretized quasi-static mechanical initial BVP.]
+\begin{problem}[Material incremental discretized mechanical initial BVP.]
 GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible nodal displacement field $\vect u_{n+1}\in {^h\mathscr{K}_{n+1}}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
 \begin{equation}
-    \vect r(\vect u_{n+1})\equiv \vect f^\text{int}(\vect u_{n+1})-\vect f^\text{ext}_{n+1}=\vect 0, \label{eq:equilibrium_material}
+    \mathbf M \ddot{\mathbf u} +\mathbf f^\text{\;int}(\mathbf u_{n+1})-\mathbf f^\text{\;ext}_{n+1}=\mathbf 0, \label{eq:equilibrium_material}
 \end{equation}
-where $\vect f^\text{int}$ e $\vect f^\text{ext}_{n+1}$ are the global vectors of internal and external forces defined as
+where $\mathbf f^\text{\;int}$ e $\mathbf f^\text{\;ext}_{n+1}$ are the global vectors of internal and external forces defined as
 \begin{align}
-    \vect f^\text{int} &\equiv \int_{^h\Omega_0}{\mat G^g}^T \hat{\mat P}(\mat F_{n+1}, \vect \alpha_n)\ud v,\\
-    \vect f^\text{ext}_{n+1} &\equiv \int_{^h\Omega_0}{\mat N^g}^T \vect b_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{traction,0}}{\mat N^g}^T \vect t_{0,n+1}\ud a.
+    \mathbf f^\text{int} &\equiv \int_{^h\Omega_0}{\mathbf G^g}^T \hat{\mat P}(\mat F_{n+1}, \vect \alpha_n)\ud v,\\
+    \mathbf f^\text{ext}_{n+1} &\equiv \int_{^h\Omega_0}{\mathbf N^g}^T \mathbf b_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{traction,0}}{\mathbf N^g}^T \mathbf t_{0,n+1}\ud a.
 \end{align}
+and $\mathbf M$ is the mass matrix defined as
+\begin{equation}
+  \mathbf M = \int_{{}^h\Omega_0} \rho_0 {\mathbf{N}^g}^T \ud v.
+\end{equation}
 \end{problem}
 
 The global vectors for the internal and external forces are usually obtained by assemblage of their elemental counterparts as
 \begin{gather}
-    \vect f^\text{int} = \assemble_{e=1}^{n_\text{elem}} \left(\vect f^\text{int}\right)^{(e)},\\
-    \vect f^\text{ext} = \assemble_{e=1}^{n_\text{elem}} \left(\vect f^\text{ext}\right)^{(e)},
+    \mathbf f^\text{\;int} = \assemble_{e=1}^{n_\text{elem}} \left(\mathbf f^\text{\;int}\right)^{(e)},\\
+    \mathbf f^\text{\;ext} = \assemble_{e=1}^{n_\text{elem}} \left(\mathbf f^\text{\;ext}\right)^{(e)},
 \end{gather}
 where the elemental vectors in the spatial description are defined as
 \begin{highlight}[innertopmargin=-5pt]
     \begin{align}
-        \left(\vect f^\text{int}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}} \mat B^T \hat{\mat \sigma }(\mat F_{n+1},\mat \alpha_n)\ud v,\\
-        \left(\vect f^\text{ext}_{n+1}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}}\mat N^T \vect b_{n+1}\ud v + \int_{\partial^h\Omega_\text{traction}^{(e)}} \mat N^T \vect t_{n+1}\ud a,
+        \left(\mathbf f^\text{\;int}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}} \mathbf B^T \hat{\mat \sigma }(\mat F_{n+1},\mat \alpha_n)\ud v,\\
+        \left(\mathbf f^\text{\;ext}_{n+1}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}}\mathbf N^T \mathbf b_{n+1}\ud v + \int_{\partial^h\Omega_\text{traction}^{(e)}} \mathbf N^T \mathbf t_{n+1}\ud a,
     \end{align}
 \end{highlight}
 and in material description as
     \begin{align}
-        \left(\vect f^\text{int}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}} \mat G^T \hat{\mat P }(\mat F_{n+1},\mat \alpha_n)\ud v,\\
-        \left(\vect f^\text{ext}_{n+1}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}}\mat N^T \vect b_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{traction}^{(e)}} \mat N^T \vect t_{0,n+1}\ud a,
+        \left(\mathbf f^\text{\;int}\right)^{(e)} &\equiv \int_{^h\Omega_0^{(e)}} \mathbf G^T \hat{\mat P }(\mat F_{n+1},\mat \alpha_n)\ud v,\\
+        \left(\mathbf f^\text{\;ext}_{n+1}\right)^{(e)} &\equiv \int_{^h\Omega_0^{(e)}}\mathbf N^T \mathbf b_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{0, traction}^{(e)}} \mathbf N^T \mathbf t_{0,n+1}\ud a,
     \end{align}
-The matrices $\mat N$, $\mat B$ and $\mat G$ are the elemental interpolation matrix, the symmetric elemental gradient operator and the discrete elemental gradient operator, respectively.
+The matrices $\mathbf N$, $\mathbf B$, and $\mathbf G$ are the elemental interpolation matrix, the symmetric elemental gradient operator, and the discrete elemental gradient operator.
 
-\subsection{Newton-Raphson Method}
-
-The equilibrium equation, Equation \eqref{eq:equilibrium_spatial} in a spatial description and Equation \eqref{eq:equilibrium_material} in a material description, is generally nonlinear due to geometrical and/or material nonlinearities.
-The Newton-Raphson Method is an efficient and robust iterative scheme with a quadratic convergence rate that is often use to solve the equilibrium equation at each time increment, $t_n$.
-It's application to this problem is detailed by \cite{de2011computational}.
+In a similar manner, the global mass matrix is also usually obtained by assemblage of their elemental counterparts as
+\begin{equation}
+  \mathbf M \equiv \assemble_{e=1}^{n_\text{elem}} \mathbf M^{(e)},
+\end{equation}
+where the elemental mass matrices in the spatial description are defined as
+\begin{highlight}
+  \begin{equation}
+    \mathbf M^{(e)} = \int_{^h\Omega^{(e)}} \rho \mathbf N^T\ud v,
+  \end{equation}
+\end{highlight}
+and the material descriptrion
+\begin{equation}
+  \mathbf M^{(e)} = \int_{^h\Omega_0^{(e)}} \rho_0\mathbf N^T \ud v.
+\end{equation}
 
 \subsection{Numerical integration} \label{sec:numerical_integration}
 
@@ -311,3 +368,12 @@ where $\vect \zeta_i$ and $w_i$, $i=1,\dots,n_\text{GP}$ are the positions and w
 \begin{equation}
     j(\vect \zeta) = \text{det}\,\left(\frac{\partial \vect x}{\partial \vect \zeta}\right).
 \end{equation}
+
+
+\section{Linearisation}
+
+The equilibrium equation, Equation \eqref{eq:equilibrium_spatial} in a spatial description and Equation \eqref{eq:equilibrium_material} in a material description, is generally nonlinear due to geometrical and/or material nonlinearities.
+The Newton-Raphson Method is an efficient and robust iterative scheme with a quadratic convergence rate often used to solve the equilibrium equation at each time increment, $t_n$.
+Its application to this problem is detailed by \cite{de2011computational}.
+
+\section{Constitutive laws}
