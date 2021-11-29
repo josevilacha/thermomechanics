@@ -1,0 +1,418 @@
+\chapter{Mechanical problem}
+
+In the following chapter, the general framework presented in the previous chapter is applied to a purely mechanical analysis, neglecting the thermal terms.
+
+\subsection{Mechanical constitutive initial value problem}
+
+In the purely mechanical case, with all the quantities related to the thermal domain removed, a constitutive model based on internal variables is established by the following set of equations
+    \begin{gather}
+        \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
+        s = - \frac{\partial \psi}{\partial \theta},\\
+        \psi = \psi(\mat F,\theta, \nabla_0 \theta,\mat \alpha),\\
+        \dot{\vect \alpha} = f(\mat F, \theta, \nabla_0 \theta,\vect \alpha),\\
+        \frac{1}{\theta}\nabla_0 \theta = g(\bm F, \theta, \bm \alpha).
+    \end{gather}
+  Thus, the spatial mechanical constitutive initial value problem can be stated as follows
+
+  the single effects. To emphasize this additive decomposition, the Helmholtz free energy \(\psi\) in (5.7) is expressed with respect to the reference volume, so that \(\psi\) is reformulated using potential functions according to
+  \[
+  \rho_{0} \psi\left(\boldsymbol{F}, T, \operatorname{grad} T, \boldsymbol{\alpha}_{\mathrm{k}}, \boldsymbol{X}\right):=\hat{\mathbb{U}}\left(J^{e}\right)+\hat{\mathbb{W}}(\tilde{\boldsymbol{F}})+\hat{\mathbb{M}}\left(J^{e}, T\right)+\hat{\mathbb{T}}(T)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, T\right)
+  \]
+  where in contrast to the deformation gradient \(\boldsymbol{F}\), the Jacobi-determinant \(J^{e}(5.6)\) and the isochoric deformation gradient \(\tilde{\boldsymbol{F}}(2.36)\) are applied. \(\hat{U}\) and \(\mathbb{W}\) can be identified with the standard hyperelastic materials potentials according to \((3.57)\), whereas \(\hat{M}\left(J^{e}, T\right)\) describes the thermomechanical coupling potential. The potential \(\hat{\mathbb{T}}(T)\) represents the purely thermal potential and is assumed identical to (4.8). Finally, \(\hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{\mathrm{k}}, T\right)\) is the convex plastic potential. Subsequently, based on the potential functions, the coupling of the two fields structure and thermo can be explained: the temperature enters the structural field via additional thermal stresses and possibly moreover via temperature-dependent material parameters. Herein, \(\mathbb{M}\left(J^{e}, T\right)\) characterizes the thermomechanical coupling potential, leading to thermal stresses and moreover to thermal expansion and dilatation, whereas \(\mathbb{K}\left(\boldsymbol{\alpha}_{\mathrm{k}}, T\right)\) being temperature-dependent and therefore enables exemplarily von Mises plasticity combined with temperature-dependent isotropic hardening and thermal softening. This is in accordance to Agelet de Saracibar et al. [2], Ibrahimbegovic and Chorfi \([61]\), but in contrast to Simo and Miehe [122], who assumed an isothermal plastic potential \(\mathbb{K}_{\text {Simo }}\left(\boldsymbol{\alpha}_{\mathrm{k}}\right)\). In contrast, the structure enters the themal field via coupling terms, arising from \(\hat{\mathbb{M}}\left(J^{e}, T\right)\) and \(\mathbb{K}\left(\boldsymbol{\alpha}_{k}, T\right)\), in addition to the purely thermal energy (4.8). Thus, coupling terms as the internal or mechanical dissipation \(\mathcal{D}_{\text {mech }}\) may emerge in the thermal balance equation. Furthemore, for finite defomation TSI, where the initial domain \(\Omega_{0}\) deforms to \(\Omega\), so that \(\Omega \neq \Omega_{0}\), and a Lagrangian formulation is used, the deformation enters the thermal field additionally due to the mapping of all quantities in the balance equations to the reference configuration.
+
+Likewise, in a material description it can be stated as
+    \begin{problem}[Material thermomechanical constitutive initial value problem.]
+    GGiven the initial values of the internal variables, $\vect \alpha(t_0)$, the history of the deformation gradient
+    \begin{equation}
+        \mat F(t),\quad t\in[t_0,t_\text{end}],
+    \end{equation}
+    and the history of the temperature distribution
+    \begin{equation}
+    \theta(t),\quad t\in[t_0,t_\text{end}],
+    \end{equation}
+    find the functions for $\mat P(t)$, \(s(t)\), \(\bm Q(t)\) and $\vect \alpha(t)$ such that the constitutive equations
+    \begin{gather}
+        \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
+        s = C_{V} \ln \left(\frac{\theta}{\theta_{0}}\right)-\frac{1}{\rho_{0}}\left(\frac{\partial \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta}+\frac{\partial \hat{\mathbb{K}}\left(\alpha_{k}, \theta\right)}{\partial \theta}\right),\\
+        \psi =\frac{1}{\rho_0}\left( \hat{\mathbb{U}}\left(J^{e}\right)+\hat{\mathbb{W}}(\tilde{\boldsymbol{F}})+\hat{\mathbb{M}}\left(J^{e}, \theta\right)+\hat{\mathbb{T}}(\theta)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{\mathrm{k}}, \theta\right)\right),\\
+        \bm Q = - k_0 \bm C^{-1} \nabla_0 \theta,\\
+        \dot{\vect \alpha} = f(\mat F, \theta, \nabla_0 \theta,\vect \alpha),
+    \end{gather}
+    are satisfied for every $t\in [t_0, t_\text{end}]$, where
+    \begin{gather}
+    \hat{\mathbb T}(\theta) = - C_{\mathrm{V}}\left[\left(\theta-\theta_{0}\right)-\theta \ln \left(\frac{\theta}{\theta_{0}}\right)\right].
+    \end{gather}
+    \end{problem}
+
+\subsection{Weak equilibrium. The principle of virtual work}
+
+The strong equations that enforce the equilirium of a body can be writen using the spatial description as
+\begin{equation}
+  \rho \ddot{\bm u} = \operatorname{div}\bm \sigma + \bm b\quad \text{in $\Omega.$}
+\end{equation}
+From a practical standpoint, finding the exact solution to the strong equilibrium equations in the context of real engineering problems is most often nearly or entirely impossible.
+Most numerical methods obtain only approximate solutions to the so-called weak equilibrium equations to circumvent this problem.
+These result from relaxing the strong equilibrium equations so that the solutions need only satisfy the equilibrium equations in an average sense instead of satisfying them pointwise.
+This is achieved through an integration over the body volume.
+The weak equilibrium equations can be found making use of several energetic and weighted residual methods, such as the Virtual Work Principle used here.
+\enlargethispage{\baselineskip}
+
+The principle of virtual work can be expressed in a completly equivalent way using a material description.
+\begin{problem}[Weak form of the linear momentum and energy balance equations (material version).]
+IIn a material description, the body is in mechanical and energetic equilibrium if and only if the First Piola-Kirchhoff stress field, \(\bm P(t)\), the heat flow \(\bm Q(t)\), satisfy
+    \begin{gather}
+        \int_{\Omega_0} [\mat P(t):\nabla_0 \vect \eta - (\vect b_0(t) - \rho_0 \ddot{\bm u}(t))\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0(t)\cdot \vect \eta\ud da = 0,\quad \forall \vect \eta \in \mathscr{V},\\
+          \int_{\Omega_0}   \left[\rho_0\left(\dot e (t)- r(t)\right) \xi - \bm Q(t)\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} \bm Q(t)\cdot \bm n_0 \xi\ud a = 0,\quad \forall \xi \in \mathscr{W},
+    \end{gather}
+ where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
+ \begin{equation}
+     \vect \eta\colon \Omega\to \mathscr{U}.
+ \end{equation}
+ and  $\mathscr{W}$ is the space of virtual temperature distributions of the body, defined by the space of sufficiently regular arbitrary temperature distributions
+ \begin{equation}
+     \xi\colon \Omega\to \mathbb R.
+ \end{equation}
+\end{problem}
+
+\subsection{Mechanical constitutive initial boundary value problem}
+
+It is now possible to pose the mechanical constitutive initial value problem in its weak form.
+Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time, as presented in Figure \ref{}.
+In addition, it is assumed that the interior of the body was subjected to a prescribed history of body forces, $\vect b(\bm X, t)$, $t\in[t_0, t_\text{end}]$, and to the following boundary conditions:
+\begin{itemize}
+    \item \textbf{Natural (or Neumann) boundary condition:}
+    The boundary portion $\Omega_\text{traction, 0}$ of $\mathscr{B}$ is subjected to a prescribed history of traction forces, $\vect t_\text{presc}(\vect X, t)$, $\vect X\in \partial \Omega_\text{traction,0}$, $t\in[t_0, t_\text{end}]$,\\
+    \item \textbf{Essential (or Dirichlet) boundary condition:}
+    The boundary portion $\Omega_\text{motion, 0}$ of $\mathscr{B}$ is subjected to a prescribed displacement field history, $\vect u_\text{presc}(\vect X, t)$, such that $$\vect \varphi(\vect X, t) = \vect X + \vect u_\text{presc}(\vect X, t),\quad \vect X\in \partial\Omega_\text{motion, 0},\quad t\in[t_0, t_\text{end}].$$
+\end{itemize}
+
+It is also convenient to define the set of kinematically admissible displacements of $\mathscr{B}$ as the set of all sufficiently regular displacement functions tha satisfy the essential boundary condition \citep{de2011computational},
+\begin{highlight}[innertopmargin=-5pt]
+    \begin{multline}
+        \mathscr{K}\equiv \{\vect u:\Omega\times \mathscr{R}\to \mathscr{U}\;|\;\vect u(\vect X,t) = \vect u_\text{presc} (\vect X,t),\\ \vect X\in\partial \Omega_\text{motion,0},\quad t\in [t_0,t_\text{end}]\}.\quad
+    \end{multline}
+\end{highlight}
+
+
+\begin{equation}
+  \dot e \equiv \dot \psi + s\dot \theta + \dot s\theta.
+\end{equation}
+
+\begin{equation}
+\dot{s}\left(\boldsymbol{F}, \theta, \bm{\alpha}_{\mathrm{k}}\right)= C_{\mathrm{V}} \frac{1}{\theta} \dot{\theta}- \frac{1}{\theta}\pazocal H^\text{ep}
+\end{equation}
+
+
+
+\begin{equation}
+\pazocal H^\text{ep} =  \frac{\theta}{\rho_{0}}\left(\frac{\partial^{2} \hat{\mathrm{M}}\left(J^{e}, T\right)}{\partial T \partial J^{e}} j^{e}+\frac{\partial^{2} \hat{\mathrm{M}}\left(J^{e}, T\right)}{\partial T^{2}} \dot{T}+\right.
+\left.+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, T\right)}{\partial T^{2}} \dot{T}+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, T\right)}{\partial T \partial \boldsymbol{\alpha}_{k}} \star \dot{\alpha}_{k}\right)
+\end{equation}
+
+
+
+So the weak form of the quasi-static mechanical constitutive initial boundary value problem can be stated in a spatial description as follows
+and in the material description as
+\begin{problem}[Material mechanical initial BVP.]
+    FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}_u$, and an admissible temperature distribution, \(\theta \in \mathscr K_\theta\), such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in mechanical and energetic equilibrium
+        \begin{equation}
+        \int_{\Omega_0} [\mat P(t):\nabla_0 \vect \eta - (\vect b_0(t)-\rho_0\ddot{\bm u}(t))\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0(t)\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \end{equation}
+        \begin{multline}
+        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta(t) -\mathcal D_\text{mech}(t) - \pazocal H^\text{ep}(t) - \rho_0 r(t)\right) \xi - \bm Q(t)\cdot \nabla_0 \xi\right]\ud v\\ - \int_{\partial\Omega_0} \bm Q(t)\cdot \bm n_0 \xi\ud a = 0,\quad \forall \xi \in \mathscr{W},
+    \end{multline}
+    where the space of virtual displacements at time $t$ is defined by
+    \begin{equation}
+        \mathscr{V} \equiv \left\{\vect \eta:\Omega_0\to \mathscr{U}\;|\;\vect \eta = \vect 0\quad \text{in}\quad \partial\Omega_\text{motion,0}\right\},
+    \end{equation}
+    and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material mechanical constitutive initial values problem.
+\end{problem}
+
+\section{Time descretization} \label{sec:time_discretization}
+
+Given a generic path-dependent model, i.e., a model in which the stress state does not depend only on the instantaneous deformation state but also on the deformation history, the solution of the constitutive initial value problem for a given set of initial conditions is usually not known for complex strain paths $\mat F(t)$.
+Thus, there is a need to use an appropriate numerical algorithm to integrate the rate constitutive equations.
+
+In general, the algorithms for integrating rate constitutive equations are obtained adopting some time (or pseudo-time) discretization and some hypothesis on the deformation path between adjacent time stations.
+In the present document, an algorithm is adopted based on approximated incremental constitutive functions.
+Attending to the mechanical constitutive initial boundary value problem and considering the time increment $[t_n, t_{n+1}]$, this approach is comprised by the following two requirements:
+\begin{itemize}
+    \item \textbf{First Piola-Kirchhoff stress tensors.}   Considering a time increment $[t_n, t_{n+1}]$ and given the set $\vect \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ and the temperature distribution \(\theta_{n+1}\) at time $t_{n+1}$ determines the First Piola-Kirchhoff stress tensor $\mat P_{n+1}$ uniquely as
+        \begin{highlight}
+    \begin{equation}
+        \mat P_{n+1} = \hat{\mat P}(\mat F_{n+1}, \theta_{n+1}, \mat \alpha_n),
+    \end{equation}
+        \end{highlight}
+    where $\hat{\mat P}$ is the incremental constitutive function for the First Piola-Kirchhoff stress tensor.
+    \item \textbf{Set of internal variables.} Assuming that the set of internal variables $\vect \alpha_n$ is known at $t_n$, the set of internal variables must be uniquely determined by the prescribed deformationgradient $\mat F_{n+1}$ prescribed at $t_{n+1}$ as
+    \begin{highlight}
+        \begin{equation}
+             \vect \alpha_{n+1} =\hat{\vect \alpha}(\mat F_{n+1}, \theta_{n+1}, \mat \alpha_n), \label{eq:incremental_flux}
+        \end{equation}
+    \end{highlight}
+    where $\hat{\vect \alpha}$ is the incremental constitutive function for the set of internal variables.
+
+    \item \textbf{Mechanical dissipation.}
+
+    \begin{highlight}
+    \begin{equation}
+    \mathcal D_{\text{mech},n+1} = \hat{\mathcal D}_\text{mech}(\bm F_{n+1}, \theta_{n+1}, \bm \alpha_n).
+    \end{equation}
+    \end{highlight}
+
+    \item \textbf{Gough-Joule effect.}
+
+    \begin{highlight}
+    \begin{equation}
+    \pazocal H^\text{ep}_{n+1} = \hat{\pazocal H}^\text{ep}(\bm F_{n+1}, \theta_{n+1}, \bm \alpha_n).
+    \end{equation}
+    \end{highlight}
+\end{itemize}
+
+
+
+Generally, the numerical constitutive laws are nonlinear and path-independent within one increment.
+In other words, within each increment, $\mat \sigma_{n+1}$ and $\vect \alpha_{n+1}$, they are functions of $\mat F_{n+1}$ alone with the argument $\vect \alpha_n$ constant within the same time interval.
+
+Making use of the aforementioned time discretization, one can state the weak form of the mechanical constitutive initial boundary value problem in the spatial description as
+and in the material description as
+\begin{problem}[Material incremental mechanical initial BVP.]
+    GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$ at $t_{n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ and temperature distribution \(\theta_{n+1}\) at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{u,n+1}$ and the admissible temperature distribution \(\theta_{n+1}\in\mathscr K_{\theta,n+1}\) such that the body $\mathscr{B}$ is in mechanical and energetic equilibrium
+            \begin{multline}
+        \int_{\Omega_{n+1}} [\hat{\mat P}(\mat F(\bm u_{n+1}), \theta_{n+1}, \vect \alpha_n):\nabla_0 \vect \eta - (\vect b_{0,n+1}-\rho_0\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v\\ - \int_{\partial\Omega_{n+1}} \vect t_{0,n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \end{multline}
+        \begin{multline}
+        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta_{n+1} -\hat{\mathcal D}_\text{mech}(\bm F(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n) - \hat{\pazocal H}^\text{ep}(\bm{F}(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n)- \rho_0 r_{n+1} \right) \xi\right.\\
+        \left. - \bm Q_{n+1}\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} \hat Q_{n+1} \xi\ud a = 0,\quad \forall \xi \in \mathscr{W},
+    \end{multline}
+    where
+    \begin{gather}
+            \mathscr{K}_{u,n+1}\equiv \{\vect u:\Omega\times \mathscr{R}\to \mathscr{U}\;|\;\vect u_{n+1}(\vect X) = \vect u_\text{presc,$n+1$}(\vect X),\;\vect X\in\partial \Omega_\text{motion,0}\},\\
+            \mathscr{K}_{\theta, n+1}\equiv \{\vect u:\Omega\times \mathscr{R}\to \mathscr{R}\;|\;\theta_{n+1}(\vect X) = \theta_\text{presc,$n+1$}(\vect X),\;\vect X\in\partial \Omega_\text{temperature,0}\}.
+    \end{gather}
+\end{problem}
+
+\section{Finite Element Method} \label{sec:fem}
+
+With the incremental weak form of the mechanical constitutive initial boundary value problem now established, an approximated solution can be found using the Finite Element Method.
+
+\subsection{Finite element concept}
+
+The first in the Finite Element method is to discretize the continuum domain $\Omega$ in a finite set of $n_\text{elem}$ mutually exclusive subdomains called finite elements $\Omega^{(e)}$.
+The discretized domain, $^h\Omega$, is therefore an approximation to the continuum domain expressed by
+\begin{equation}
+    \Omega \approx ^h\Omega \equiv \bigcup_{e=1}^{n_\text{elem}}\Omega^{(e)}.
+\end{equation}
+The space of virtual displacements $\mathscr{V}$ as well as the space of kinematically admissible displacement fields $\mathscr{K}$ are also discretized in the same, with their discretized forms denoted by $^h\mathscr{V}$ and $^h\mathscr{K}$.
+
+\subsection{Interpolation functions}
+
+Let $e$ be a generic finite element with $n_\text{nodes}$ nodes, where each node $i$ of coordinates $\vect x^i$ is associated with an interpolation function $N_i^{(e)}$.
+These interpolation functions are often called shape functions and perform the required filed interpolations inside the element domain $\Omega^{(e)}$.
+
+Letting $a(\vect x)$ be a generic field defined over $\Omega^{(e)}$, its interpolation at any point $\vect x$ inside the element is defined by the element shape functions as
+\begin{highlight}
+    \begin{equation}
+        a(\vect x) \approx ^ha(\vect x) \equiv \sum_{i=1}^{n_\text{nodes}} a(\vect x_i) N_i^{(e)}(\vect x).
+    \end{equation}
+\end{highlight}
+If instead $a(\vect x)$ is instead a generic field defined over the global domain $\Omega$, the interpolation of $a(\vect x)$ at any point $\vect x$ is defined by the global shape functions as
+\begin{highlight}
+    \begin{equation}
+        a(\vect x) \approx ^h a(\vect x) \equiv \sum_{i=1}^{n_\text{points}} a(\vect x_i) N_i^g(\vect x), \label{eq:interpol_global}
+    \end{equation}
+\end{highlight}
+where $n_\text{points}$ is the total number of nodes of the finite element mesh.
+The discretized spaces $^h \mathscr{V}$ and $^h\mathscr{K}$ can now be defined as
+\begin{align}
+    ^h \mathscr{K}&\equiv \Big\{\vphantom{|}^h\vect u(\vect x) = \sum_{i=1}^{n_\text{points}} \vect u(\vect x_i) N_i^g(\vect x)\;|\; \vect u(\vect x_i) = \vect u_\text{presc}(\vect x_i)\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}  \Big\},\\
+    ^h\mathscr{V}&\equiv \Big\{\vphantom{|}^h\vect \eta(\vect x) = \sum_{i=1}^{n_\text{points} } \vect \eta(\vect x_i) N_i^g(\vect x)\;|\;\vect \eta(\vect x_i)=\vect 0\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}   \Big\}
+\end{align}
+
+\subsection{Interpolation matrix and discrete gradient operators}
+
+The global shape functions can be conveniently assembled in the so-called global interpolation matrix as
+\begin{equation}
+    \mathbf N^g(\vect x) \equiv \left[\text{diag}[N_1^g(\vect x)]\; \text{diag}[N_2^g(\vect x)]\;\cdots\; \text{diag}[N_{n_\text{points}}^g(\vect x)]\right],
+\end{equation}
+where $\text{diag}[N_i^g]$ is a diagonal matriz $n_\text{dim} \times n_\text{dim}$
+\begin{equation}
+    \text{diag}[N_i^g(\vect x)]\equiv \left[
+    \begin{array}{cccc}
+         N_i^g & 0 & \cdots & 0  \\
+         0     & N_i^g & \cdots & 0 \\
+         \vdots & \vdots & \ddots & \vdots \\
+         0 & 0 & \cdots & N_i^g
+    \end{array}
+    \right]
+\end{equation}
+where $n_\text{dim}$ is the number of degrees of freedom per node.
+
+Defining the global vector of nodal displacements as
+\begin{equation}
+    \mathbf u = \Big[ u_1^1,\dots,u^1_{n_\text{dim}},\dots, u_1^{n_\text{points}},\dots,u^{n_\text{points}}_{n_\text{dim}}\Big]^T,
+\end{equation}
+the displacement field $\vec u(\vect x)$m defined over the global domain $\Omega$, can be found from Equation \eqref{eq:interpol_global} at any point $\vect x$ as
+\begin{highlight}
+    \begin{gather}
+        ^h\vect u(\vect x) \equiv \mathbf N^{g,u}(\vect x)\mathbf u,\quad ^h\vect u\in {}^h\mathscr{K_u},\\
+        ^h\theta(\vect x) \equiv \mathbf N^{g,\theta}(\vect x)\bm \uptheta,\quad ^h\vect \theta\in {}^h\mathscr{K_\theta}.
+    \end{gather}
+\end{highlight}
+
+\subsection{Spatial discretization} \label{sec:spatial_discretization}
+
+Applying the aforementioned finite element discretization to the incremental mechanical constitutive initial boundary value problem, we can then write in the spatial description
+\begin{highlight}
+    \begin{equation}
+        \int_{^h\Omega}\left[\hat{\mat \sigma}^T\mathbf B^g\vect \eta - (\mathbf b_{n+1} - \rho\ddot{\mathbf u}_{n+1}) \cdot \mathbf N^g \vect \eta \right]\ud v -\int_{\partial ^h\Omega_\text{traction}} \mathbf t_{n+1}\cdot \mathbf N^g\vect \eta \ud a = 0,\quad \forall \vect \eta \in ^h\mathscr{V},  \label{eq:forma_fraca_disc}
+    \end{equation}
+\end{highlight}
+where $\mathbf B^g$ is the discrete symmetric global gradient operator, defined for a 2D problem in cartesian coordinates as
+\begin{equation}
+    \mathbf B^g\equiv \left[
+    \begin{array}{ccccccc}
+         \displaystyle{\frac{\partial N_1^g}{\partial x}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial x}} & 0 & \cdots &
+         \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial x}} & 0\\
+         0 & \displaystyle{\frac{\partial N_1^g}{\partial y}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial y}} & \cdots &
+         0 & \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial y}}\\
+         \displaystyle{\frac{\partial N_1^g}{\partial y}} & \displaystyle{\frac{\partial N_1^g}{\partial x}} & \displaystyle{\frac{\partial N_2^g}{\partial y}} & \displaystyle{\frac{\partial N_2^g}{\partial x}} & \cdots &
+         \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial y}} & \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial x}}
+    \end{array}
+    \right].
+\end{equation}
+
+Equation \eqref{eq:forma_fraca_disc} can be rewritten as
+\begin{multline}
+    \left\{  \int_{^h\Omega}\left[{\mathbf B^g}^T \hat{\mat \sigma}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T\mathbf b_{n+1} +{\mathbf N^g}^T\rho\ddot{\mathbf u}_{n+1} \right]\ud v \right. \\ \left. -\int_{\partial ^h\Omega_\text{traction}} {\mathbf N^g}^T \mathbf t_{n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V}, \label{eq:eq_forças}
+\end{multline}
+and, since it must be satisfied for any $\vect \eta \in {}^h \mathscr{V}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the spatial description as
+
+In a material description, Equation \eqref{eq:eq_forças} is written as
+\begin{multline}
+     \left\{  \int_{^h\Omega_0}\left[{\mathbf G^g}^T \hat{\mat P}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T \mathbf b_{0,n+1} + {\mathbf N^g}^T \rho_0\ddot{\mathbf u}_{n+1} \right]\ud v \right.\\ \left.   -\int_{\partial ^h\Omega_\text{traction,0}} {\mathbf N^g}^T \mathbf t_{0,n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V},
+\end{multline}
+where $\mathbf G^g$ is the discrete global gradient operator, defined for a 2D problem in cartesian coordinates as
+\begin{equation}
+    \mathbf G^g\equiv \left[
+    \begin{array}{ccccccc}
+         \displaystyle{\frac{\partial N_1^g}{\partial x}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial x}} & 0 & \cdots &
+         \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial x}} & 0\\
+         0 & \displaystyle{\frac{\partial N_1^g}{\partial x}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial x}} & 0 & \cdots &
+         \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial x}}\\
+         \displaystyle{\frac{\partial N_1^g}{\partial y}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial y}} & \cdots &
+         0 & \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial y}} & 0\\
+         0 & \displaystyle{\frac{\partial N_1^g}{\partial y}} & 0 & \displaystyle{\frac{\partial N_2^g}{\partial y}} & \cdots &
+         0 & \displaystyle{\frac{\partial N_{n_\text{points}}^g}{\partial y}}\\
+    \end{array}
+    \right],
+\end{equation}
+and, as for the spatial description, it must  be satisfied for any $\vect \eta \in ^h \mathscr{V}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the material description as
+\begin{problem}[Material incremental discretized mechanical initial BVP.]
+GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible nodal displacement field $\vect u_{n+1}\in {^h\mathscr{K}_{n+1}}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
+\begin{gather}
+    \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \\
+    \mathbf C \ddot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0,
+\end{gather}
+where $\mathbf f_u^\text{\;int}$ e $\mathbf f^\text{\;ext}_{u,n+1}$ are the global vectors of internal and external forces defined as
+\begin{align}
+    \mathbf f_u^\text{int} &\equiv \int_{^h\Omega_0}{\mathbf G^g}^T \hat{\mat P}(\mat F(\bm u_{n+1}), \theta_{n+1} \vect \alpha_n)\ud v,\\
+    \mathbf f^\text{ext}_{u,n+1} &\equiv \int_{^h\Omega_0}{\mathbf N^g}^T \mathbf b_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{traction,0}}{\mathbf N^g}^T \mathbf t_{0,n+1}\ud a,\\
+    \mathbf f_\theta^\text{int} &\equiv \int_{^h\Omega_0}{\mathbf N^g}^T \hat{\mathcal D}_\text{mech}(\mat F(\bm u_{n+1}), \theta_{n+1} \vect \alpha_n) +\hat{\pazocal H}^\text{ep}(\mat F(\bm u_{n+1}), \theta_{n+1} \vect \alpha_n) \ud v,\\
+    \mathbf f^\text{ext}_{\theta,n+1} &\equiv \int_{^h\Omega_0}{\mathbf N^g}^T \mathbf r_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{heat,0}}{\mathbf N^g}^T \hat Q_{n+1}\ud a.
+\end{align}
+and $\mathbf M$ is the mass matrix defined as
+\begin{equation}
+  \mathbf M = \int_{{}^h\Omega_0} \rho_0 {\mathbf{N}^g}^T\mathbf{N}^g \ud v,\\
+  \mathbf C = \int_{{}^h\Omega_0} \rho_0C_\mathrm{V} {\mathbf{N}^g}^T\mathbf{N}^g \ud v.
+\end{equation}
+\end{problem}
+
+\begin{equation}
+\begin{aligned}
+\pazocal{H}^{e} &=\theta m_{0} \operatorname{tr} \dot{\varepsilon}^{e} \\
+\mathcal{D}_{\text {mech }} &=\eta: \dot{\varepsilon}^{p}-\kappa\left(\varepsilon^{p}\right) \dot{\xi}^{p}
+\end{aligned}
+\end{equation}
+
+
+The global vectors for the internal and external forces are usually obtained by assemblage of their elemental counterparts as
+\begin{gather}
+    \mathbf f^\text{\;int} = \assemble_{e=1}^{n_\text{elem}} \left(\mathbf f^\text{\;int}\right)^{(e)},\\
+    \mathbf f^\text{\;ext} = \assemble_{e=1}^{n_\text{elem}} \left(\mathbf f^\text{\;ext}\right)^{(e)},
+\end{gather}
+where the elemental vectors in the spatial description are defined as
+\begin{highlight}[innertopmargin=-5pt]
+    \begin{align}
+        \left(\mathbf f^\text{\;int}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}} \mathbf B^T \hat{\mat \sigma }(\mat F_{n+1},\mat \alpha_n)\ud v,\\
+        \left(\mathbf f^\text{\;ext}_{n+1}\right)^{(e)} &\equiv \int_{^h\Omega^{(e)}}\mathbf N^T \mathbf b_{n+1}\ud v + \int_{\partial^h\Omega_\text{traction}^{(e)}} \mathbf N^T \mathbf t_{n+1}\ud a,
+    \end{align}
+\end{highlight}
+and in material description as
+    \begin{align}
+        \left(\mathbf f^\text{\;int}\right)^{(e)} &\equiv \int_{^h\Omega_0^{(e)}} \mathbf G^T \hat{\mat P }(\mat F_{n+1},\mat \alpha_n)\ud v,\\
+        \left(\mathbf f^\text{\;ext}_{n+1}\right)^{(e)} &\equiv \int_{^h\Omega_0^{(e)}}\mathbf N^T \mathbf b_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{0, traction}^{(e)}} \mathbf N^T \mathbf t_{0,n+1}\ud a,
+    \end{align}
+The matrices $\mathbf N$, $\mathbf B$, and $\mathbf G$ are the elemental interpolation matrix, the symmetric elemental gradient operator, and the discrete elemental gradient operator.
+
+In a similar manner, the global mass matrix is also usually obtained by assemblage of their elemental counterparts as
+\begin{equation}
+  \mathbf M \equiv \assemble_{e=1}^{n_\text{elem}} \mathbf M^{(e)},
+\end{equation}
+where the elemental mass matrices in the spatial description are defined as
+\begin{highlight}
+  \begin{equation}
+    \mathbf M^{(e)} = \int_{^h\Omega^{(e)}} \rho \mathbf N^T\ud v,
+  \end{equation}
+\end{highlight}
+and the material descriptrion
+\begin{equation}
+  \mathbf M^{(e)} = \int_{^h\Omega_0^{(e)}} \rho_0\mathbf N^T \ud v.
+\end{equation}
+
+\subsection{Numerical integration} \label{sec:numerical_integration}
+
+In the Finite Element Method, the integrations over the element domain are generally performed numerically using the Gaussian Quadrature Method.
+Stating it's application succinctly, let $a(\vect x)$ be a generic field, if there is a coordinate transformation from a local (or natural) normalized domain $\Upsilon$ to the element domain $\Omega^{(e)}$, $\vect x\colon \Upsilon \to \Omega^{(e)}$, the integral of $a(\vect x)$ over the domain $\Omega^{(e)}$ can be numerically determined as
+\begin{equation}
+    \int_{\Omega^{(e)} } a(\vect x)\ud \vect x = \int_\Upsilon a(\vect x(\vect \zeta))j(\vect \zeta)\ud \vect \zeta \approx \sum_{i=1}^{n_\text{GP}} w_i a(\vect x(\vect \zeta_i))j(\vect \zeta_i),
+\end{equation}
+where $\vect \zeta_i$ and $w_i$, $i=1,\dots,n_\text{GP}$ are the positions and weigths of the Gauss sampling points in the domain $\Upsilon$ and $j(\vect \zeta)$ is the determinant of the coordinate trasnformation's Jacobian defined as
+\begin{equation}
+    j(\vect \zeta) = \text{det}\,\left(\frac{\partial \vect x}{\partial \vect \zeta}\right).
+\end{equation}
+
+
+\section{Linearisation}
+
+The equilibrium equation, Equation \eqref{eq:equilibrium_spatial} in a spatial description and Equation \eqref{eq:equilibrium_material} in a material description, is generally nonlinear due to geometrical and/or material nonlinearities.
+The Newton-Raphson Method is an efficient and robust iterative scheme with a quadratic convergence rate often used to solve the equilibrium equation at each time increment, $t_n$.
+The residual of the fully discretized balance of linear momentum is defined for an iteration step \(i\) of the Newton-Raphson method as
+\begin{equation}
+\mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{M} \ddot{\mathbf u}_{n+1}^{i}+\mathbf f^\text{\;int} (\mathbf{u}_{n+1}^{i})-\mathbf{f}_{n+1}^\text{\;ext}.
+\end{equation}
+A Taylor expansion about the current solution \(\mathbf{u}_{n+1}^{i}\) is performed, discarding all terms of  higher order than one, yielding the linearised form
+\begin{equation}
+\operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{r}(\mathbf{u}_{n+1}^{i})+\underbrace{\left.\frac{\partial \mathbf{r}(\mathbf{u}_{n+1})}{\partial \mathbf{u}_{n+1} }\right|^{i} }_{\mathbf{K}(\mathbf{u}_{n+1}^{i})} \delta \mathbf{u}.
+\end{equation}
+with the dynamic effective tangential stiffness matrix \(\mathbf{K}(\mathbf{u}_{n+1}^{i})\).
+The linearisation of the internal forces included in \(\mathbf{K}\) is known as the tangential stiffness matrix \(\mathbf{K}_T\), which is defined as
+\begin{equation}
+\mathbf{K}_{T}^{i}=\left.\frac{\partial \mathbf{f}^{\text{\;int}} }{\partial \mathbf{u}_{n+1}}\right|^{i}.
+\end{equation}
+Equilibrium is achieved if
+\begin{equation}
+\operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i}) = \mathbf{0},
+\end{equation}
+so that a linear system of equation is given by
+\begin{equation}
+\mathbf{K}(\mathbf{u}_{n+1}^{i}) \delta \mathbf{u}=-\mathbf{r}\left(\mathbf{u}_{n+1}^{i}\right).
+\end{equation}
+Thus, a new solution of the displacement increment \(\delta \mathbf{u}\) for current iteration step \(i+1\) is determined, and the final displacement solution of time step \(n+1\) is obtained via updating
+\begin{equation}
+\mathbf{u}_{n+1}^{i+1}=\mathbf{u}_{n+1}^{i}+\delta \mathbf{u}.
+\end{equation}
+A solution of \(t_{n+1}\) is found, i.e. an equilibrium state is reached and \(\mathbf{u}_{n+1}=\mathbf{u}_{n+1}^{i+1}\), if prescribed, user-defined convergence criteria are fulfilled.
+
+
+Correção do TPC de DT
