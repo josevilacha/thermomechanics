@@ -319,7 +319,7 @@ where $\mathbf f^\text{\;int}$ e $\mathbf f^\text{\;ext}_{n+1}$ are the global v
 \end{align}
 and $\mathbf M$ is the mass matrix defined as
 \begin{equation}
-  \mathbf M = \int_{{}^h\Omega_0} \rho_0 {\mathbf{N}^g}^T \ud v.
+  \mathbf M = \int_{{}^h\Omega_0} \rho_0 {\mathbf{N}^g}^T\mathbf{N}^g \ud v.
 \end{equation}
 \end{problem}
 
@@ -349,12 +349,12 @@ In a similar manner, the global mass matrix is also usually obtained by assembla
 where the elemental mass matrices in the spatial description are defined as
 \begin{highlight}
   \begin{equation}
-    \mathbf M^{(e)} = \int_{^h\Omega^{(e)}} \rho \mathbf N^T\ud v,
+    \mathbf M^{(e)} = \int_{^h\Omega^{(e)}} \rho \mathbf N^T\mathbf N\ud v,
   \end{equation}
 \end{highlight}
 and the material descriptrion
 \begin{equation}
-  \mathbf M^{(e)} = \int_{^h\Omega_0^{(e)}} \rho_0\mathbf N^T \ud v.
+  \mathbf M^{(e)} = \int_{^h\Omega_0^{(e)}} \rho_0\mathbf N^T\mathbf N \ud v.
 \end{equation}
 
 \subsection{Numerical integration} \label{sec:numerical_integration}

@@ -312,6 +312,15 @@ Equations \eqref{eq:material_equilibrium} and \eqref{eq:spatial_equilibrium} are
 \end{equation}
 where $e$ is the specific internal energy field, $r$ is the density of heat production field and $\vect q$ is the heat flux vector field.
 The second order tensor $\mat D$ denotes a strain rate measure, such that the double contraction $\mat \sigma\;:\;\mat D$ represents the stress power per unit volume in the deformed configuration of body.
+In material coordinates, it reads
+\begin{equation}
+ \rho_0 \frac{\partial e}{\partial t} = \bm P :\frac{\partial\bm F}{\partial t} + \rho_0 r -\operatorname{div}_0 \bm q_0,
+\end{equation}
+where \(\bm q_0\) is the Piola transformation of \(\bm q\), i.e.,
+\begin{equation}
+  \bm q_0 = J \bm F^{-T} \bm q,
+\end{equation}
+and all state variables depend on the material coordinates \(\bm X\).
 
 \subsubsection{Second principle of thermodynamics}
 
@@ -329,6 +338,11 @@ yielding
     \rho\dot s +\text{div}\left[\frac{\vect q}{\theta}\right] -\frac{\rho r}{\theta} \geq 0,
 \end{equation}
    where $\theta$ and $s$ are the temperature and specific entropy fields respectively.
+In a material description, it reads
+\begin{equation}
+  \rho_0 \frac{\partial s}{\partial t} + \operatorname{div}_0 \left[\frac{\bm q_0}{\theta}\right] - \frac{\rho_0 r}{\theta} \geq 0,
+\end{equation}
+where all state variables depend on the material coordinates \(\bm X\).
 
 \subsubsection{Clausius-Duhem inequality}
 
@@ -359,7 +373,7 @@ From a physical point of view, the Clausius-Duhem inequality states that the ene
 Moreover the terms in the inequalitiy can be splited between the mechanical internal dissipation \(\pazocal D_\text{mech}\) and the dissipation due to heat conduction \(\pazocal D_\text{cond}\).
 From
 \begin{equation}
-\hat \eta = \bm \sigma :\bm D - \rho \left(\dot \psi  +s \dot \theta\right) -\frac{1}{\theta}\bm q\cdot\bm g,
+\hat s = \bm \sigma :\bm D - \rho \left(\dot \psi  +s \dot \theta\right) -\frac{1}{\theta}\bm q\cdot\bm g,
 \end{equation}
 assuming that the process leads to an uniform temperature distribution, yields for the mechanical dissipation \(\pazocal D_\text{mech}\),
 \begin{equation}

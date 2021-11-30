@@ -6,16 +6,15 @@ In a first step, the balance equations for the thermal field will be established
 
 \section{Governing equations}
 
-Based on the general model presented in Section~\ref{}, the balance equations for the temperature field are obtained as special case by neglecting all mechanical terms.
+Based on the general model presented in Section~\ref{}, the balance equations for the temperature field are obtained as a special case by neglecting all mechanical terms.
 Hence, the energy balance equation (Equation~\eqref{eq:first_principle_thermo}), now in material description, reduces to
-\begin{equation}
-\rho_0(\dot{\psi}+\dot{\theta} s+ \theta \dot{s})=-\operatorname{div}_0 \bm Q+\rho_0 r \quad \text { in } \Omega_0,
+\begin{equation} \label{eq:strong_energy_eq}
+\rho_0\ e=-\operatorname{div}_0 \bm q_0+\rho_0 r \quad \text { in } \Omega_0,
 \end{equation}
-where all mechanical terms are neglected and the rate of the internal energy \(\dot{e}\) is replaced using Equation~\eqref{eq:def_helmholtz_free_energy}.
-The target application of the present thesis is on coupled generally nonlinear thermomechanical interaction problems, where the initial and the current domains are not equal, i.e. \(\Omega_{0} \neq \Omega\).
+where all mechanical terms are neglected.
+The target application of the present work is on coupled generally nonlinear thermomechanical interaction problems, where the initial and the current domains are not equal, i.e. \(\Omega_{0} \neq \Omega\).
 Thus, for the sake of simplicity and in view of the later coupled problem, all following relations are expressed in material quantities.
 A purely thermal analysis is independent of the deformation, so that reference and current configuration are identical and the domain remains constant, i.e. \(\Omega_{0} \equiv \Omega\).
-Consequently, for a purely thermal analysis, the equations can be treated similar to a geometrically linear analysis, where e.g. the deformation gradient \(\bm F\) reduces to the identity tensor \(\bm I\).
 
 \section{Thermal constitutive initial value problem}
 
@@ -27,8 +26,8 @@ find the function for $\bm q(t)$, \(s(t)\) and \(\bm \alpha(t)\) such that the c
 \begin{gather}
     s = -\frac{\partial \psi}{\partial \theta},\label{eq:entropy_constitutive_relation}\\
     \psi = \psi(\theta),\\
-    \dot{\bm \alpha} = f(\theta, \bm g, \bm \alpha),\\
-    \frac{1}{\theta}\bm q = g(\theta, \bm g, \bm \alpha).
+    \dot{\bm \alpha} = f(\theta, \bm g_0, \bm \alpha),\\
+    \frac{1}{\theta}\bm q_0 = g(\theta, \bm g_0, \bm \alpha).
 \end{gather}
 are satisfied for every $t\in [t_0, t_\text{end}]$.
 \end{problem}
@@ -39,9 +38,9 @@ As a first step, the specific heat \(C_{V}\) is established and defined accordin
 \begin{equation}
 C_{\mathrm{V}}=\frac{\partial e}{\partial \theta}.
 \end{equation}
-The index \((\cdot)_\mathrm{V}\) denotes that \(C_{v}\) is measured at constant volume.
+The index \((\cdot)_\mathrm{V}\) denotes that \(C_\mathrm{V}\) is measured at constant volume.
 Its dimensions are energy over temperature, i.e., \(\mathrm{[E/\Theta]}\), and using the International System of Units (SI), \(C_{V}\) is expressed in joules per kelvin.
-Using Equation~\ref{eq:def_helmholtz_free_energy}, the specific heat at constant volume follows can be written as
+Using Equation~\ref{eq:def_helmholtz_free_energy}, the specific heat at constant volume can be written as
 \begin{equation} \label{eq:def_cv_partial}
 C_{\mathrm{V}}=-\frac{\partial^{2} \psi}{\partial \theta^{2}} \theta=\frac{\partial s}{\partial \theta} \theta.
 \end{equation}
@@ -74,7 +73,7 @@ Subsequently, the time derivative of the entropy is
 \end{equation}
 
 As previously mentioned, in a purely thermal analysis the deformation is neglected, consequently the material and spatial heat flux coincide, that is \(\bm Q \equiv \bm q\), which is also valid for the material and spatial gradient, hence \(\nabla_0 \theta \equiv \nabla \theta\).
-Subsequently, to satisfy the dissipation inequality due to conduction (Equation~\eqref{}), a constitutive law for the heat flux has to be chosen associating the heat flux \(\bm q\) with its dual variable \(\bm g\) and the temperature \(T\).
+To satisfy the dissipation inequality due to conduction (Equation~\eqref{}), a constitutive law for the heat flux has to be chosen associating the heat flux \(\bm q\) with its dual variable \(\bm g\) and the temperature \(T\).
 Accordingly, so-called Fourier's law, which is linear and isotropic is utilised, which is defined as
 \[
 \bm q=-k \bm g.
@@ -83,12 +82,13 @@ Herein, the thermal conductivity \(k\) is assumed constant and positive that is 
 Thus, heat is conducted in the direction of decreasing temperatures.
 Apart from Fourier's law, different constitutive laws for the heat flux are available in the literature, as e.g. Duhamel's law of heat conduction (see e.g. Holzapfel [58]) which uses a positive semi-definite second-order tensor \(k\) instead of the constant conductivity \(k\).
 If Duhamel's law is restricted to thermally isotropic behaviour (i.e. no preferred direction), the conductivity tensor reduces to \(k=k \boldsymbol{I}\).
-If a constant heat conductivity \(k=\) const. is assumed, Fourier's law is recovered as a special form of Duhamel's law. Moreover, e.g. in Holzapfel and Simo [59] and Sherief and Abd El-Latief [117], a variable conductivity \((k \neq \mathrm{const}\) is assumed in the context of elastomers.
+If a constant heat conductivity \(k=\) const. is assumed, Fourier's law is recovered as a special form of Duhamel's law. Moreover, e.g. in Holzapfel and Simo [59] and Sherief and Abd El-Latief [117], a variable conductivity \((k \neq \mathrm{const}\) is assumed in the context of elastomers).
 In Bargmann and Steinmann [13] and Bargmann et al. [14], three different constitutive laws for the heat flux \(\bm q\) are proposed based on the Green-Naghdi's non-classical theory.
 Nevertheless, for the present work Fourier's law yields physical results and hence is exclusively considered in this work.
 
 No extra internal variables \(\bm \alpha\) are considered in the present description of the thermal problem.
 Thus, the thermal constitutive initial value problem given the standard assumptions laid out above accepts a closed form solution, i.e., the functions for \(\bm q\) and \(s\) can be computed directly.
+
 \begin{problem}["Standard" thermal constitutive initial value problem.]
 GGiven the history of the temperature distribution
 \[\theta(t),\quad t\in[t_0, t_\text{end}],\]
@@ -99,12 +99,16 @@ compute the functions for $\bm q(t)$ and \(s(t)\) at every $t\in [t_0, t_\text{e
 \end{gather}
 \end{problem}
 
-\begin{problem}[Weak energy balance equations.]
+\section{Weak energy balance equation}
+
+The solution of the thermal problem using the FEM requires the use of the weak form of the energy balance equation.
+It can be found applying to the governing equation (Equation~\eqref{eq:strong_energy_eq}) in the strong form, a variational approach.
+\begin{problem}[Weak energy balance equation]
 TThere is energy balance in the body if and only if the temperature distribution satisfies
     \begin{equation}
         \int_\Omega   \left[\left(\dot e - \rho r\right) \xi - \bm q\cdot \nabla \xi\right]\ud v - \int_{\partial\Omega} \bm q\cdot \bm n_0 \xi\ud a = 0,\quad \forall \vect \xi \in \mathscr{W},
     \end{equation}
- where $\mathscr{W}$ is the space of virtual temperature variations of the body, defined by the space of sufficiently regular arbitrary temperature variations.
+ where $\mathscr{W}$ is the space of virtual temperature distributions on the body, defined by the space of sufficiently regular arbitrary temperature distributions.
  \end{problem}
 
 \section{The thermal initial boundary value problem}
