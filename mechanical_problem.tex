@@ -44,7 +44,11 @@ Likewise, in a material description it can be stated as
 
 The strong equations that enforce the equilirium of a body can be writen using the spatial description as
 \begin{equation}
-  \rho \ddot{\bm u} = \operatorname{div}\bm \sigma + \bm b\quad \text{in $\Omega.$}
+  \rho \ddot{\bm u} = \operatorname{div}\bm \sigma + \bm b\quad \text{in $\Omega$},
+\end{equation}
+and the material description as
+\begin{equation}
+  \rho_0\ddot{\bm u} = \operatorname{div}_0 \bm P + \bm b_0\quad \text{in $\Omega_0$}.
 \end{equation}
 From a practical standpoint, finding the exact solution to the strong equilibrium equations in the context of real engineering problems is most often nearly or entirely impossible.
 Most numerical methods obtain only approximate solutions to the so-called weak equilibrium equations to circumvent this problem.
@@ -55,9 +59,9 @@ The weak equilibrium equations can be found making use of several energetic and 
 \begin{problem}[Principle of virtual work (spatial version).]
 TThe Virtual Work Principle states, in a spatial description, that the body is in equilibrium if and only if the Cauchy stress field satisfies
     \begin{equation}
-        \int_\Omega [\mat \sigma:\nabla \vect \eta - (\vect b -\rho \ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_\Omega [\mat \sigma:\nabla \vect \eta - (\vect b -\rho \ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_u,
     \end{equation}
- where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
+ where $\mathscr{V}_u$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
  \begin{equation}
      \vect \eta\colon \Omega\to  \mathscr{U}
  \end{equation}
@@ -69,11 +73,11 @@ The principle of virtual work can be expressed in a completly equivalent way usi
 \begin{problem}[Principle of virtual work (material version).]
 TThe Virtual Work Principle states, in a material description, that the body is in equilibrium if and only if the First Piola-Kirchhoff stress field satisfies
     \begin{equation}
-        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - (\vect b_0 - \rho_0 \ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud da = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - (\vect b_0 - \rho_0 \ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud da = 0,\quad \forall \vect \eta \in \mathscr{V}_{u,0},
     \end{equation}
- where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
+ where $\mathscr{V}_{u,0}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
  \begin{equation}
-     \vect \eta\colon \Omega\to \mathscr{U}.
+     \vect \eta\colon \Omega_0\to \mathscr{U}.
  \end{equation}
 \end{problem}
 
@@ -92,31 +96,31 @@ In addition, it is assumed that the interior of the body was subjected to a pres
 It is also convenient to define the set of kinematically admissible displacements of $\mathscr{B}$ as the set of all sufficiently regular displacement functions tha satisfy the essential boundary condition \citep{de2011computational},
 \begin{highlight}[innertopmargin=-5pt]
     \begin{multline}
-        \mathscr{K}\equiv \{\vect u:\Omega\times \mathscr{R}\to \mathscr{U}\;|\;\vect u(\vect X,t) = \vect u_\text{presc} (\vect X,t),\\ \vect X\in\partial \Omega_\text{motion,0},\quad t\in [t_0,t_\text{end}]\}.\quad
+        \mathscr{K}_u\equiv \{\vect u:\Omega_0\times \mathscr{R}\to \mathscr{U}\;|\;\vect u(\vect X,t) = \vect u_\text{presc} (\vect X,t),\\ \vect X\in\partial \Omega_\text{motion,0},\quad t\in [t_0,t_\text{end}]\}.\quad
     \end{multline}
 \end{highlight}
 
 So the weak form of the quasi-static mechanical constitutive initial boundary value problem can be stated in a spatial description as follows
 \begin{problem}[Spatial mechanical initial BVP.]
-    FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
+    FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}_u$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
         \begin{equation}
-        \int_\Omega [\mat \sigma:\nabla \vect \eta - (\vect b-\rho\ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_\Omega [\mat \sigma:\nabla \vect \eta - (\vect b-\rho\ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega} \vect t\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_u,
     \end{equation}
     where the space of virtual displacements at time $t$ is defined by
     \begin{equation}
-        \mathscr{V} \equiv \left\{\vect \eta:\Omega\to \mathscr{U}\;|\;\vect \eta = \vect 0\quad \text{in}\quad \partial\Omega_\text{motion,0}\right\},
+        \mathscr{V}_u \equiv \left\{\vect \eta:\Omega\to \mathscr{U}\;|\;\vect \eta = \vect 0\quad \text{in}\quad \bm \varphi(\partial\Omega_\text{motion,0},t)\right\},
     \end{equation}
     and at each point of $\mathscr{B}$, the Cauchy stress tensor is the solution of spatial mechanical constitutive initial values problem.
 \end{problem}
 and in the material description as
 \begin{problem}[Material mechanical initial BVP.]
-    FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
+    FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}_u$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
         \begin{equation}
-        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - (\vect b_0-\rho_0\ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_0} [\mat P:\nabla_0 \vect \eta - (\vect b_0-\rho_0\ddot{\bm u})\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_{u,0},
     \end{equation}
     where the space of virtual displacements at time $t$ is defined by
     \begin{equation}
-        \mathscr{V} \equiv \left\{\vect \eta:\Omega_0\to \mathscr{U}\;|\;\vect \eta = \vect 0\quad \text{in}\quad \partial\Omega_\text{motion,0}\right\},
+        \mathscr{V}_{u,0} \equiv \left\{\vect \eta:\Omega_0\to \mathscr{U}\;|\;\vect \eta = \vect 0\quad \text{in}\quad \partial\Omega_\text{motion,0}\right\},
     \end{equation}
     and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material mechanical constitutive initial values problem.
 \end{problem}
@@ -157,24 +161,24 @@ In other words, within each increment, $\mat \sigma_{n+1}$ and $\vect \alpha_{n+
 
 Making use of the aforementioned time discretization, one can state the weak form of the mechanical constitutive initial boundary value problem in the spatial description as
 \begin{problem}[Spatial incremental mechanical initial BVP.]
-    GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{n+1}$ and $\vect t_{n+1}$ at $t_{n+1}$, and the prescribed deformating gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{n+1}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the virtual Work Principle
+    GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{n+1}$ and $\vect t_{n+1}$ at $t_{n+1}$, and the prescribed deformating gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{u,n+1}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the virtual Work Principle
             \begin{equation}
-        \int_{\Omega_{n+1}} [\hat{\mat \sigma}(\mat F_{n+1}, \vect \alpha_n):\nabla \vect \eta - (\vect b_{n+1}-\rho\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v - \int_{\partial\Omega_{n+1}} \vect t_{n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_{n+1}} [\hat{\mat \sigma}(\mat F_{n+1}, \vect \alpha_n):\nabla \vect \eta - (\vect b_{n+1}-\rho\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v - \int_{\partial\Omega_{n+1}} \vect t_{n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_u,
     \end{equation}
     where the space of kinematically admissible displacement fields $\mathscr{K}_{n+1}$ is defined by
     \begin{equation}
-            \mathscr{K}_{n+1}\equiv \{\vect u:\Omega\times \mathscr{R}\to \mathscr{U}\;|\;\vect u_{n+1}(\vect X) = \vect u_\text{presc,$n+1$}(\vect X),\;\vect X\in\partial \Omega_\text{motion,0}\}.
+            \mathscr{K}_{u,n+1}\equiv \{\vect u:\Omega_0\times \mathscr{R}\to \mathscr{U}\;|\;\vect u_{n+1}(\vect X) = \vect u_\text{presc,$n+1$}(\vect X),\;\vect X\in\partial \Omega_\text{motion,0}\}.
     \end{equation}
 \end{problem}
 and in the material description as
 \begin{problem}[Material incremental mechanical initial BVP.]
-    GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$ at $t_{n+1}$, and the prescribed deformating gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{n+1}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the virtual Work Principle
+    GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$ at $t_{n+1}$, and the prescribed deformating gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{u,n+1}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the virtual Work Principle
             \begin{equation}
-        \int_{\Omega_{n+1}} [\hat{\mat P}(\mat F_{n+1}, \vect \alpha_n):\nabla_0 \vect \eta - (\vect b_{0,n+1}-\rho_0\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v - \int_{\partial\Omega_{n+1}} \vect t_{0,n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_0} [\hat{\mat P}(\mat F_{n+1}, \vect \alpha_n):\nabla_0 \vect \eta - (\vect b_{0,n+1}-\rho_0\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v - \int_{\partial\Omega_{0,n+1}} \vect t_{0,n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_{u,0},
     \end{equation}
     where the space of kinematically admissible displacement fields $\mathscr{K}_{n+1}$ is defined by
     \begin{equation}
-            \mathscr{K}_{n+1}\equiv \{\vect u:\Omega\times \mathscr{R}\to \mathscr{U}\;|\;\vect u_{n+1}(\vect X) = \vect u_\text{presc,$n+1$}(\vect X),\;\vect X\in\partial \Omega_\text{motion,0}\}.
+            \mathscr{K}_{u,n+1}\equiv \{\vect u:\Omega_0\times \mathscr{R}\to \mathscr{U}\;|\;\vect u_{n+1}(\vect X) = \vect u_\text{presc,$n+1$}(\vect X),\;\vect X\in\partial \Omega_\text{motion,0}\}.
     \end{equation}
 \end{problem}
 
@@ -187,9 +191,9 @@ With the incremental weak form of the mechanical constitutive initial boundary v
 The first in the Finite Element method is to discretize the continuum domain $\Omega$ in a finite set of $n_\text{elem}$ mutually exclusive subdomains called finite elements $\Omega^{(e)}$.
 The discretized domain, $^h\Omega$, is therefore an approximation to the continuum domain expressed by
 \begin{equation}
-    \Omega \approx ^h\Omega \equiv \bigcup_{e=1}^{n_\text{elem}}\Omega^{(e)}.
+    \Omega \approx {}^h\Omega \equiv \bigcup_{e=1}^{n_\text{elem}}\Omega^{(e)}.
 \end{equation}
-The space of virtual displacements $\mathscr{V}$ as well as the space of kinematically admissible displacement fields $\mathscr{K}$ are also discretized in the same, with their discretized forms denoted by $^h\mathscr{V}$ and $^h\mathscr{K}$.
+The spaces of virtual displacements $\mathscr{V}_u$ and \(\mathscr V_{u,0}\) as well as the space of kinematically admissible displacement fields $\mathscr{K}_u$ are also discretized in the same way, with their discretized forms denoted by $^h\mathscr{V}_u$, \(^h\mathscr{V}_{u,0}\) and $^h\mathscr{K}_u$.
 
 \subsection{Interpolation functions}
 
@@ -199,21 +203,22 @@ These interpolation functions are often called shape functions and perform the r
 Letting $a(\vect x)$ be a generic field defined over $\Omega^{(e)}$, its interpolation at any point $\vect x$ inside the element is defined by the element shape functions as
 \begin{highlight}
     \begin{equation}
-        a(\vect x) \approx ^ha(\vect x) \equiv \sum_{i=1}^{n_\text{nodes}} a(\vect x_i) N_i^{(e)}(\vect x).
+        a(\vect x) \approx {}^ha(\vect x) \equiv \sum_{i=1}^{n_\text{nodes}} a(\vect x_i) N_i^{(e)}(\vect x).
     \end{equation}
 \end{highlight}
 If instead $a(\vect x)$ is instead a generic field defined over the global domain $\Omega$, the interpolation of $a(\vect x)$ at any point $\vect x$ is defined by the global shape functions as
 \begin{highlight}
     \begin{equation}
-        a(\vect x) \approx ^h a(\vect x) \equiv \sum_{i=1}^{n_\text{points}} a(\vect x_i) N_i^g(\vect x), \label{eq:interpol_global}
+        a(\vect x) \approx {}^h a(\vect x) \equiv \sum_{i=1}^{n_\text{points}} a(\vect x_i) N_i^g(\vect x), \label{eq:interpol_global}
     \end{equation}
 \end{highlight}
 where $n_\text{points}$ is the total number of nodes of the finite element mesh.
-The discretized spaces $^h \mathscr{V}$ and $^h\mathscr{K}$ can now be defined as
+The discretized spaces $^h \mathscr{V}_u$ and $^h\mathscr{K}_u$ can now be defined as
 \begin{align}
-    ^h \mathscr{K}&\equiv \Big\{\vphantom{|}^h\vect u(\vect x) = \sum_{i=1}^{n_\text{points}} \vect u(\vect x_i) N_i^g(\vect x)\;|\; \vect u(\vect x_i) = \vect u_\text{presc}(\vect x_i)\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}  \Big\},\\
-    ^h\mathscr{V}&\equiv \Big\{\vphantom{|}^h\vect \eta(\vect x) = \sum_{i=1}^{n_\text{points} } \vect \eta(\vect x_i) N_i^g(\vect x)\;|\;\vect \eta(\vect x_i)=\vect 0\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}   \Big\}
+    ^h \mathscr{K}_u&\equiv \Big\{\vphantom{|}^h\vect u(\vect x) = \sum_{i=1}^{n_\text{points}} \vect u(\vect x_i) N_i^g(\vect x)\;|\; \vect u(\vect x_i) = \vect u_\text{presc}(\vect x_i)\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}  \Big\},\\
+    ^h\mathscr{V}_u&\equiv \Big\{\vphantom{|}^h\vect \eta(\vect x) = \sum_{i=1}^{n_\text{points} } \vect \eta(\vect x_i) N_i^g(\vect x)\;|\;\vect \eta(\vect x_i)=\vect 0\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}   \Big\}
 \end{align}
+Quantities defined on the reference configuration \(\Omega_0\) accepted a treatment entirely similar to the one described above, and thus is omitted.
 
 \subsection{Interpolation matrix and discrete gradient operators}
 
@@ -238,10 +243,10 @@ Defining the global vector of nodal displacements as
 \begin{equation}
     \mathbf u = \Big[ u_1^1,\dots,u^1_{n_\text{dim}},\dots, u_1^{n_\text{points}},\dots,u^{n_\text{points}}_{n_\text{dim}}\Big]^T,
 \end{equation}
-the displacement field $\vec u(\vect x)$m defined over the global domain $\Omega$, can be found from Equation \eqref{eq:interpol_global} at any point $\vect x$ as
+the displacement field $\bm u(\vect x)$ defined over the global domain $\Omega$, can be found from Equation \eqref{eq:interpol_global} at any point $\vect x$ as
 \begin{highlight}
     \begin{equation}
-        ^h\vect u(\vect x) \equiv \mathbf N^g(\vect x)\mathbf u,\quad ^h\vect u\in {}^h\mathscr{K}.
+        ^h\vect u(\vect x) \equiv \mathbf N^g(\vect x)\mathbf u,\quad {}^h\vect u\in {}^h\mathscr{K}_u.
     \end{equation}
 \end{highlight}
 
@@ -250,7 +255,7 @@ the displacement field $\vec u(\vect x)$m defined over the global domain $\Omega
 Applying the aforementioned finite element discretization to the incremental mechanical constitutive initial boundary value problem, we can then write in the spatial description
 \begin{highlight}
     \begin{equation}
-        \int_{^h\Omega}\left[\hat{\mat \sigma}^T\mathbf B^g\vect \eta - (\mathbf b_{n+1} - \rho\ddot{\mathbf u}_{n+1}) \cdot \mathbf N^g \vect \eta \right]\ud v -\int_{\partial ^h\Omega_\text{traction}} \mathbf t_{n+1}\cdot \mathbf N^g\vect \eta \ud a = 0,\quad \forall \vect \eta \in ^h\mathscr{V},  \label{eq:forma_fraca_disc}
+        \int_{^h\Omega}\left[\hat{\mat \sigma}^T\mathbf B^g\vect \eta - (\mathbf b_{n+1} - \rho\ddot{\mathbf u}_{n+1}) \cdot \mathbf N^g \vect \eta \right]\ud v -\int_{\partial ^h\Omega_\text{traction}} \mathbf t_{n+1}\cdot \mathbf N^g\vect \eta \ud a = 0,\quad \forall \vect \eta \in {}^h\mathscr{V}_u,  \label{eq:forma_fraca_disc}
     \end{equation}
 \end{highlight}
 where $\mathbf B^g$ is the discrete symmetric global gradient operator, defined for a 2D problem in cartesian coordinates as
@@ -269,11 +274,11 @@ where $\mathbf B^g$ is the discrete symmetric global gradient operator, defined 
 
 Equation \eqref{eq:forma_fraca_disc} can be rewritten as
 \begin{multline}
-    \left\{  \int_{^h\Omega}\left[{\mathbf B^g}^T \hat{\mat \sigma}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T\mathbf b_{n+1} +{\mathbf N^g}^T\rho\ddot{\mathbf u}_{n+1} \right]\ud v \right. \\ \left. -\int_{\partial ^h\Omega_\text{traction}} {\mathbf N^g}^T \mathbf t_{n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V}, \label{eq:eq_forças}
+    \left\{  \int_{^h\Omega}\left[{\mathbf B^g}^T \hat{\mat \sigma}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T\mathbf b_{n+1} +{\mathbf N^g}^T\rho\ddot{\mathbf u}_{n+1} \right]\ud v \right. \\ \left. -\int_{\partial ^h\Omega_\text{traction}} {\mathbf N^g}^T \mathbf t_{n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V}_u, \label{eq:eq_forças}
 \end{multline}
-and, since it must be satisfied for any $\vect \eta \in {}^h \mathscr{V}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the spatial description as
+and, since it must be satisfied for any $\vect \eta \in {}^h \mathscr{V}_u$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the spatial description as
 \begin{problem}[Spatial incremental discretized mechanical initial BVP.]
-GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{n+1}$ and $\vect t_{n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible nodal displacement field $\vect u_{n+1}\in {^h\mathscr{K}_{n+1}}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
+GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{n+1}$ and $\vect t_{n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible nodal displacement field $\vect u_{n+1}\in {^h\mathscr{K}_{u,n+1}}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
 \begin{equation}
     \mathbf M \ddot{\mathbf u}_{n+1} + \mathbf f^\text{\;int}(\mathbf u_{n+1})-\mathbf f^\text{\;ext}_{n+1}=\mathbf 0, \label{eq:equilibrium_spatial}
 \end{equation}
@@ -284,12 +289,12 @@ where $\mathbf f^\text{int}$ e $\mathbf f^\text{ext}_{n+1}$ are the global vecto
 \end{align}
 and $\mathbf M$ is the mass matrix defined as
 \begin{equation}
-  \mathbf M = \int_{{}^h\Omega} \rho {\mathbf{N}^g}^T \ud v.
+  \mathbf M = \int_{{}^h\Omega} \rho {\mathbf{N}^g}^T\mathbf{N}^g \ud v.
 \end{equation}
 \end{problem}
 In a material description, Equation \eqref{eq:eq_forças} is written as
 \begin{multline}
-     \left\{  \int_{^h\Omega_0}\left[{\mathbf G^g}^T \hat{\mat P}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T \mathbf b_{0,n+1} + {\mathbf N^g}^T \rho_0\ddot{\mathbf u}_{n+1} \right]\ud v \right.\\ \left.   -\int_{\partial ^h\Omega_\text{traction,0}} {\mathbf N^g}^T \mathbf t_{0,n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V},
+     \left\{  \int_{^h\Omega_0}\left[{\mathbf G^g}^T \hat{\mat P}(\vect \alpha_n, \vect F_{n+1})-{\mathbf N^g}^T \mathbf b_{0,n+1} + {\mathbf N^g}^T \rho_0\ddot{\mathbf u}_{n+1} \right]\ud v \right.\\ \left.   -\int_{\partial ^h\Omega_\text{traction,0}} {\mathbf N^g}^T \mathbf t_{0,n+1}\ud a\right\}^T\;\vect \eta =0,\quad \forall \vect \eta \in ^h \mathscr{V}_{u,0},
 \end{multline}
 where $\mathbf G^g$ is the discrete global gradient operator, defined for a 2D problem in cartesian coordinates as
 \begin{equation}
@@ -306,9 +311,9 @@ where $\mathbf G^g$ is the discrete global gradient operator, defined for a 2D p
     \end{array}
     \right],
 \end{equation}
-and, as for the spatial description, it must  be satisfied for any $\vect \eta \in ^h \mathscr{V}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the material description as
+and, as for the spatial description, it must  be satisfied for any $\vect \eta \in {}^h\mathscr{V}_{u,0}$, the incremental quasi-static discretized mechanical constitutive initial boundary value problem can thus be stated in the material description as
 \begin{problem}[Material incremental discretized mechanical initial BVP.]
-GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible nodal displacement field $\vect u_{n+1}\in {^h\mathscr{K}_{n+1}}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
+GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ at $t_{n+1}$, find the kinematically admissible nodal displacement field $\vect u_{n+1}\in {^h\mathscr{K}_{u,n+1}}$ such that the body $\mathscr{B}$ is in equilibrium as stated by the Virtual Work Principle
 \begin{equation}
     \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f^\text{\;int}(\mathbf u_{n+1})-\mathbf f^\text{\;ext}_{n+1}=\mathbf 0, \label{eq:equilibrium_material}
 \end{equation}
