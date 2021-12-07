@@ -1,26 +1,85 @@
-\chapter{Mechanical problem}
+\chapter{Thermo-mechanical problem}
 
-In the following chapter, the general framework presented in the previous chapter is applied to a purely mechanical analysis, neglecting the thermal terms.
+In the following chapter, the general framework presented in chapter~\ref{} is applied to the full thermo-mechanical analysis.
+Chapters~\ref{} and \ref{} concerning the standalone mechanical and thermal problems provided a guide for the developments that follow, where the coupled problem is explored.
+This coupling is a so-called volume coupling, as in each point of the domain the two fields are coupled.
+This is in contrast to surface-coupled problems, e.g., fluid-structure interactions problems, where there is coupling only at the interface bewteen the fluid and the structural domain.
 
-\subsection{Mechanical constitutive initial value problem}
+The standard approach in finite deformation thermomechanical analysis, is the thermomechanical potential \cite{}.
+It is already included in the description of continuum thermodynamics in Chapter~\ref{}, where the Helmholtz free-energy is allowed to the depend on the temperature \(\theta\).
+Thus, the temperature is directly included in the constitutive law.
+Following the setup of finite strain plasticity in the general non-isothermal case, in addition to the plastic intermediate configuration, a thermal intermediate configuration has to be considered \cite{}, i.e.,
+\begin{equation}
+  \bm F = \bm F^t\,\bm F^e\,\bm F^p.
+\end{equation}
 
-In the purely mechanical case, with all the quantities related to the thermal domain removed, a constitutive model based on internal variables is established by the following set of equations
+In contrast to thermal deformations which are solely volumetric, for most metals the volume remains constant during plastic deformations.
+Hence, plastic deformations are assumed isochoric, \(J^p = \operatorname{det}\bm F^p=1\), yielding the following split for the jacobian of the deformation
+\begin{equation}
+  J = J^t J^e.
+\end{equation}
+Following \cite{danowski_computational_2014}, the thermal expansion is assumed to be
+\begin{equation}
+  J^t = \frac{\ud v}{\ud v_0} = \operatorname{exp}(3\alpha_T \Delta\theta).
+\end{equation}
+Combining the last two equations, the elastic volumetric deformation \(J^e\), can be expressed as
+\begin{equation} \label{eq:jacobian_elasatic_temp}
+  J^e  = J^e(\theta) = J/J^t.
+\end{equation}
+Consequently, the additional thermal intermediate configuration can be omitted and volumetric deformations are described only \(J^e\).
+Thus, if thermal stresses arise due to a temperature change, elastic strains balance the body which implicitly correspond to the thermal strains according to Equation~\eqref{eq:jacobian_elasatic_temp}.
+
+\subsection{Thermo-mechanical constitutive initial value problem}
+
+In the full thermo-mechanical case, considering all quantities related to both the mechanical and the thermal domain, a constitutive model based on internal variables is established by the following set of equations
     \begin{gather}
         \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
         s = - \frac{\partial \psi}{\partial \theta},\\
-        \psi = \psi(\mat F,\theta, \nabla_0 \theta,\mat \alpha),\\
-        \dot{\vect \alpha} = f(\mat F, \theta, \nabla_0 \theta,\vect \alpha),\\
-        \frac{1}{\theta}\nabla_0 \theta = g(\bm F, \theta, \bm \alpha).
+        \psi = \psi(\mat F,\theta, \bm g_0,\mat \alpha),\label{eq:thermo_mech_helmholtz_free_energy}\\
+        \dot{\vect \alpha} = f(\mat F, \theta, \bm g_0,\vect \alpha),\\
+        \frac{1}{\theta}\bm q_0 = g(\bm F, \theta, \bm \alpha).
     \end{gather}
-  Thus, the spatial mechanical constitutive initial value problem can be stated as follows
 
-  the single effects. To emphasize this additive decomposition, the Helmholtz free energy \(\psi\) in (5.7) is expressed with respect to the reference volume, so that \(\psi\) is reformulated using potential functions according to
-  \[
-  \rho_{0} \psi\left(\boldsymbol{F}, T, \operatorname{grad} T, \boldsymbol{\alpha}_{\mathrm{k}}, \boldsymbol{X}\right):=\hat{\mathbb{U}}\left(J^{e}\right)+\hat{\mathbb{W}}(\tilde{\boldsymbol{F}})+\hat{\mathbb{M}}\left(J^{e}, T\right)+\hat{\mathbb{T}}(T)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, T\right)
-  \]
-  where in contrast to the deformation gradient \(\boldsymbol{F}\), the Jacobi-determinant \(J^{e}(5.6)\) and the isochoric deformation gradient \(\tilde{\boldsymbol{F}}(2.36)\) are applied. \(\hat{U}\) and \(\mathbb{W}\) can be identified with the standard hyperelastic materials potentials according to \((3.57)\), whereas \(\hat{M}\left(J^{e}, T\right)\) describes the thermomechanical coupling potential. The potential \(\hat{\mathbb{T}}(T)\) represents the purely thermal potential and is assumed identical to (4.8). Finally, \(\hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{\mathrm{k}}, T\right)\) is the convex plastic potential. Subsequently, based on the potential functions, the coupling of the two fields structure and thermo can be explained: the temperature enters the structural field via additional thermal stresses and possibly moreover via temperature-dependent material parameters. Herein, \(\mathbb{M}\left(J^{e}, T\right)\) characterizes the thermomechanical coupling potential, leading to thermal stresses and moreover to thermal expansion and dilatation, whereas \(\mathbb{K}\left(\boldsymbol{\alpha}_{\mathrm{k}}, T\right)\) being temperature-dependent and therefore enables exemplarily von Mises plasticity combined with temperature-dependent isotropic hardening and thermal softening. This is in accordance to Agelet de Saracibar et al. [2], Ibrahimbegovic and Chorfi \([61]\), but in contrast to Simo and Miehe [122], who assumed an isothermal plastic potential \(\mathbb{K}_{\text {Simo }}\left(\boldsymbol{\alpha}_{\mathrm{k}}\right)\). In contrast, the structure enters the themal field via coupling terms, arising from \(\hat{\mathbb{M}}\left(J^{e}, T\right)\) and \(\mathbb{K}\left(\boldsymbol{\alpha}_{k}, T\right)\), in addition to the purely thermal energy (4.8). Thus, coupling terms as the internal or mechanical dissipation \(\mathcal{D}_{\text {mech }}\) may emerge in the thermal balance equation. Furthemore, for finite defomation TSI, where the initial domain \(\Omega_{0}\) deforms to \(\Omega\), so that \(\Omega \neq \Omega_{0}\), and a Lagrangian formulation is used, the deformation enters the thermal field additionally due to the mapping of all quantities in the balance equations to the reference configuration.
+The Helmholtz free energy \(\psi\) in Equation~\ref{eq:thermo_mech_helmholtz_free_energy} is expressed with respect to the reference volume, so that \(\psi\) is reformulated using potential functions,to emphasize this additive decomposition, as follows
+  \begin{highlight}
+    \begin{equation}
+    \rho_{0} \psi\left(\bm{F}, \theta, \bm{\alpha}\right):=\hat{\mathbb{U}}\left(J^e,\theta\right)+\hat{\mathbb{W}}(\bm{F}_\text{iso},\theta)+\hat{\mathbb{M}}\left(J^e, \theta\right)+\hat{\mathbb{T}}(\theta)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}, \theta\right),
+    \end{equation}
+  \end{highlight}
+  where in contrast to the deformation gradient \(\bm{F}\), the Jacobi-determinant \(J^{e}\) and the isochoric deformation gradient \(\bm{F}_\text{iso}\) are applied.
+  \(\hat{\mathbb U}\) and \(\hat{\mathbb{W}}\) can be identified with the standard hyperelastic materials potentials, with the caveat that now the material parameters can depend on the temperature, whereas
+  \(\hat{\mathbb M}\) describes the thermomechanical coupling potential.
+  The potential \(\hat{\mathbb{T}}\) represents the purely thermal potential and is assumed identical to Equation~\eqref{}.
+  Finally, \(\hat{\mathbb{K}}\) is the convex plastic potential.
 
-Likewise, in a material description it can be stated as
+Based on the potential functions, the coupling of the two fields structure and thermo can be explained:
+\begin{itemize}
+  \item the temperature enters the structural field via additional thermal stresses and possibly moreover via temperature-dependent material parameters.
+  Herein, \(\hat{\mathbb{M}}\) characterizes the thermomechanical coupling potential, leading to thermal stresses and moreover to thermal expansion and dilatation, whereas \(\hat{\mathbb{K}}\) being temperature-dependent and therefore enables exemplarily von Mises plasticity combined with temperature-dependent isotropic hardening and thermal softening.
+  \item the structure enters the themal field via coupling terms, arising from \(\hat{\mathbb{M}}\) and \(\hat{\mathbb{K}}\) , in addition to the purely thermal energy \(\hat{\mathbb T}\).
+  Thus, coupling terms as the internal or mechanical dissipation \(\pazocal{D}_{\text {mech }}\) may emerge in the thermal balance equation. Furthemore, for finite defomation thermo-mechanical problems, where the initial domain \(\Omega_{0}\) deforms to \(\Omega\), so that \(\Omega \neq \Omega_{0}\), and a Lagrangian formulation is used, the deformation enters the thermal field additionally due to the mapping of all quantities in the balance equations to the reference configuration.
+\end{itemize}
+
+The constitutive relations found for the first Piola-Kirchhoff stress tensor (Equation~\eqref{}) and the entropy (Equation~\eqref{}) are the same.
+The expression for the entropy in full can be written as
+\begin{highlight}
+  \begin{equation}
+    s = C_{V} \ln \left(\frac{\theta}{\theta_{0}}\right)-\frac{1}{\rho_{0}}\left(\frac{\partial \hat{\mathbb{U}}\left(J^e,\theta\right)}{\partial \theta} + \frac{\partial \hat{\mathbb{W}}(\bm{F}_\text{iso},\theta)}{\partial \theta} + \frac{\partial \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta}+\frac{\partial \hat{\mathbb{K}}\left(\bm \alpha, \theta\right)}{\partial \theta}\right).
+  \end{equation}
+\end{highlight}
+
+As in Chapter~\ref{}, the heat conduction law is chosen to be the Fourier heat conduction law, repeated here for the sake of clarity in the spatial descrition
+\begin{equation}
+  \bm q = - k \bm g.
+\end{equation}
+Applying the Piola transformation yields for the material description of the heat flux vector,
+\begin{highlight}
+  \begin{equation}
+    \bm q_0 = - k_0 \bm C^{-1} \bm g_0.
+  \end{equation}
+\end{highlight}
+
+Thus, the material thermo-mechanical constitutive initial value problem can be stated as
     \begin{problem}[Material thermomechanical constitutive initial value problem.]
     GGiven the initial values of the internal variables, $\vect \alpha(t_0)$, the history of the deformation gradient
     \begin{equation}
@@ -30,13 +89,13 @@ Likewise, in a material description it can be stated as
     \begin{equation}
     \theta(t),\quad t\in[t_0,t_\text{end}],
     \end{equation}
-    find the functions for $\mat P(t)$, \(s(t)\), \(\bm Q(t)\) and $\vect \alpha(t)$ such that the constitutive equations
+    find the functions for $\mat P(t)$, \(s(t)\), \(\bm q_0(t)\) and $\vect \alpha(t)$ such that the constitutive equations
     \begin{gather}
         \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
-        s = C_{V} \ln \left(\frac{\theta}{\theta_{0}}\right)-\frac{1}{\rho_{0}}\left(\frac{\partial \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta}+\frac{\partial \hat{\mathbb{K}}\left(\alpha_{k}, \theta\right)}{\partial \theta}\right),\\
-        \psi =\frac{1}{\rho_0}\left( \hat{\mathbb{U}}\left(J^{e}\right)+\hat{\mathbb{W}}(\tilde{\boldsymbol{F}})+\hat{\mathbb{M}}\left(J^{e}, \theta\right)+\hat{\mathbb{T}}(\theta)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{\mathrm{k}}, \theta\right)\right),\\
-        \bm Q = - k_0 \bm C^{-1} \nabla_0 \theta,\\
-        \dot{\vect \alpha} = f(\mat F, \theta, \nabla_0 \theta,\vect \alpha),
+        s = C_{V} \ln \left(\frac{\theta}{\theta_{0}}\right)-\frac{1}{\rho_{0}}\left(\frac{\partial \hat{\mathbb{U}}\left(J^e,\theta\right)}{\partial \theta} + \frac{\partial \hat{\mathbb{W}}(\bm{F}_\text{iso},\theta)}{\partial \theta} + \frac{\partial \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta}+\frac{\partial \hat{\mathbb{K}}\left(\bm \alpha, \theta\right)}{\partial \theta}\right),\\
+        \psi =\frac{1}{\rho_0}\left( \hat{\mathbb{U}}\left(J^{e}\right)+\hat{\mathbb{W}}(\bm F_\text{iso})+\hat{\mathbb{M}}\left(J^{e}, \theta\right)+\hat{\mathbb{T}}(\theta)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}, \theta\right)\right),\\
+        \bm q_0 = - k_0 \bm C^{-1} \bm g_0,\\
+        \dot{\vect \alpha} = f(\mat F, \theta, \bm g_0 ,\vect \alpha),
     \end{gather}
     are satisfied for every $t\in [t_0, t_\text{end}]$, where
     \begin{gather}
@@ -46,86 +105,107 @@ Likewise, in a material description it can be stated as
 
 \subsection{Weak equilibrium. The principle of virtual work}
 
-The strong equations that enforce the equilirium of a body can be writen using the spatial description as
-\begin{equation}
-  \rho \ddot{\bm u} = \operatorname{div}\bm \sigma + \bm b\quad \text{in $\Omega.$}
-\end{equation}
-From a practical standpoint, finding the exact solution to the strong equilibrium equations in the context of real engineering problems is most often nearly or entirely impossible.
-Most numerical methods obtain only approximate solutions to the so-called weak equilibrium equations to circumvent this problem.
-These result from relaxing the strong equilibrium equations so that the solutions need only satisfy the equilibrium equations in an average sense instead of satisfying them pointwise.
-This is achieved through an integration over the body volume.
-The weak equilibrium equations can be found making use of several energetic and weighted residual methods, such as the Virtual Work Principle used here.
-\enlargethispage{\baselineskip}
-
-The principle of virtual work can be expressed in a completly equivalent way using a material description.
+The strong equations that enforce the equilibrium of a body can be writen using the material description as
+\begin{align}
+  \rho_0 \ddot{\bm u} = \operatorname{div}_0\bm P + \bm b_0, \quad & \text{in $\Omega_0$},\\
+   \rho_0 \dot e = \bm P :\dot{\bm F} + \rho_0 r -\operatorname{div}_0 \bm q_0, \quad & \text{in  $\Omega_0$}.
+\end{align}
+Following an approach entirelly similar to the ones presented in Chapters~\ref{} and \ref{}, the weak form of the linear momentum and energy balance equations can be found to be
 \begin{problem}[Weak form of the linear momentum and energy balance equations (material version).]
-IIn a material description, the body is in mechanical and energetic equilibrium if and only if the First Piola-Kirchhoff stress field, \(\bm P(t)\), the heat flow \(\bm Q(t)\), satisfy
+IIn a material description, the body is in mechanical and energetic equilibrium if and only if the First Piola-Kirchhoff stress field, \(\bm P(t)\), the heat flux vector \(\bm q_0(t)\), satisfy
     \begin{gather}
-        \int_{\Omega_0} [\mat P(t):\nabla_0 \vect \eta - (\vect b_0(t) - \rho_0 \ddot{\bm u}(t))\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0(t)\cdot \vect \eta\ud da = 0,\quad \forall \vect \eta \in \mathscr{V},\\
-          \int_{\Omega_0}   \left[\rho_0\left(\dot e (t)- r(t)\right) \xi - \bm Q(t)\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} \bm Q(t)\cdot \bm n_0 \xi\ud a = 0,\quad \forall \xi \in \mathscr{W},
+        \int_{\Omega_0} [\mat P(t):\nabla_0 \vect \eta - (\vect b_0(t) - \rho_0 \ddot{\bm u}(t))\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0(t)\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_{u,0},\\
+          \int_{\Omega_0}   \left[\left(\rho_0\dot e (t)- \bm P(t):\dot{\bm F}- \rho_0r(t)\right) \xi - \bm q_0(t)\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} h_0(t) \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,0},
     \end{gather}
- where $\mathscr{V}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
+ where $\mathscr{V}_{u,0}$ is the space of virtual displacement of the body, defined by the space of sufficiently regular arbitrary displacements
  \begin{equation}
-     \vect \eta\colon \Omega\to \mathscr{U}.
+     \vect \eta\colon \Omega_0\to \mathscr{U}.
  \end{equation}
- and  $\mathscr{W}$ is the space of virtual temperature distributions of the body, defined by the space of sufficiently regular arbitrary temperature distributions
+ and  $\mathscr{V}_{\theta,0}$ is the space of virtual temperature distributions of the body, defined by the space of sufficiently regular arbitrary temperature distributions
  \begin{equation}
-     \xi\colon \Omega\to \mathbb R.
+     \xi\colon \Omega_0\to \mathscr R.
  \end{equation}
 \end{problem}
 
 \subsection{Mechanical constitutive initial boundary value problem}
 
-It is now possible to pose the mechanical constitutive initial value problem in its weak form.
+It is now possible to pose the thermo-mechanical constitutive initial value problem in its weak form.
 Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time, as presented in Figure \ref{}.
-In addition, it is assumed that the interior of the body was subjected to a prescribed history of body forces, $\vect b(\bm X, t)$, $t\in[t_0, t_\text{end}]$, and to the following boundary conditions:
+In addition, it is assumed that the interior of the body was subjected to a prescribed history of body forces, $\vect b(\bm X, t)$, and a prescribed history of heat sources, $r(\bm X,t)$, $t\in[t_0, t_\text{end}]$, and to the following boundary conditions:
 \begin{itemize}
     \item \textbf{Natural (or Neumann) boundary condition:}
-    The boundary portion $\Omega_\text{traction, 0}$ of $\mathscr{B}$ is subjected to a prescribed history of traction forces, $\vect t_\text{presc}(\vect X, t)$, $\vect X\in \partial \Omega_\text{traction,0}$, $t\in[t_0, t_\text{end}]$,\\
+    \begin{itemize}
+      \item \textbf{Mechanical field:} The boundary portion $\Omega_\text{traction, 0}$ of $\mathscr{B}$ is subjected to a prescribed history of traction forces, $\vect t_\text{presc,0}(\vect X, t)$, $\vect X\in \partial \Omega_\text{traction,0}$, $t\in[t_0, t_\text{end}]$,\\
+      \item \textbf{Thermal field:} The boundary portion \(\partial \Omega_\text{heat,0}\) of \(\mathcal B\) is subject to a prescribed history of heat flux, \(h_\text{presc,0}(\bm X, t) = \bm q_\text{presc,0}(\bm X, t)\cdot \bm m(\bm X)\), \(\bm X \in \partial \Omega_\text{heat,0}\), \(t\in [t_0,t_\text{end}]\).
+    \end{itemize}
     \item \textbf{Essential (or Dirichlet) boundary condition:}
-    The boundary portion $\Omega_\text{motion, 0}$ of $\mathscr{B}$ is subjected to a prescribed displacement field history, $\vect u_\text{presc}(\vect X, t)$, such that $$\vect \varphi(\vect X, t) = \vect X + \vect u_\text{presc}(\vect X, t),\quad \vect X\in \partial\Omega_\text{motion, 0},\quad t\in[t_0, t_\text{end}].$$
+    \begin{itemize}
+      \item \textbf{Mechanical field:} The boundary portion $\Omega_\text{motion, 0}$ of $\mathscr{B}$ is subjected to a prescribed displacement field history, $\vect u_\text{presc}(\vect X, t)$, such that $$\vect \varphi(\vect X, t) = \vect X + \vect u_\text{presc}(\vect X, t),\quad \vect X\in \partial\Omega_\text{motion, 0},\quad t\in[t_0, t_\text{end}].$$
+      \item \textbf{Thermal field:} The boundary portion \(\partial \Omega_\text{temperature,0}\) of \(\mathcal B\) is subject to a prescribed temperature history, \(\theta_\text{presc}(\bm X, t)\), \(\bm X \in \partial \Omega_\text{temperature,0}\), \(t\in [t_0,t_\text{end}]\).
+    \end{itemize}
 \end{itemize}
 
-It is also convenient to define the set of kinematically admissible displacements of $\mathscr{B}$ as the set of all sufficiently regular displacement functions tha satisfy the essential boundary condition \citep{de2011computational},
+It is also convenient to define the set of kinematically admissible displacements and admissible temperature distributions of $\mathscr{B}$ as the set of all sufficiently regular displacement and temperature functions that satisfy the correspondin essential boundary conditions \citep{de2011computational},
 \begin{highlight}[innertopmargin=-5pt]
     \begin{multline}
-        \mathscr{K}\equiv \{\vect u:\Omega\times \mathscr{R}\to \mathscr{U}\;|\;\vect u(\vect X,t) = \vect u_\text{presc} (\vect X,t),\\ \vect X\in\partial \Omega_\text{motion,0},\quad t\in [t_0,t_\text{end}]\}.\quad
+        \mathscr{K}_u\equiv \{\vect u:\Omega_0\times \mathscr{R}\to \mathscr{U}\;|\;\vect u(\vect X,t) = \vect u_\text{presc} (\vect X,t),\\ \vect X\in\partial \Omega_\text{motion,0},\quad t\in [t_0,t_\text{end}]\}.\quad
+    \end{multline}
+    \begin{multline}
+        \mathscr{K}_\theta\equiv \{\theta:\Omega_0\times \mathscr{R}\to \mathscr{R}\;|\;\theta(\vect X,t) = \theta_\text{presc} (\vect X,t),\\ \vect X\in\partial \Omega_\text{temperature,0},\quad t\in [t_0,t_\text{end}]\}.\quad
     \end{multline}
 \end{highlight}
 
-
+To obtain the thermo-mechanical initial boundary value problem, express the internal specific energy of the system using its specific Helmholtz free energy, yielding
 \begin{equation}
   \dot e \equiv \dot \psi + s\dot \theta + \dot s\theta.
 \end{equation}
+
 
 \begin{equation}
 \dot{s}\left(\boldsymbol{F}, \theta, \bm{\alpha}_{\mathrm{k}}\right)= C_{\mathrm{V}} \frac{1}{\theta} \dot{\theta}- \frac{1}{\theta}\pazocal H^\text{ep}
 \end{equation}
 
+\begin{equation}
+  \dot \psi = \bm P:\dot{\bm F} -s\dot{\theta} - \bm A_k*\bm \alpha_k
+\end{equation}
+
+\begin{equation}
+  \pazocal D_\text{mech} = \rho_0\bm A_k *\bm \alpha_k
+\end{equation}
+
+\begin{highlight}
+  \begin{equation}
+    \dot \psi = \bm P:\dot{\bm F} - s\dot \theta - \pazocal D_\text{mech}
+  \end{equation}
+\end{highlight}
 
 
 \begin{equation}
-\pazocal H^\text{ep} =  \frac{\theta}{\rho_{0}}\left(\frac{\partial^{2} \hat{\mathrm{M}}\left(J^{e}, T\right)}{\partial T \partial J^{e}} j^{e}+\frac{\partial^{2} \hat{\mathrm{M}}\left(J^{e}, T\right)}{\partial T^{2}} \dot{T}+\right.
-\left.+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, T\right)}{\partial T^{2}} \dot{T}+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, T\right)}{\partial T \partial \boldsymbol{\alpha}_{k}} \star \dot{\alpha}_{k}\right)
+\pazocal H^\text{ep} =  \frac{\theta}{\rho_{0}}\left(\frac{\partial^{2} \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta \partial J^{e}} J^{e}+\frac{\partial^{2} \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta^{2}} \dot{\theta}+\right.
+\left.+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, \theta\right)}{\partial \theta^{2}} \dot{\theta}+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, \theta\right)}{\partial \theta \partial \boldsymbol{\alpha}_{k}} * \dot{\bm\alpha}_{k}\right)
 \end{equation}
 
 
 
 So the weak form of the quasi-static mechanical constitutive initial boundary value problem can be stated in a spatial description as follows
 and in the material description as
-\begin{problem}[Material mechanical initial BVP.]
+\begin{problem}[Material thermo-mechanical initial BVP.]
     FFind a kinematically admissible displacement function, $\vect u\in \mathscr{K}_u$, and an admissible temperature distribution, \(\theta \in \mathscr K_\theta\), such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in mechanical and energetic equilibrium
         \begin{equation}
-        \int_{\Omega_0} [\mat P(t):\nabla_0 \vect \eta - (\vect b_0(t)-\rho_0\ddot{\bm u}(t))\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0(t)\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+        \int_{\Omega_0} [\mat P(t):\nabla_0 \vect \eta - (\vect b_0(t)-\rho_0\ddot{\bm u}(t))\cdot \vect \eta]\ud v - \int_{\partial\Omega_0} \vect t_0(t)\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_{u,0},
         \end{equation}
         \begin{multline}
-        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta(t) -\mathcal D_\text{mech}(t) - \pazocal H^\text{ep}(t) - \rho_0 r(t)\right) \xi - \bm Q(t)\cdot \nabla_0 \xi\right]\ud v\\ - \int_{\partial\Omega_0} \bm Q(t)\cdot \bm n_0 \xi\ud a = 0,\quad \forall \xi \in \mathscr{W},
+        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta(t) -\pazocal D_\text{mech}(t) - \pazocal H^\text{ep}(t) - \rho_0 r(t)\right) \xi - \bm q_0(t)\cdot \nabla_0 \xi\right]\ud v\\ - \int_{\partial\Omega_0} h_0(t) \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,0},
     \end{multline}
     where the space of virtual displacements at time $t$ is defined by
     \begin{equation}
-        \mathscr{V} \equiv \left\{\vect \eta:\Omega_0\to \mathscr{U}\;|\;\vect \eta = \vect 0\quad \text{in}\quad \partial\Omega_\text{motion,0}\right\},
+        \mathscr{V}_{u,0} \equiv \left\{\vect \eta:\Omega_0\to \mathscr{U}\;|\;\vect \eta = \vect 0\quad \text{in}\quad \partial\Omega_\text{motion,0}\right\},
     \end{equation}
-    and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material mechanical constitutive initial values problem.
+    the space of virtual temperatures at time $t$ is defined by
+    \begin{equation}
+    \mathscr{V}_{\theta,0} \equiv \left\{\xi:\Omega_0\to \mathscr{R}\;|\; \xi =  0\quad \text{in}\quad \partial\Omega_\text{temperature,0}\right\},
+    \end{equation}
+    and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material mechanical constitutive initial value problem.
 \end{problem}
 
 \section{Time descretization} \label{sec:time_discretization}

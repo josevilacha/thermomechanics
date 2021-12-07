@@ -16,7 +16,7 @@ Its motion, depicted in Figure \ref{}, is defined by a smooth one-to-one functio
 mapping each material particle of coordinates $\vect X$ in the reference configuration to its position $\vect x$ in the deformed configuration, for a given instant of time $t$, as
 \begin{highlight}
     \begin{equation}
-        \vect x = \vect \varphi(\vect X, t).
+        \vect x = \vect \varphi(\vect X, t)=\bm \varphi_t(\bm X).
     \end{equation}
 \end{highlight}
 
@@ -54,6 +54,27 @@ The spatial and material gradients, $\nabla$ and $\nabla_0$, respectively, are d
 \end{equation}
 where the derivatives are taken with respect to the spatial and reference configuration accordingly.
 
+% \subsection{Velocity and acceleration}
+%
+% For solid dynamical problems, both the velocity and the acceleration corresponding to the motion \(\bm \varphi\) must be considered.
+% The velocity is defined as
+% \begin{gather}
+%   \bm V = \frac{\partial \bm \varphi}{\partial t},\\
+%   \bm v_t = \bm V_t \circ \bm \varphi_t^{-1},
+% \end{gather}
+% in the material and and spatial descriptions, respectively.
+% See Figure~\ref{}.
+% The formulas for the acceleration, again in both material and spatial descriptions, are
+% \begin{gather}
+%  \bm A = \frac{\partial \bm V}{\partial t},\\
+%  \bm a = \bm A_t\circ \bm \varphi^{-1}_t.
+% \end{gather}
+% The spatial acceleration \(\bm a\) is related to the spatial velocity \(\bm v\) by
+% \begin{equation}
+%   \bm a = \dot{\bm v} = \frac{\partial \bm v}{\partial t} + \nabla \bm v\cdot \bm v.
+% \end{equation}
+
+
 \subsection{Deformation gradient}
 
 The deformation gradient, a second order tensor denoted by $\mat F$, is defined as
@@ -68,18 +89,18 @@ or, taking into account that
 \end{equation}
 it can be expressed as
 \begin{equation}
-    \mat F(\vect X, t) = \mat I + \nabla_0 u.
+    \mat F(\vect X, t) = \mat I + \nabla_0 \bm u.
 \end{equation}
 
 The deformation gradient relates the relative position between two neighboring material particles before and after deformation.
 To see this let $\vect X$ be the coordinates of some material prickle in the reference configuration and $\vect X + d\vect X$ the coordinates of some material particle in its neighborhood, their corresponding coordinates in the deformed configuration are given by
 \begin{gather}
-    \vect X = \vect x + \vect u(\vect X, t), \label{eq:mat_pos}\\
-    \vect X + d\vect X = \vect x + d\vect x +\vect u(\vect X +d\vect X, t). \label{eq:mat_pos_delta}
+    \vect X = \vect x - \vect u(\vect X, t), \label{eq:mat_pos}\\
+    \vect X + d\vect X = \vect x + d\vect x -\vect u(\vect X +d\vect X, t). \label{eq:mat_pos_delta}
 \end{gather}
 Subtracting Equation \eqref{eq:mat_pos} to Equation \eqref{eq:mat_pos_delta}, it is found that
 \begin{align}
-    d\vect X &= d\vect x +\vect u(\vect X +d\vect X, t) -\vect u(\vect X, t)\\
+    d\vect X &= d\vect x +\vect u(\vect X, t)-\vect u(\vect X +d\vect X, t)\\
              &=(\mat I +\nabla_0 \vect u(\vect X, t))\; d\vect x\\
              &=\mat F\;d\vect x.
 \end{align}
@@ -143,33 +164,33 @@ The eigenvectors of left $\mat V$ and right $\mat U$ stretch tensors are related
 forming two orthogonal bases.
 These vectors define the Lagrangian and Eulerian principal directions, respectively, allowing for the expression of the local stretching from a material particle, associated with any deformation, as a superposition of stretches along the three mutual orthogonal directions.,
 
-\textcolor{red}{
-For solid dynamical problems, material time differentiation of the deformation and the strain measures need to be introduced. The first and second derivative of the displacement field \(u(X, t)\). li.e. the material velocity and acceleration, \(\dot{u}\) and \(\ddot{u}\), respectively, result in)
-where \((2.2)\) can be used to show that due to the constant initial position \(X\) )
-\[
-\hat{\boldsymbol{x}}(\boldsymbol{X}, t) \equiv \overline{\boldsymbol{u}}(\boldsymbol{X}, t)
-\]
-According to \((2.3)\), the material velocity gradient results in
-With the material gradient operator \(\operatorname{Grad}(\cdot)\). Equation \((2.23)\) can be reformulated, yielding the Ispatial velocity gradient
-and its symmetric part
-\[
-\begin{array}{c}
-\boldsymbol{L}=\dot{\boldsymbol{F}} \cdot \boldsymbol{F}^{-1} \\
-\boldsymbol{D}=\frac{1}{2}\left(\boldsymbol{L}+\boldsymbol{L}^{\top}\right)
-\end{array}
-\]
-The rate of the Green-Lagrange strain tensor results in the material strain rate tensor
-\[
-\dot{E}_{\mathrm{GL}}=\frac{1}{2} \dot{C}=\boldsymbol{F}^{\mathrm{T}} \cdot \boldsymbol{D} \cdot \boldsymbol{F}
-\]
-which can be expressed as pull-back of the symmetric spatial strain rate tensor \(D\). Via the Liederivative or Oldroyd-Lie derivative of the Euler-Almansi strain tensor \(\mathcal{L}_{t}\left[\boldsymbol{E}_{\mathrm{EA}}\right]\), which represents an objective material time derivative, a relation to the rate of the Euler-Almansi strain tensor is achieved as
-\[
-\mathcal{L}_{t}\left[\boldsymbol{E}_{\mathrm{EA}}\right]=\varphi\left[\frac{\mathrm{d}}{\mathrm{d} t}\left(\varphi^{-1}\left[\boldsymbol{E}_{\mathrm{EA}}\right]\right)\right]=\boldsymbol{D}=\boldsymbol{F}^{-\top} \cdot \dot{\boldsymbol{E}}_{\mathrm{GL}} \cdot \boldsymbol{F}^{-1}
-\]
-Moreover, the rate of volume changes is described by \(\dot{J}\) and can be expressed through
-\[
-\dot{J}=J \operatorname{tr} \boldsymbol{D}
-\]}
+% \textcolor{red}{
+% For solid dynamical problems, material time differentiation of the deformation and the strain measures need to be introduced. The first and second derivative of the displacement field \(u(X, t)\). li.e. the material velocity and acceleration, \(\dot{u}\) and \(\ddot{u}\), respectively, result in)
+% where \((2.2)\) can be used to show that due to the constant initial position \(X\) )
+% \[
+% \hat{\boldsymbol{x}}(\boldsymbol{X}, t) \equiv \overline{\boldsymbol{u}}(\boldsymbol{X}, t)
+% \]
+% According to \((2.3)\), the material velocity gradient results in
+% With the material gradient operator \(\operatorname{Grad}(\cdot)\). Equation \((2.23)\) can be reformulated, yielding the Ispatial velocity gradient
+% and its symmetric part
+% \[
+% \begin{array}{c}
+% \boldsymbol{L}=\dot{\boldsymbol{F}} \cdot \boldsymbol{F}^{-1} \\
+% \boldsymbol{D}=\frac{1}{2}\left(\boldsymbol{L}+\boldsymbol{L}^{\top}\right)
+% \end{array}
+% \]
+% The rate of the Green-Lagrange strain tensor results in the material strain rate tensor
+% \[
+% \dot{E}_{\mathrm{GL}}=\frac{1}{2} \dot{C}=\boldsymbol{F}^{\mathrm{T}} \cdot \boldsymbol{D} \cdot \boldsymbol{F}
+% \]
+% which can be expressed as pull-back of the symmetric spatial strain rate tensor \(D\). Via the Liederivative or Oldroyd-Lie derivative of the Euler-Almansi strain tensor \(\mathcal{L}_{t}\left[\boldsymbol{E}_{\mathrm{EA}}\right]\), which represents an objective material time derivative, a relation to the rate of the Euler-Almansi strain tensor is achieved as
+% \[
+% \mathcal{L}_{t}\left[\boldsymbol{E}_{\mathrm{EA}}\right]=\varphi\left[\frac{\mathrm{d}}{\mathrm{d} t}\left(\varphi^{-1}\left[\boldsymbol{E}_{\mathrm{EA}}\right]\right)\right]=\boldsymbol{D}=\boldsymbol{F}^{-\top} \cdot \dot{\boldsymbol{E}}_{\mathrm{GL}} \cdot \boldsymbol{F}^{-1}
+% \]
+% Moreover, the rate of volume changes is described by \(\dot{J}\) and can be expressed through
+% \[
+% \dot{J}=J \operatorname{tr} \boldsymbol{D}
+% \]}
 
 
 \section{Strain tensors}
@@ -264,29 +285,44 @@ and $\mat \sigma_d$ is the deviatoric stress defined as
     \sigma_d \equiv \mat \sigma - p\mat I.
 \end{equation}
 
+\section{Heat}
+
+Changes in temperature of a body are very often related to heat flowing inside, entering or leaving it.
+In continuum mechanics, heat is measured in power per unit surface.
+
+\subsubsection{Heat flux vector}
+
+According to Cauchy's theorem the relation between the heat flux across a surface, \(h(\bm x, \bm n)\), and the unitary outward normal to the deformed surface under analysis, \(\bm n\), is linear and given by
+\begin{highlight}
+  \begin{equation}
+    h(\bm x, \bm n ) = -\bm q(\bm x)\cdot \bm n.
+  \end{equation}
+\end{highlight}
+where \(\bm q\) is the heat flux vector.
+
 \section{Fundamental conservation principles}
 
 In Continuum Mechanics. there is a set of conservation principles and thermodynamic laws, that irrespective of the quantities used to describe the mechanical behavior of a body undergoing large deformations must always be satisfied.
 
-\subsubsection{Principle of mass conservation}
+\subsection{Principle of mass conservation}
 
 The principle of mass conservation can be stated as
 \begin{highlight}
     \begin{equation}
-        \dot \rho + \rho\; \text{div}\; \dot{\vect u}(\vect x)=0,
+        \dot \rho + \rho\; \text{div}\; \dot{\bm u}=0,
     \end{equation}
 \end{highlight}
     where $\rho$ is the material density measured in mass per unit deformed volume.
 
-\subsubsection{Principle of linear momentum conservation}
+\subsection{Principle of linear momentum conservation}
 
 The principle of linear momentum conservation can be stated in both material and spatial description.
 In a spatial description it reads
 \begin{highlight}
     \begin{equation}
         \begin{cases}
-            \text{div}\;\mat \sigma(\vect x) + \vect b = \rho \ddot{\vect u}(\vect x),&\quad \forall\vect x\in \Omega,\\[12pt]
-            \vect t(\vect x,\vect n) = \mat \sigma(\vect x) \vect n,&\quad \forall\vect x\in\partial\Omega,
+            \text{div}\;\mat \sigma + \vect b = \rho \ddot{\bm u},&\quad \forall\vect x\in \Omega,\\[12pt]
+            \vect t = \mat \sigma \vect n,&\quad \forall\vect x\in\partial\Omega,
         \end{cases} \label{eq:material_equilibrium}
     \end{equation}
 \end{highlight}
@@ -295,34 +331,52 @@ where $\vect b$ is the body forces field measured as per unit deformed volume.
 One can also write the principle of linear momentum conservation in material coordinates, as
 \begin{equation}
     \begin{cases}
-        \text{div}_0\;\mat P(\vect X) + \vect b_0 = \rho_0 \ddot{\vect u}(\vect X),&\quad\forall \vect x\in \Omega_0,\\[12pt]
-        \vect t_0(\vect X,\vect m) = \mat P(\vect X) \vect m,&\quad \forall\vect x\in\partial\Omega_0,
+        \text{div}_0\;\mat P + \vect b_0 = \rho_0 \ddot{\bm u},&\quad\forall \vect X\in \Omega_0,\\[12pt]
+        \vect t_0 = \mat P \vect m,&\quad \forall\vect X\in\partial\Omega_0,
     \end{cases}\label{eq:spatial_equilibrium}
 \end{equation}
-where $\vect b_0$ is the body forces field, measured in force per unit undeformed volume, and $\rho_0$ is the material density, measured in mass per unit undeformed volume. Both these quantities can be found from their spatial counterparts as
+where $\vect b_0$ is the body forces field, measured in force per unit undeformed volume, and $\rho_0$ is the material density, measured in mass per unit undeformed volume.
+Both these quantities can be found from their spatial counterparts as
 \begin{equation}
-    \vect b_0 = J\;\vect b,\quad \rho_0 = J\;\rho.
+    \vect b_0 = J\vect b,\quad \rho_0 = J\rho.
 \end{equation}
+Take notice of the abuse of language regarding functions defined on the referece configuration \(\Omega_0\) and on the deformed configuration \(\Omega\).
+The same symbol, \(f\), is used for a function \(f\) defined on \(\Omega\) and the function \(f\circ \bm\varphi\) defined on \(\Omega_0\).
+
 Equations \eqref{eq:material_equilibrium} and \eqref{eq:spatial_equilibrium} are the so-called strong, point-wise or local equilibrium equations, as they enforce the mechanical equilibrium at every material particle of the body.
 
-\subsubsection{First principle of thermodynamics}
+\subsection{First principle of thermodynamics}
 
+Let \(e\) be the internal energy per unit mass, \(r\) the heat supply per unit mass and \(\bm q\) the heat flux, then the first principle of thermodynamics pertaining to the balance of energy can be written in the spatial description as
+\begin{highlight}
 \begin{equation} \label{eq:first_principle_thermo}
-    \rho\dot e = \mat \sigma\;:\;\mat D + \rho r -\text{div}\;\vect q,
+  \begin{cases}
+    \rho\dot e = \mat \sigma\;:\;\mat D + \rho r -\text{div}\;\vect q,\quad &\forall \bm x\in\Omega,\\
+    \bm t = \bm \sigma \bm n,\quad &\forall \bm x\in \partial \Omega,\\
+    h = \bm q \cdot \bm n,\quad &\forall \bm x\in \partial \Omega.
+  \end{cases}
 \end{equation}
-where $e$ is the specific internal energy field, $r$ is the density of heat production field and $\vect q$ is the heat flux vector field.
-The second order tensor $\mat D$ denotes a strain rate measure, such that the double contraction $\mat \sigma\;:\;\mat D$ represents the stress power per unit volume in the deformed configuration of body.
+\end{highlight}
+The second order tensor $\mat D$ denotes a strain rate measure, such that the double contraction $\mat \sigma\colon\mat D$ represents the stress power per unit volume in the deformed configuration of body.
 In material coordinates, it reads
 \begin{equation}
- \rho_0 \frac{\partial e}{\partial t} = \bm P :\frac{\partial\bm F}{\partial t} + \rho_0 r -\operatorname{div}_0 \bm q_0,
+  \begin{cases}
+ \rho_0 \dot e = \bm P :\dot{\bm F} + \rho_0 r -\operatorname{div}_0 \bm q_0,\quad& \forall \bm X\in\Omega_0,\\
+ \bm t_0 = \bm P\bm m,\quad&\forall \bm X\in\partial \Omega_0,\\
+ h_0 = \bm q_0\cdot\bm m,\quad&\forall \bm X\in\partial \Omega_0,
+  \end{cases}
 \end{equation}
 where \(\bm q_0\) is the Piola transformation of \(\bm q\), i.e.,
 \begin{equation}
   \bm q_0 = J \bm F^{-T} \bm q,
 \end{equation}
-and all state variables depend on the material coordinates \(\bm X\).
+and
+\begin{equation}
+  h_0 = J h.
+\end{equation}
 
-\subsubsection{Second principle of thermodynamics}
+
+\subsection{Second principle of thermodynamics}
 
 The local entropy balance can written as
 \begin{equation}
@@ -340,11 +394,10 @@ yielding
    where $\theta$ and $s$ are the temperature and specific entropy fields respectively.
 In a material description, it reads
 \begin{equation}
-  \rho_0 \frac{\partial s}{\partial t} + \operatorname{div}_0 \left[\frac{\bm q_0}{\theta}\right] - \frac{\rho_0 r}{\theta} \geq 0,
+  \rho_0 \dot s + \operatorname{div}_0 \left[\frac{\bm q_0}{\theta}\right] - \frac{\rho_0 r}{\theta} \geq 0.
 \end{equation}
-where all state variables depend on the material coordinates \(\bm X\).
 
-\subsubsection{Clausius-Duhem inequality}
+\subsection{Clausius-Duhem inequality}
 
 Combining the first and second thermodynamic principles yields
 \begin{equation}
@@ -386,6 +439,10 @@ If on the other hand, only conduction effects are retained, i.e., assuming the p
 \end{equation}
 
 Equation \eqref{eq:clasius_duhem_eq} can also be written as
+\begin{equation}
+  \bm P\colon\dot{\bm F} - \rho_0(\dot\psi + s\dot \theta) - \frac{1}{\theta}\bm q_0\cdot \bm g_0 \geq 0,
+\end{equation}
+where \(\bm g_0 = \nabla_0 \theta\), aplying the Piola transformation, and as
 \begin{equation}
     \mat \tau\;:\;\mat D -\rho_0\left(\dot\psi + s\dot \theta\right) -\frac{J}{\theta}\vect q\cdot \vect g \geq 0,
 \end{equation}
@@ -470,7 +527,7 @@ For each internal variable $\alpha_k$ of the set $\alpha$ of internal variables,
 so that the Clausius-Duhem equation can be written in a reduced form as
 \begin{highlight}
     \begin{equation}
-        -A*\dot{\vect \alpha} - \frac{J}{\theta}\vect q\cdot \vect g\geq 0,
+        -\bm A*\dot{\vect \alpha} - \frac{J}{\theta}\vect q\cdot \vect g\geq 0,
     \end{equation}
 \end{highlight}
 where $\vect A$ is the set of conjugate thermodynamical forces and \(*\) denotes the appropriate product operation.
