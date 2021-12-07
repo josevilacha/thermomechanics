@@ -130,21 +130,20 @@ and in the material description as
 
 \section{Time descretization} \label{sec:time_discretization}
 
-Given a generic path-dependent model, i.e., a model in which the stress state does not depend only on the instantaneous deformation state but also on the deformation history, the solution of the constitutive initial value problem for a given set of initial conditions is usually not known for complex strain paths $\mat F(t)$.
-Thus, there is a need to use an appropriate numerical algorithm to integrate the rate constitutive equations.
+In the context of thermo-mechanical problems, a generic path-dependent model is a model in which the thermodynamical state does not depend only on the instantaneous deformation and temperature states but also on their history.
+Under these conditions, the solution of the constitutive initial value problem for a given set of initial conditions is usually not known for complex strain, $\mat F(t)$, or temperature paths, \(\theta(t)\), paths.
+Thus, as in the domain of a stricly mechanical problem, there is a need to use an appropriate numerical algorithm to integrate the rate constitutive equations.
 
-In general, the algorithms for integrating rate constitutive equations are obtained adopting some time (or pseudo-time) discretization and some hypothesis on the deformation path between adjacent time stations.
-In the present document, an algorithm is adopted based on approximated incremental constitutive functions.
-Attending to the mechanical constitutive initial boundary value problem and considering the time increment $[t_n, t_{n+1}]$, this approach is comprised by the following two requirements:
+Attending to the thermo-mechanical constitutive initial boundary value problem and considering the time increment $[t_n, t_{n+1}]$, this approach is comprised by the following requirements:
 \begin{itemize}
-    \item \textbf{First Piola-Kirchhoff stress tensors.}   Considering a time increment $[t_n, t_{n+1}]$ and given the set $\vect \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ and the temperature distribution \(\theta_{n+1}\) at time $t_{n+1}$ determines the First Piola-Kirchhoff stress tensor $\mat P_{n+1}$ uniquely as
+    \item \textbf{First Piola-Kirchhoff stress tensors.} Considering a time increment $[t_n, t_{n+1}]$ and given the set $\bm \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ and the temperature distribution \(\theta_{n+1}\) at time $t_{n+1}$ determines the First Piola-Kirchhoff stress tensor $\mat P_{n+1}$ uniquely as
         \begin{highlight}
     \begin{equation}
         \mat P_{n+1} = \hat{\mat P}(\mat F_{n+1}, \theta_{n+1}, \mat \alpha_n),
     \end{equation}
         \end{highlight}
     where $\hat{\mat P}$ is the incremental constitutive function for the First Piola-Kirchhoff stress tensor.
-    \item \textbf{Set of internal variables.} Assuming that the set of internal variables $\vect \alpha_n$ is known at $t_n$, the set of internal variables must be uniquely determined by the prescribed deformationgradient $\mat F_{n+1}$ prescribed at $t_{n+1}$ as
+    \item \textbf{Set of internal variables.} Assuming that the set of internal variables $\vect \alpha_n$ is known at $t_n$, the set of internal variables must be uniquely determined by the prescribed deformation gradient $\mat F_{n+1}$ and temperature distribution \(\theta_{n+1}\) prescribed at $t_{n+1}$ as
     \begin{highlight}
         \begin{equation}
              \vect \alpha_{n+1} =\hat{\vect \alpha}(\mat F_{n+1}, \theta_{n+1}, \mat \alpha_n), \label{eq:incremental_flux}
@@ -152,38 +151,34 @@ Attending to the mechanical constitutive initial boundary value problem and cons
     \end{highlight}
     where $\hat{\vect \alpha}$ is the incremental constitutive function for the set of internal variables.
 
-    \item \textbf{Mechanical dissipation.}
-
+    \item \textbf{Mechanical dissipation.} 
+ Considering a time increment $[t_n, t_{n+1}]$ and given the set $\bm \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ and the temperature distribution \(\theta_{n+1}\) at time $t_{n+1}$ determines the mechanical dissipation \(\pazocal D_\text{mech}\) as
     \begin{highlight}
     \begin{equation}
-    \mathcal D_{\text{mech},n+1} = \hat{\mathcal D}_\text{mech}(\bm F_{n+1}, \theta_{n+1}, \bm \alpha_n).
+    \pazocal D_{\text{mech},n+1} = \hat{\pazocal D}_\text{mech}(\bm F_{n+1}, \theta_{n+1}, \bm \alpha_n).
     \end{equation}
     \end{highlight}
 
     \item \textbf{Gough-Joule effect.}
-
+ Considering a time increment $[t_n, t_{n+1}]$ and given the set $\bm \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ and the temperature distribution \(\theta_{n+1}\) at time $t_{n+1}$ determines the Gough-Joule effect \(\pazocal H^\text{ep}\) as
     \begin{highlight}
     \begin{equation}
     \pazocal H^\text{ep}_{n+1} = \hat{\pazocal H}^\text{ep}(\bm F_{n+1}, \theta_{n+1}, \bm \alpha_n).
     \end{equation}
     \end{highlight}
 \end{itemize}
-
-
-
 Generally, the numerical constitutive laws are nonlinear and path-independent within one increment.
-In other words, within each increment, $\mat \sigma_{n+1}$ and $\vect \alpha_{n+1}$, they are functions of $\mat F_{n+1}$ alone with the argument $\vect \alpha_n$ constant within the same time interval.
 
-Making use of the aforementioned time discretization, one can state the weak form of the mechanical constitutive initial boundary value problem in the spatial description as
+Making use of the aforementioned time discretization, one can state the weak form of the mechanical constffitutive initial boundary value problem in the spatial description as
 and in the material description as
-\begin{problem}[Material incremental mechanical initial BVP.]
-    GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$ at $t_{n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ and temperature distribution \(\theta_{n+1}\) at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{u,n+1}$ and the admissible temperature distribution \(\theta_{n+1}\in\mathscr K_{\theta,n+1}\) such that the body $\mathscr{B}$ is in mechanical and energetic equilibrium
-            \begin{multline}
-        \int_{\Omega_{n+1}} [\hat{\mat P}(\mat F(\bm u_{n+1}), \theta_{n+1}, \vect \alpha_n):\nabla_0 \vect \eta - (\vect b_{0,n+1}-\rho_0\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v\\ - \int_{\partial\Omega_{n+1}} \vect t_{0,n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V},
+\begin{problem}[Material incremental thermo-mechanical initial BVP.]
+    GGiven the set of internal variables $\vect \alpha_n$ at $t_n$, the prescribed body and traction force fields $\vect b_{0,n+1}$ and $\vect t_{0,n+1}$, as well as, the prescribed heat sources, \(\bm r_{n+1}\) and heat fluxes, \(h_{0,n+1}\), at $t_{n+1}$, and the prescribed deformation gradient $\mat F_{n+1}$ and temperature distribution \(\theta_{n+1}\) at $t_{n+1}$, find the kinematically admissible displacement field $\vect u_{n+1}\in\mathscr{K}_{u,n+1}$ and the admissible temperature distribution \(\theta_{n+1}\in\mathscr K_{\theta,n+1}\) such that the body $\mathscr{B}$ is in mechanical and energetic equilibrium
+            \begin{multline}f
+        \int_{\Omega_{n+1}} [\hat{\mat P}(\mat F(\bm u_{n+1}), \theta_{n+1}, \vect \alpha_n):\nabla_0 \vect \eta - (\vect b_{0,n+1}-\rho_0\ddot{\bm u}_{n+1})\cdot \vect \eta]\ud v\\ - \int_{\partial\Omega_{n+1}} \vect t_{0,n+1}\cdot \vect \eta\ud a = 0,\quad \forall \vect \eta \in \mathscr{V}_{u,n+1},
         \end{multline}
         \begin{multline}
-        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta_{n+1} -\hat{\mathcal D}_\text{mech}(\bm F(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n) - \hat{\pazocal H}^\text{ep}(\bm{F}(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n)- \rho_0 r_{n+1} \right) \xi\right.\\
-        \left. - \bm Q_{n+1}\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} \hat Q_{n+1} \xi\ud a = 0,\quad \forall \xi \in \mathscr{W},
+        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta_{n+1} -\hat{\pazocal D}_\text{mech}(\bm F(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n) - \hat{\pazocal H}^\text{ep}(\bm{F}(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n)- \rho_0 r_{n+1} \right) \xi\right.\\
+        \left. - \bm Q_{n+1}\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} \hat Q_{n+1} \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,n+1},
     \end{multline}
     where
     \begin{gather}
@@ -194,42 +189,15 @@ and in the material description as
 
 \section{Finite Element Method} \label{sec:fem}
 
-With the incremental weak form of the mechanical constitutive initial boundary value problem now established, an approximated solution can be found using the Finite Element Method.
+It is now possible to apply the finite element method to discretize spatial the incremental thermo-mechanical initial boundary value problem.
+The approach is entirely similar to the one present in the context of the strictly mechancial (see Section~\ref{}) and stricly thermal (see Section~\ref{}) problems.
+As such some details are ommited.
 
-\subsection{Finite element concept}
-
-The first in the Finite Element method is to discretize the continuum domain $\Omega$ in a finite set of $n_\text{elem}$ mutually exclusive subdomains called finite elements $\Omega^{(e)}$.
-The discretized domain, $^h\Omega$, is therefore an approximation to the continuum domain expressed by
+Defining the global vector of nodal displacements as
 \begin{equation}
-    \Omega \approx ^h\Omega \equiv \bigcup_{e=1}^{n_\text{elem}}\Omega^{(e)}.
+    \mathbf u = \Big[ u_1^1,\dots,u^1_{n_\text{dim}},\dots, u_1^{n_\text{points}},\dots,u^{n_\text{points}}_{n_\text{dim}}\Big]^T,
 \end{equation}
-The space of virtual displacements $\mathscr{V}$ as well as the space of kinematically admissible displacement fields $\mathscr{K}$ are also discretized in the same, with their discretized forms denoted by $^h\mathscr{V}$ and $^h\mathscr{K}$.
-
-\subsection{Interpolation functions}
-
-Let $e$ be a generic finite element with $n_\text{nodes}$ nodes, where each node $i$ of coordinates $\vect x^i$ is associated with an interpolation function $N_i^{(e)}$.
-These interpolation functions are often called shape functions and perform the required filed interpolations inside the element domain $\Omega^{(e)}$.
-
-Letting $a(\vect x)$ be a generic field defined over $\Omega^{(e)}$, its interpolation at any point $\vect x$ inside the element is defined by the element shape functions as
-\begin{highlight}
-    \begin{equation}
-        a(\vect x) \approx ^ha(\vect x) \equiv \sum_{i=1}^{n_\text{nodes}} a(\vect x_i) N_i^{(e)}(\vect x).
-    \end{equation}
-\end{highlight}
-If instead $a(\vect x)$ is instead a generic field defined over the global domain $\Omega$, the interpolation of $a(\vect x)$ at any point $\vect x$ is defined by the global shape functions as
-\begin{highlight}
-    \begin{equation}
-        a(\vect x) \approx ^h a(\vect x) \equiv \sum_{i=1}^{n_\text{points}} a(\vect x_i) N_i^g(\vect x), \label{eq:interpol_global}
-    \end{equation}
-\end{highlight}
-where $n_\text{points}$ is the total number of nodes of the finite element mesh.
-The discretized spaces $^h \mathscr{V}$ and $^h\mathscr{K}$ can now be defined as
-\begin{align}
-    ^h \mathscr{K}&\equiv \Big\{\vphantom{|}^h\vect u(\vect x) = \sum_{i=1}^{n_\text{points}} \vect u(\vect x_i) N_i^g(\vect x)\;|\; \vect u(\vect x_i) = \vect u_\text{presc}(\vect x_i)\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}  \Big\},\\
-    ^h\mathscr{V}&\equiv \Big\{\vphantom{|}^h\vect \eta(\vect x) = \sum_{i=1}^{n_\text{points} } \vect \eta(\vect x_i) N_i^g(\vect x)\;|\;\vect \eta(\vect x_i)=\vect 0\quad\text{if $\vect x_i\in \partial\Omega_\text{motion,0}$}   \Big\}
-\end{align}
-
-\subsection{Interpolation matrix and discrete gradient operators}
+the displacement field $\vec u(\vect x)$m defined over the global domain $\Omega$, can be found from Equation \eqref{eq:interpol_global} at any point $\vect x$ as
 
 The global shape functions can be conveniently assembled in the so-called global interpolation matrix as
 \begin{equation}
@@ -248,11 +216,6 @@ where $\text{diag}[N_i^g]$ is a diagonal matriz $n_\text{dim} \times n_\text{dim
 \end{equation}
 where $n_\text{dim}$ is the number of degrees of freedom per node.
 
-Defining the global vector of nodal displacements as
-\begin{equation}
-    \mathbf u = \Big[ u_1^1,\dots,u^1_{n_\text{dim}},\dots, u_1^{n_\text{points}},\dots,u^{n_\text{points}}_{n_\text{dim}}\Big]^T,
-\end{equation}
-the displacement field $\vec u(\vect x)$m defined over the global domain $\Omega$, can be found from Equation \eqref{eq:interpol_global} at any point $\vect x$ as
 \begin{highlight}
     \begin{gather}
         ^h\vect u(\vect x) \equiv \mathbf N^{g,u}(\vect x)\mathbf u,\quad ^h\vect u\in {}^h\mathscr{K_u},\\
