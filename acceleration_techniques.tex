@@ -1,162 +1,179 @@
- Equations to be solved
+\chapter{Strongly coupled methods for coupled fields}
 
-$$
-\begin{array}{l}\mathbf{M u}_{n+1}+\mathbf{f}_{u}^{\mathrm{int}}\left(\boldsymbol{\theta}_{n+1}, \mathbf{u}_{n+1}\right)-\mathbf{f}_{u, n+1}^{\mathrm{ext}}=\mathbf{0} \\[6pt]\mathbf{C} \dot{\boldsymbol \theta}_{n+1}+\mathbf{f}_{\theta}^{\mathrm{int}}\left(\boldsymbol{\theta}_{n+1}, \mathbf{u}_{n+1}\right)-\mathbf{f}_{\theta, n+1}^{\mathrm{ext}}=\mathbf{0}\end{array}
-$$
+In what follows the most common strongly coupled or implicit methods employd for the solution of coupled problems are presented.
+This presentation seeks to provide a literature overview of the available approaches and uses as its basis the work by \cite{gatzhammer_efficient_2014}.
 
-The approach chosen is the strongly coupled approach. To ease the discussion consider
+For the sake of clarity, the discretized equations of the thermo-mechanical problem under review are recovered here
+\begin{gather}
+    \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \label{eq:mech_problem}\\
+    \mathbf C \dot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0, \label{eq:therm_problem}
+\end{gather}
+where the complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
 
-$$
-\mathcal R_u(\boldsymbol \theta, \mathbf u) = \mathbf 0,\\
-\mathcal R_\theta(\boldsymbol \theta, \mathbf u) = \mathbf 0.
-$$
+As only partitioned approach are being considered, the thermal and mechanical problems are solved separetely.
+To ease the discussion consider, consider the existence of two functions \(\pazocal U\) and \(\pazocal T\) that represent the solution of the mechanical and thermal problems with the temperature or the configuration fixed, respectively.
+These so-called solvers satisfy
+\begin{equation}
+  \mathbf u = \pazocal U(\bm \uptheta),\quad
+  \bm \uptheta = \pazocal T(\mathbf u).
+\end{equation}
+See Chapter~\ref{} for detailed information on them.
 
- Fixed-point approaches
+Two main ways of realizing a strongly coupled approach to the solution of the coupled problem are presented.
+The first focuses on fixed-point solvers, and acceleration/stabilization techniques for them.
+The second deals with approaches based on the Newton-Raphson method, with the main problem tackled being an efficient and accurate approximation to the Jacobian.
 
-Consider that the $\boldsymbol \theta_n$ and $\mathbf u_n$ are both known and that $\boldsymbol \theta_{n+1}$ and $\mathbf u_{n+1}$ are now to be determined. A superscript $k$ is introduced to denote the iterations concerning the loop of the implicit scheme. To prevent cluttering, the subscripts concerning the timestep are dropped.
 
+\section{Fixed-point approaches}
+
+Consider that the $\bm \uptheta_n$ and $\mathbf u_n$ are both known and that $\bm \uptheta_{n+1}$ and $\mathbf u_{n+1}$ are now to be determined.
+A superscript $k$ is introduced to denote the iterations concerning the loop of the implicit scheme. To prevent cluttering, the subscripts concerning the timestep are dropped.
 There are two basic Schwarz procedures commonly employed in strongly coupled solution procedures. Both originate from domain decomposition.
-
 They are the additive and the parallel Scharwz procedures.
 
- Block Jacobi or Schwarz additive
+\subsection{Block Jacobi or Schwarz additive}
 
-If both systems of equations \eqref{} are solved in parallel the procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
-
-$$
-\text{Solve }\mathcal R_u(\boldsymbol \theta^{k},\mathbf u^{k+1}) = \mathbf 0\text{ for \(\mathbf u^{k+1}\)}\\
-\text{Solve }\mathcal R_\theta(\boldsymbol \theta^{k+1}, \mathbf u^k) = \mathbf 0\text{ for \(\boldsymbol \theta^{k+1}\)}
-$$
-
-which can also be written as
-
-$$
-\mathbf u^{k+1} = \mathcal U(\boldsymbol \theta^k),\\
-\boldsymbol \theta^{k+1} = \mathcal T(\mathbf u^k).
-$$
+If both the mechanical (Equation~\eqref{eq:mech_problem}) and the mechanical problem (Equation~\eqref{eq:therm_problem}) are solved in parallel the procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
+\begin{gather}
+\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k),\\
+\bm \uptheta^{k+1} = \pazocal T(\mathbf u^k).
+\end{gather}
 
 Box~\ref{box:block_jacobi} shows the pseudo-code for the block Jacobi approach.
 
- Block Gauss-Seidel or Schwarz multiplicative
+\begin{framedbox}[htb]
+  \caption{Additive Schwarz procedure, also called block Jacobi, for one timestep.}
+  \label{box:block_jacobi}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item \(\mathbf u^0 = \mathbf u_{n}\)
+    \item \(\bm \uptheta^0 = \bm \uptheta_n\)
+    \item \(k=0\)
+    \item Enter the fixed-point loop
+    \begin{enumerate}[(1)]
+      \item Set fixed-point counter to zero: \(k=0\)
+      \item Solve the mechanical problem at fixed temeperature \(\bm \uptheta^k\): \(\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k)\)
+      \item Solve the thermal problem at a fixed configuration \(\mathbf u^k\): \(\bm \uptheta^{k+1} = \pazocal T(\mathbf u^k)\)
+      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
 
-If the systems are solved sequentially, where the output of the first system is used as input when solving the second system, the solution procedure is said to be Scharwz multiplicative or block Gauss-Seidel.
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
 
-One of the fields must chosen as the first and this may be important (Joosten et al. (2009)).
+\subsection{Block Gauss-Seidel or Schwarz multiplicative}
 
-$$
-\text{Solve }\mathcal R_u(\boldsymbol \theta^{k},\mathbf u^{k+1}) = \mathbf 0\text{ for \(\mathbf u^{k+1}\)}\\
-\text{Solve }\mathcal R_\theta(\boldsymbol \theta^{k+1}, \mathbf u^{k+1}) = \mathbf 0\text{ for \(\boldsymbol \theta^{k+1}\)}
-$$
-
-or
-
-$$
-\mathbf u^{k+1}  = \mathcal U(\boldsymbol \theta^k),\\
-\boldsymbol \theta^{k+1} = \mathcal T(\mathbf u^{k+1}).
-$$
+If the fields are solved sequentially, where the output of the first solver is used as the input for the second solver, the solution procedure is said to be Scharwz multiplicative or block Gauss-Seidel.
+\begin{gather}
+\mathbf u^{k+1}  = \pazocal U(\bm \uptheta^k),\\
+\bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1}).
+\end{gather}
+One of the fields must be chosen as the first and this may be important \citep{joosten_analysis_2009}.
+Here, the focus is on the sequence coinciding with the isothermic splict, i.e., first the mechanical problem is solved at a fixed temeprature, and then the thermal problem is fixed at a fixed configuration.
 
 Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seidel approach.
 
-As from a computational standpoint the block Jacobi and Gauss-Seidel approaches are very similar, the latter is used as the basis for the exposition that follows. Their similarity comes from the fact that the block Jacobi method can be regard as the computation of two simultaneous decoupled block Gauss-Seidel iterations.
+\begin{framedbox}[htb]
+  \caption{Multiplicative Schwarz procedure, also called block Gauss-Seidel, for one timestep.}
+  \label{box:block_gauss_seidel}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item \(\mathbf u^0 = \mathbf u_{n}\)
+    \item \(\bm \uptheta^0 = \bm \uptheta_n\)
+    \item \(k=0\)
+    \item Enter the fixed-point loop
+    \begin{enumerate}[(1)]
+      \item Set fixed-point counter to zero: \(k=0\)
+      \item Solve the mechanical problem at fixed temeperature \(\bm \uptheta^k\): \(\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k)\)
+      \item Solve the thermal problem at a fixed configuration \(\mathbf u^{k+1}\): \(\bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1})\)
+      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
 
- Convergence criteria
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
+As from a computational standpoint the block Jacobi and Gauss-Seidel approaches are very similar, the latter is used as the basis for the exposition that follows.
+Their similarity comes from the fact that the block Jacobi method can be regard as the computation of two simultaneous decoupled block Gauss-Seidel iterations.
+
+\paragraph{Convergence criteria}
 
 For an iterative method to be useful, there must be reasonable criteria to determine its convergence.
-
 With this in view, each full iteration of the strongly coupled scheme is written in a fixed-point notation as
-
-$$
-\tilde{\boldsymbol \theta}^{k+1} = \mathcal T \left(\mathcal U(\boldsymbol \theta^k)\right),
-$$
-
+\begin{equation} \label{eq:fixed_point_iteration}
+\tilde{\bm \uptheta}^{k+1} = \pazocal T \left(\pazocal U(\bm \uptheta^k)\right),
+\end{equation}
 where $\tilde{\bullet}$ denotes a solution coming directly from the solver, whereas the same symbol without the tilde represents the quantity after post-processing.
 
-The sequence of system solvers can also be inverted, i.e.,
-
-$$
-\tilde{\mathbf u}^{k+1} = \mathcal U\left(\mathcal T(\mathbf u^k)\right).
-$$
-
 The iteration residual is defined as
+\begin{equation}
+\mathbf r^{k+1} = \pazocal T\left(\pazocal U(\bm\uptheta^k)\right) - \bm\uptheta^k = \tilde{\bm \uptheta}^{k+1} - \bm\uptheta^k.
+\end{equation}
 
-$$
-\mathbf r^{k+1} = \mathcal T\left(\mathcal U(\boldsymbol\theta^k)\right) - \boldsymbol\theta^k = \tilde{\boldsymbol \theta}^{k+1} - \boldsymbol\theta^k.
-$$
-
-It is equal to zero when the fixed-point $\boldsymbol \theta$ is reached, i.e.,
-
-$$
-\mathbf r = \mathcal T\left(\mathcal U(\boldsymbol \theta)\right) - \boldsymbol \theta = \mathbf 0,
-$$
-
+It is equal to zero when the fixed-point $\bm \uptheta$ is reached, i.e.,
+\begin{equation} \label{eq:residual_definition}
+\mathbf r = \pazocal T\left(\pazocal U(\bm \uptheta)\right) - \bm \uptheta = \mathbf 0,
+\end{equation}
 and hence, a reasonable convergence measure for the fixed-point iteration.
 
-The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual $r=\left(r^{1}, \ldots, r^{m}\right)^{T}$ as
+The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k+1}=\left(r^{k+1,1}, \ldots, r^{k+1,m}\right)^{T}\) as
+\begin{equation} \label{eq:absolute_residual_criterion}
+\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k+1, i}\right)^{2}}=\sqrt{\sum_{i}\left(\tilde{\uptheta}^{k+1, i}-\uptheta^{k, i}\right)^{2}}.
+\end{equation}
 
-$$
-\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k+1, i}\right)^{2}}=\sqrt{\sum_{i}\left(\tilde{\theta}^{k+1, i}-\theta^{k, i}\right)^{2}}
-$$
-
-Directly using \eqref{} yields an absolute convergence criterion
-
-$$
-\left\|\boldsymbol{r} ^{k+1}\right\|_{L^{2}}<\epsilon_\mathrm{abs}
-$$
-
-with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid. However, since the absolute value of $r$ can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations. A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
-
-$$
-\frac{\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}}{\left\|\tilde{\boldsymbol{\theta}}^{k+1}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
-$$
+Directly using \eqref{eq:absolute_residual_criterion} yields an absolute convergence criterion
+\begin{equation}
+\left\|\boldsymbol{r} ^{k+1}\right\|_{L^{2}}<\epsilon_\mathrm{abs}.
+\end{equation}
+with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid.
+However, since the absolute value of $r$ can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations.
+A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
+\begin{equation}
+\frac{\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}}{\left\|\tilde{\bm{\uptheta}}^{k+1}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
+\end{equation}
 
 Since a relative convergence measure can fail to work properly when the coupling iterate values are close to zero and rounding errors come into play, a combination of absolute and relative measure, where the absolute measure takes care of close to zero cases and the relative handles all other cases, is often a good choice.
 
- Acceleration techniques
+\subsection{Acceleration techniques}
 
- Newton-Raphson schemes
+\section{Newton-Raphson schemes}
 
-Newton-Raphson schemes, in the following denoted as Newton schemes, can be applied to the partitioned coupled fields either by considering the chained overall fixed-point notation (Equation~\eqref{}) or by writing up a blocked system consisting of coupled structural and fluid fixed-point iterations.
+Newton-Raphson schemes, in the following denoted as Newton schemes, can be applied to the partitioned coupled fields either by considering the chained overall fixed-point notation (Equation~\eqref{eq:fixed_point_iteration}) or by writing up a blocked system consisting of coupled structural and fluid fixed-point iterations.
 
-To apply a Newton scheme to the overall chained fixed-point iteration (Equation \eqref{}), the residual operator from (Equation~\eqref{}) is defined as
-
-$$
-\mathcal{R}\equiv\mathcal{U} \circ \mathcal {T}-\boldsymbol{I},
-$$
-
-where $\boldsymbol{I}$ is the identity matrix of suitable size.
-
-The Newton scheme tries to find the root $\boldsymbol \theta$ such that $\mathcal R(\boldsymbol \theta)=0$, assuming a linear behavior of $\mathcal R$ described by its Jacobi matrix $J_{\mathcal R}(\boldsymbol \theta)$.
+To apply a Newton scheme to the overall chained fixed-point iteration (Equation \eqref{eq:fixed_point_iteration}), the residual operator from (Equation~\eqref{eq:residual_definition}) is defined as
+\begin{equation}
+\pazocal{R}\equiv\pazocal{U} \circ \pazocal {T}-\mathbf{I},
+\end{equation}
+where $\mathbf{I}$ is the identity matrix of suitable size.
+The Newton scheme tries to find the root $\bm \uptheta$ such that $\pazocal R(\bm \uptheta)=0$, assuming a linear behavior of $\pazocal R$ described by its Jacobi matrix $J_{\pazocal R}(\bm \uptheta)$.
 
 An iterative scheme, consisting of repeatedly solving
-
-$$
-J_{\mathcal R}\left(\boldsymbol \theta^{k}\right) \Delta \boldsymbol \theta^{k}=-\mathcal R\left(\boldsymbol \theta^{k}\right)
-$$
-
-for $\Delta \boldsymbol \theta^{k}$ and updating the iterate
-
-$$
-\boldsymbol \theta^{k+1}= \boldsymbol \theta^{k}+\Delta \boldsymbol \theta^{k}
-$$
-
+\begin{equation} \label{eq:newton_raphson}
+J_{\pazocal R}\left(\bm \uptheta^{k}\right) \Delta \bm \uptheta^{k}=-\pazocal R\left(\bm \uptheta^{k}\right)
+\end{equation}
+for $\Delta \bm \uptheta^{k}$ and updating the iterate
+\begin{equation}
+\bm \uptheta^{k+1}= \bm \uptheta^{k}+\Delta \bm \uptheta^{k}
+\end{equation}
 is performed.
-In case of writing up a separate fixed-point iteration for the different fields, a thermal residual operator $\mathcal{R}_{u}(\mathbf{u}, \boldsymbol{\theta})$ and, in addition, a mechanical residual operator $\mathcal{R}_{u}(\mathbf{u}, \boldsymbol{\theta})$ are obtained
-
-$$
-\mathcal{R}_{u}(\mathbf{u}, \boldsymbol{\theta})=\mathbf{u}-\mathcal{U}(\boldsymbol{\theta})=0 \\
-\mathcal{R}_{\theta}(\mathbf{u}, \boldsymbol{\theta})=\boldsymbol{\theta}-\mathcal{T}(\mathbf{u})=0
-$$
+In case of writing up a separate fixed-point iteration for the different fields, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and, in addition, a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ are obtained
+\begin{gather}
+\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})=\mathbf{u}-\pazocal{U}(\bm{\uptheta})=0, \\
+\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})=\bm{\uptheta}-\pazocal{T}(\mathbf{u})=0.
+\end{gather}
 
 From this, a block Newton iteration can be written as
-
-$$
-\left[\begin{array}{ll}J_{\mathcal R_{u}}\left(\mathbf{u}^{k}\right) & J_{\mathcal{R}_{u}}\left(\boldsymbol{\theta}^{k}\right) \\[7pt] J_{\mathcal{R}_{\theta}}\left(\mathbf{u}^{k}\right) & J_{\mathcal{R}_{\theta}}\left(\boldsymbol{\theta}^{k}\right)\end{array}\right]
-\left\{\begin{array}{c}\Delta \boldsymbol{f}{k} \\ \Delta \boldsymbol{s}{k}\end{array}\right\}=-\left\{\begin{array}{l}\mathcal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \mathcal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\}
-$$
-
+\begin{equation} \label{eq:block_newton_raphson}
+\left[\begin{array}{ll}J_{\pazocal R_{u}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{u}}\left(\boldsymbol{\theta}^{k}\right) \\[7pt] J_{\pazocal{R}_{\theta}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{\theta}}\left(\boldsymbol{\theta}^{k}\right)\end{array}\right]
+\left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
+=-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
+\end{equation}
 and the update of the iteration variables reads
-
-$$
+\begin{equation}
 \left\{\begin{array}{l}
 \mathbf{u}^{k+1} \\
 \boldsymbol{\theta}^{k+1}
@@ -166,80 +183,138 @@ $$
 \end{array}\right\}+\left\{\begin{array}{c}
 \Delta \mathbf{u}^{k} \\
 \Delta \boldsymbol{\theta}^{k}
-\end{array}\right\}
-$$
+\end{array}\right\}.
+\end{equation}
 
-Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\mathcal{R}\left(\mathbf{u}^{k}\right)$ or both $\mathcal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\mathcal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
+Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\pazocal{R}\left(\mathbf{u}^{k}\right)$ or both $\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
 
-While in \eqref{} the flow and structure solvers have to be executed sequentially, \eqref{} allows for interfield-parallelism, i.e., the solvers can be executed at the same time.
+The critical point for black box equation coupling is how to obtain the derivative information in the Jacobi matrices in \eqref{eq:newton_raphson} or \eqref{eq:block_newton_raphson}.
+In the following, methods are presented which find approximations for the required Jacobian times vector products in different ways.
 
-The critical point for black box equation coupling is how to obtain the derivative information in the Jacobi matrices in \eqref{} or \eqref{}. In the following, methods are presented which find approximations for the required Jacobian times vector products in different ways.
+\subsection{GMRES-inspired approach}
 
- Single residual
+In \cite{michler_interface_2005}, a Krylov-subspace method is proposed in the context of FSI.
+In the present document, this mehod is adapted to the thermo-mechanical problem.
+It approximates the solution $\Delta \bm{\uptheta}^{k}$ of system \eqref{eq:newton_raphson}, which results in a Newton-Krylov solver for the partitioned thermo-mechanical system.
+This particular nomenclature is however debatable.
+\cite{kuttler_vector_2009} argues that the correct term for this approach should be instead a “Krylov-based vector extrapolation” method. \jvc{Later take a closer look a this and link to the section on vector extrapolation.}
 
- GMRES-inspired approach
-
-In \cite{michler}, a Krylov-subspace method is proposed in the context of FSI. In the present work, it approximates the solution $\Delta \boldsymbol{\theta}^{k}$ of system \eqref{}, which results in a Newton-Krylov solver for the partitioned thermo-mechanical system. This particular nomenclature is however debatable. \cite{kutler} argues that the correct this approach should be instead name a “Krylov-based vector extrapolation” method.
-
-A review of Newton-Krylov methods in general is given in [93].
+% A review of Newton-Krylov methods in general is given in [93].
 
 For the GMRES-inspired approach, the Krylov-based subspace of order $m$ is written as
+\begin{equation}
+\pazocal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{\theta}^{*}_i-\boldsymbol{\theta}^{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{\theta}^*_{i}\right\}_{i=1}^{m},
+\end{equation}
+where $\Delta \bm{\uptheta}^*_{i}:=\bm{\uptheta}^*_{i}-\bm{\uptheta}^{k}$ and the $\bm{\uptheta}^*_{i}$ are generated during the Krylov iterations as $\bm{\uptheta}^*_{i+1}=\pazocal{T} \circ \pazocal U\left(\bm{\uptheta}^*_{i}\right)$ . $\bm{\uptheta}^{k}$ is associated to the outer Newton iteration and fixed during the Krylov iterations.
 
-$$
-\mathcal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{\theta}^{*}_i-\boldsymbol{\theta}^{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{\theta}^*_{i}\right\}_{i=1}^{m}
-$$
+The residual for the $m^\mathrm{th}$ Krylov iteration can be written as
+\begin{equation}
+J_\pazocal{R}(\boldsymbol \theta^k)\Delta\boldsymbol \theta^*_m - \pazocal R(\boldsymbol \theta^k).
+\end{equation}
+It is desirable that the $L_2$-norm of this residual be as small as possible.
+Approximating $\Delta \bm \uptheta^*_i$ using $\pazocal K_m$, as $\sum_{i=1}^m \alpha_i \Delta \bm \uptheta^*_i$, the coefficients $\alpha_i$ are thus found as
+\begin{equation} \label{eq:gmres_1st_ls}
+\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol\alpha} \left\|J_\pazocal{R}(\bm \uptheta^k)\sum_{i=1}^m \alpha_i \Delta\bm \uptheta^i - \pazocal R(\bm \uptheta^k)\right\|.
+\end{equation}
 
-where $\Delta \boldsymbol{\theta}^*_{i}:=\boldsymbol{\theta}^*_{i}-\boldsymbol{\theta}^{k}$ and the $\boldsymbol{\theta}^*_{i}$ are generated during the Krylov iterations as $\boldsymbol{\theta}^*_{i+1}=\mathcal{T} \circ \mathcal U\left(\boldsymbol{\theta}^*_{i}\right)$ . $\boldsymbol{\theta}^{k}$ is associated to the outer Newton iteration and fixed during the Krylov iterations.
-
-Residual for the $m^\mathrm{th}$ Krylov iteration can be written as
-
-$$
-J_\mathcal{R}(\boldsymbol \theta^k)\Delta\boldsymbol \theta^*_m - \mathcal R(\boldsymbol \theta^k).
-$$
-
-It is desirable that the $L_2$-norm of this residual be as small as possible. Approximating $\Delta \boldsymbol \theta^*_i$ using $\mathcal K_m$, as $\sum_{i=1}^m \alpha_i \Delta \boldsymbol \theta^*_i$, the coefficients $\alpha_i$ are thus found as
-
-$$
-\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol\alpha} \left\|J_\mathcal{R}(\boldsymbol \theta^k)\sum_{i=1}^m \alpha_i \Delta\boldsymbol \theta^i - \mathcal R(\boldsymbol \theta^k)\right\|.
-$$
-
-Since the Jacobian matrix $J_{\mathcal R}$ is assumed not to be accessible, a finite-difference approach
-
-$$
-J_{\mathcal{R}}\left(\boldsymbol{\theta}^{k}\right) \Delta \boldsymbol{\theta}^*_{i} \approx \mathcal{R}\left(\boldsymbol{\theta}^*_{i}\right)-\mathcal{R}\left(\boldsymbol{\theta}^{k}\right)
-$$
-
+Since the Jacobian matrix $J_{\pazocal R}$ is assumed not to be accessible, a finite-difference approach
+\begin{equation}
+J_{\pazocal{R}}\left(\boldsymbol{\theta}^{k}\right) \Delta \boldsymbol{\theta}^*_{i} \approx \pazocal{R}\left(\boldsymbol{\theta}^*_{i}\right)-\pazocal{R}\left(\boldsymbol{\theta}^{k}\right)
+\end{equation}
 is employed.
-
 Using the notation
-
-$$
-\mathbf r^*_i = \mathcal R(\boldsymbol \theta^*_i),\quad
-\mathbf r^k \equiv  \mathcal R(\boldsymbol \theta^k),\quad
+\begin{equation}
+\mathbf r^*_i = \pazocal R(\boldsymbol \theta^*_i),\quad
+\mathbf r^k \equiv  \pazocal R(\boldsymbol \theta^k),\quad
 \Delta \mathbf r_i^* \equiv \mathbf r_i^* - \mathbf r^k,
-$$
-
-Equation~\eqref{} can be rewritten in a more compact form as
-
-$$
+\end{equation}
+Equation~\eqref{eq:gmres_1st_ls} can be rewritten in a more compact form as
+\begin{equation} \label{eq:gmres_ls_condition}
 \bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol \alpha} \left\|\mathbf r^k+\sum_{i=1}^m\alpha_i\Delta\mathbf r^*_i\right\|,
-$$
+\end{equation}
+with the $\alpha_i$ determined in a least-squares sense.
+The quality of the approximation is determined from the norm of the residual
+\begin{equation} \label{eq:gmres_residual}
+\xi=\left\|\boldsymbol{r}^{k}+\sum_{i=1}^{m} \bar{\alpha}_{i} \Delta \boldsymbol{r}^*_{i}\right\|.
+\end{equation}
 
-with the $\alpha_i$ determined in a least-squares sense. The quality of the approximation is determined from the norm of the residual
-
-$$
-\xi=\left\|\boldsymbol{r}^{k}+\sum_{i=1}^{m} \bar{\alpha}_{i} \Delta \boldsymbol{r}^*_{i}\right\|
-$$
-
-Orthogonalizing a new Krylov-vector $\Delta \boldsymbol{\theta}^*_{m}$ with respect to all previous ones using the Arnoldi process, as shown in Box~\ref{}, completes the connection to the generalized minimal residual method (GMRES). Furthermore, to stabilize the solver subiterations when setting up the Krylov-subspace approximation, constant underrelaxation by $\omega$ can be employed as
-
-$$
+Orthogonalizing a new Krylov-vector $\Delta \bm{\uptheta}^*_{m}$ with respect to all previous ones using the Arnoldi process, as shown in Box~\ref{box:arnoldi_process}, completes the connection to the generalized minimal residual method (GMRES).
+Furthermore, to stabilize the solver subiterations when setting up the Krylov-subspace approximation, constant underrelaxation by $\omega$ can be employed as
+\begin{equation}
 \Delta \boldsymbol{\theta}^*_{m}=\omega \Delta \boldsymbol{\theta}^*_{m}.
-$$
+\end{equation}
 
-Box~\ref{} puts all parts of the GMRES-inpired method for one coupling timestep in proper order. The Krylov-vectors can be reused between different coupling iterations $k$ or even between different timesteps $n$.
+\begin{framedbox}[htbp]
+  \caption{Arnoldi process to orthonormalize temperature deltas}
+  \label{box:arnoldi_process}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+      \item \(j=1\)
+      \item \(\Delta \bm\uptheta^*_m = \Delta \bm\uptheta^*_m - \Delta \bm\uptheta^*_j\frac{\Delta\bm\uptheta^*_m\cdot\Delta\bm\uptheta^*_j}{\Delta\bm \uptheta^*_j\cdot\Delta\bm\uptheta^*_j}\)
+      \item \(j=j+1\)
+      \item If \(j<m-1\) go to Step (ii)
+      \item \(\Delta\bm \uptheta^*_m = \Delta\bm\uptheta^*_m/\|\Delta \bm \uptheta^*_m\|\)
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
 
- Quasi-Newton Method
+
+Box~\ref{box:gmres_inspired} puts all parts of the GMRES-inpired method for one coupling timestep in proper order. The Krylov-vectors can be reused between different coupling iterations $k$ or even between different timesteps $n$.
+
+\begin{framedbox}[htbp]
+  \caption{Timestep \(n\) of the GMRES-inspired approach.}
+  \label{box:gmres_inspired}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item \(k=0\)
+    \item If no previous timesteps are to be reused or \(n=0\) then
+    \begin{itemize}
+      \item Clear all \(\Delta \bm \uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+      \item \(m=0\)
+    \end{itemize}
+    \item \(\bm \uptheta^*_1 = \pazocal T\circ \pazocal U(\bm \uptheta^0)\)
+    \item \(\mathbf r^0 = \bm \uptheta^*_1 - \bm \uptheta^0\)
+    \item Enter the Newton loop
+    \begin{enumerate}[(1)]
+      \item If no previous iterations are to be reused
+      \begin{itemize}
+        \item Clear all \(\Delta \bm\uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+        \item \(m=0\)
+        \item \(\xi = \|\mathbf r^*_k\|\)
+      \end{itemize}
+      else
+      \begin{itemize}
+        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+        \item \(\bm \uptheta^*_{m+1} = \bm \uptheta^*_1\)
+      \end{itemize}
+      \item Enter the Krylov loop
+      \begin{enumerate}[(a)]
+        \item \(m=m+1\)
+        \item \(\Delta \bm\uptheta^*_m = \bm\uptheta^*_m - \bm\uptheta^k\)
+        \item Orthogonalize (Box~\ref{box:arnoldi_process}) and relax \(\Delta \bm\uptheta^*_m\) (Equation~\eqref{})
+        \item \(\bm\uptheta^*_m = \bm\uptheta^k + \Delta\bm\uptheta^*_m\)
+        \item \(\bm \uptheta^*_{m+1} = \pazocal T \circ \pazocal U(\bm \uptheta^*_m)\)
+        \item \(\Delta \mathbf r^*_m = (\bm\uptheta^*_{m+1} - \bm \uptheta^*_m) - \mathbf r^k\)
+        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+        \item If convergence has not been reached, \(\xi>\epsilon_2\), go to Step (a)
+      \end{enumerate}
+    \item \(\bm\uptheta^{k+1} = \bm\uptheta^k + \sum_{i=1}^m \bar{\alpha}_i \Delta\bm\uptheta_i\)
+    \item \(k=k+1\)
+    \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
+    \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
+    \item If convergence has not been reached, \(\|\mathbf r^k\\| > \epsilon_1\), go to Step (1)
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
+% \Floatbarrier
+
+\subsection{Quasi-Newton Method}
 
 An interface quasi-Newton method based on (2.151) and (2.152) is presented in [43]. The method is called interface quasi Newton with approximation of the inverse of the interface Jacobian matrix by least squares (IQN-ILS). Its origin, the IBQN-LS method presented in [172], is derived from the block Newton method (2.154) and uses two reduced order models for fluid and structure to approximate their interface Jacobians directly.
 
@@ -267,9 +342,7 @@ $$
 
 with inversed ordering of the columns compared to the original IBQN-LS method. The matrices \(\boldsymbol{V}^{n-1}, \ldots, \boldsymbol{V}^{n-l}\) and \(\boldsymbol{W}^{n-1}, \ldots, \boldsymbol{W}^{n-l}\) represent the (optional) reuse of columns
 
- Partitioned residual
-
- Block Quasi-Newton Method
+\subsection{Block Quasi-Newton Method}
 
 Linear reduced order models for the fluid solver and the structure solver are used in [172] to speed up the convergence of the FSI coupling iterations. As important feature, the reduced order models are set up from solver input and output deltas (or sensitivities) during the coupling iterations. The resulting method for two black box solvers is called interface block quasi-Newton method with least-squares approximation (IBQN-LS) in [42].
 
@@ -285,8 +358,8 @@ $$
 \Delta \hat{\mathbf{u}}_k \\
 \Delta \hat{\boldsymbol{\theta}}_k
 \end{array}\right\}=\left\{\begin{array}{l}
-\mathcal{R}_{u}(\mathbf{u}_k, \boldsymbol{\theta}_k) \\
-\mathcal{R}_{\theta}(\mathbf{u}_k, \boldsymbol{\theta}_k)
+\pazocal{R}_{u}(\mathbf{u}_k, \boldsymbol{\theta}_k) \\
+\pazocal{R}_{\theta}(\mathbf{u}_k, \boldsymbol{\theta}_k)
 \end{array}\right\}
 $$
 
@@ -295,20 +368,20 @@ where $\widehat{\boldsymbol{U}^{\prime}}$ and $\widehat{\boldsymbol{T}}^{\prime}
 Solving Equation~\eqref{}, $\Delta\hat{\mathbf u}$ and $\Delta \hat{\boldsymbol \theta}$  are found to be
 
 $$
-\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}^{\prime} \widehat{\boldsymbol{U}}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\mathcal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{T}}^{\prime} \mathcal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)\\
-\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}^{\prime} \widehat{\boldsymbol{T}}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}_k=-\mathcal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{U}}^{\prime} \mathcal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)
+\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}^{\prime} \widehat{\boldsymbol{U}}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\pazocal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{T}}^{\prime} \pazocal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)\\
+\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}^{\prime} \widehat{\boldsymbol{T}}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}_k=-\pazocal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{U}}^{\prime} \pazocal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)
 $$
 
 Since neither $\hat{\mathbf U}’$ nor $\hat{\mathbf T}'$ are known they must be approximated. A Gauss-Seidel like scheme will be employed, in the sense that the equations are solved one after the other with the most up to date values for $\mathbf u$ and $\boldsymbol \theta$ being used for the approximations. Thus assuming that $\mathbf u_k$ and $\boldsymbol \theta_k$ are known, they are used to compute the approximations $\hat{\mathbf U}_k$ and $\hat{\mathbf T}_k$ and $\mathbf u_{k+1}$ is found from
 
 $$
-\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}_{k}^{\prime} \widehat{\boldsymbol{U}}_{k}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\mathcal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{T}}_{k}^{\prime} \mathcal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)\\ \mathbf{u}_{k+1} = \mathbf{u}_k + \Delta \hat{\mathbf{u}}_k
+\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}_{k}^{\prime} \widehat{\boldsymbol{U}}_{k}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\pazocal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{T}}_{k}^{\prime} \pazocal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)\\ \mathbf{u}_{k+1} = \mathbf{u}_k + \Delta \hat{\mathbf{u}}_k
 $$
 
 Now, $\mathbf u_{k+1}$ can be used to improve the approximation of $\hat{\mathbf U}$, denoted $\hat{\mathbf U}_{k+1}$. Thus, $\boldsymbol \theta_{k+1}$ can now be found from
 
 $$
-\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \widehat{\boldsymbol{T}}_{k}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}=-\mathcal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \mathcal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)
+\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \widehat{\boldsymbol{T}}_{k}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}=-\pazocal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \pazocal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)
 $$
 
 and the approximation to the thermal Jacobian updated to $\hat{\mathbf T}_{k+1}$.
@@ -317,8 +390,8 @@ It finally remains to precise how are $\hat{\mathbf U}$ and $\hat{\mathbf T}$ ap
 
 $$
 \begin{array}{l}
-\tilde{\mathbf u}_i = \mathcal U(\boldsymbol \theta_i)\\[5pt]
-\tilde{\boldsymbol \theta}_i = \mathcal T(\mathbf u_i)
+\tilde{\mathbf u}_i = \pazocal U(\boldsymbol \theta_i)\\[5pt]
+\tilde{\boldsymbol \theta}_i = \pazocal T(\mathbf u_i)
 \end{array}\quad \text{for }i=1,\dots,k,
 $$
 
@@ -398,7 +471,7 @@ Box~\ref{} shows this method for one timestep. Initially, a prediction $\boldsym
 Applying the GMRES to the thermo-mechanical problem, the Krylov-subspace of order $m$ is written as
 
 $$
-\mathcal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{s}_{i}-\boldsymbol{s}_{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{s}_{i}\right\}_{i=1}^{m},
+\pazocal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{s}_{i}-\boldsymbol{s}_{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{s}_{i}\right\}_{i=1}^{m},
 $$
 
 ---
