@@ -145,7 +145,7 @@ In differential partitioning, the decomposition is done first, and each field is
 Differential partitioning often leads to non-matched meshes, as typical of fluid-structure interaction.
 Algebraic partitioning was initially developed for matched meshes and substructuring \citep{felippa_partitioned_2001}.
 
-The earliest contributions regarding the partitioned treatment of coupled systems emerged the mid 1970s, involving structure-structure interactions and fluid-structure interactions (see e.g. \cite{belytschko_mesh_1976}, \cite{park_stabilization_1977}, \cite{belytschko_stability_1978}, \cite{hughes_implicit-explicit_1978} and \cite{belytschko_mixed_1979}).
+The earliest contributions regarding the partitioned treatment of coupled systems emerged in the mid 1970s, involving structure-structure interactions and fluid-structure interactions (see e.g. \cite{belytschko_mesh_1976}, \cite{park_stabilization_1977}, \cite{belytschko_stability_1978}, \cite{hughes_implicit-explicit_1978} and \cite{belytschko_mixed_1979}).
 
 % ``What are partitioned time-stepping algorithms?''
 
@@ -182,7 +182,7 @@ The scheme achieves the solution of the thermo-mechanical problem, first solving
 \paragraph{Adiabatic}
 
 The adiabatic split is proposed in \cite{armero_new_1992}.
-It consists of a first phase where constant entropy is enforced and the second phase of purely thermal conduction at a fixed reference.
+It consists of a first phase where constant entropy is enforced and a second phase of purely thermal conduction with a fixed reference.
 In terms of implementation complexity, it is comparable to the isothermal split.
 This is possible because the constant entropy phase can be cast as a mechanical phase, where the stiffness and the external force are adjusted as a function of an intermediate temperature.
 This temperature is computed considering the strong form of the temperature evolution equation to retain the computational efficiency of the isothermal split, despite the momentum equation being enforced in its weak form.
@@ -232,7 +232,7 @@ In strongly nonlinear problems, such as fluid flow, stability and accuracy tend 
 As such, they are usually considered together in method design.
 The expectation is for a method that operates well at a reasonable timestep.
 
-\cite{felippa_partitioned_1988} presents a detailed explanation about how to design from scratch a loosely coupled time-stepping algorithm applicable to linear systems of equations.
+\cite{felippa_partitioned_1988} present a detailed explanation about how to design from scratch a loosely coupled time-stepping algorithm applicable to linear systems of equations.
 It includes implementation details, such as the choice of the predictor formula, and the design steps, from the formulation of the original field equations and temporal discretization to the stability and accuracy analysis.
 Other contributions focused mainly on linear systems are \cite{neishlos_finite-element_1983}, \cite{zienkiewicz_unconditionally_1988} and \cite{combescure_numerical_2002},
 
@@ -241,11 +241,12 @@ The isothermic split is such an example \citep{armero_new_1992}.
 On the other hand, the adiabatic split proposed in \cite{armero_new_1992} is unconditionally stable, despite being explicit.
 \cite{farhat_unconditionally_1991} also propose a stable staggered scheme, achieved through semi-algebraic augmentation, which, however, is limited to linearized thermoelasticity.
 In the context of coupled flow and geomechanics, \cite{kim_stability_2011-2} show that when the mechanical problem is solved first, the drained split combined with a backward Euler discretization is conditionally stable, and the undrained split is unconditionally stable when combined with midpoint rule.
-When instead the flow problem is solved, \cite{kim_stability_2011-1} show that the fixed-stress split is conditionally and the fixed-strain split is unconditionally stable for appropriate choices of the generalized midpoint rule.
+When instead the flow problem is solved first, \cite{kim_stability_2011-1} show that the fixed-stress split is conditionally and the fixed-strain split is unconditionally stable for appropriate choices of the generalized midpoint rule.
 
 Moreover, in the domain of fluid-structure interactions, it can be shown that staggered methods are inherently non-conservative.
 As time progresses in the simulation, these schemes introduce parasitic energy at the boundary, which contributes to their poor numerical stability \citep{michler_relevance_2003}.
-A further problem appears when solving these coupled physical problems, the so-called artificial added-mass effect, which manifests itself when a slender structure and fluid have similar densities, and the latter is modeled as an incompressible fluid leads to instability \citep{causin_added-mass_2005, forster_robust_2007}.
+A further problem appears when solving these coupled physical problems, the so-called artificial added-mass effect, which leads to instability.
+It manifests itself when a slender structure and fluid have similar densities, and the latter is modeled as an incompressible fluid \citep{causin_added-mass_2005, forster_robust_2007}.
 It can even be shown that for every sequentially staggered scheme and spatial discretization of a problem, a mass ratio between the fluid and structural mass density can be found at which the coupled system becomes unstable \citep{forster_artificial_2007}.
 
 Despite this, some contributions detail strategies allowing for the unconditional stability of these schemes.
