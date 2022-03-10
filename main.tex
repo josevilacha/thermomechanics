@@ -1,6 +1,6 @@
 \documentclass[a4paper, openright, twoside]{report}
 \usepackage[utf8]{inputenc}
-\usepackage[american]{babel}
+\usepackage[main=american, german]{babel}
 \usepackage{hyphenat}
 \usepackage[activate={true,nocompatibility}, final, tracking=true, kerning=true, factor=1100, stretch=10, shrink=10]{microtype}
 % Prevent hyphenization
@@ -257,7 +257,7 @@
 \pagenumbering{roman}
 
 %Hypertext marks
-\usepackage[pdftitle={NLMFEA_assignment},
+\usepackage[pdftitle={CFE_report},
 			pdfauthor={JoseVila-Cha},
 			pdfdisplaydoctitle=true,
 			colorlinks=true,
@@ -365,6 +365,8 @@
 \include{thermo_problem}
 \include{thermo_mechanical_problem}
 \include{solvers_for_coupled_fields}
+\include{validation_thermal_solver}
+\include{acceleration_techniques}
 % \include{conclusions}
 \appendix
 % \include{annex}

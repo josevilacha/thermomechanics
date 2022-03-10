@@ -1,0 +1,590 @@
+ Equations to be solved
+
+$$
+\begin{array}{l}\mathbf{M u}_{n+1}+\mathbf{f}_{u}^{\mathrm{int}}\left(\boldsymbol{\theta}_{n+1}, \mathbf{u}_{n+1}\right)-\mathbf{f}_{u, n+1}^{\mathrm{ext}}=\mathbf{0} \\[6pt]\mathbf{C} \dot{\boldsymbol \theta}_{n+1}+\mathbf{f}_{\theta}^{\mathrm{int}}\left(\boldsymbol{\theta}_{n+1}, \mathbf{u}_{n+1}\right)-\mathbf{f}_{\theta, n+1}^{\mathrm{ext}}=\mathbf{0}\end{array}
+$$
+
+The approach chosen is the strongly coupled approach. To ease the discussion consider
+
+$$
+\mathcal R_u(\boldsymbol \theta, \mathbf u) = \mathbf 0,\\
+\mathcal R_\theta(\boldsymbol \theta, \mathbf u) = \mathbf 0.
+$$
+
+ Fixed-point approaches
+
+Consider that the $\boldsymbol \theta_n$ and $\mathbf u_n$ are both known and that $\boldsymbol \theta_{n+1}$ and $\mathbf u_{n+1}$ are now to be determined. A superscript $k$ is introduced to denote the iterations concerning the loop of the implicit scheme. To prevent cluttering, the subscripts concerning the timestep are dropped.
+
+There are two basic Schwarz procedures commonly employed in strongly coupled solution procedures. Both originate from domain decomposition.
+
+They are the additive and the parallel Scharwz procedures.
+
+ Block Jacobi or Schwarz additive
+
+If both systems of equations \eqref{} are solved in parallel the procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
+
+$$
+\text{Solve }\mathcal R_u(\boldsymbol \theta^{k},\mathbf u^{k+1}) = \mathbf 0\text{ for \(\mathbf u^{k+1}\)}\\
+\text{Solve }\mathcal R_\theta(\boldsymbol \theta^{k+1}, \mathbf u^k) = \mathbf 0\text{ for \(\boldsymbol \theta^{k+1}\)}
+$$
+
+which can also be written as
+
+$$
+\mathbf u^{k+1} = \mathcal U(\boldsymbol \theta^k),\\
+\boldsymbol \theta^{k+1} = \mathcal T(\mathbf u^k).
+$$
+
+Box~\ref{box:block_jacobi} shows the pseudo-code for the block Jacobi approach.
+
+ Block Gauss-Seidel or Schwarz multiplicative
+
+If the systems are solved sequentially, where the output of the first system is used as input when solving the second system, the solution procedure is said to be Scharwz multiplicative or block Gauss-Seidel.
+
+One of the fields must chosen as the first and this may be important (Joosten et al. (2009)).
+
+$$
+\text{Solve }\mathcal R_u(\boldsymbol \theta^{k},\mathbf u^{k+1}) = \mathbf 0\text{ for \(\mathbf u^{k+1}\)}\\
+\text{Solve }\mathcal R_\theta(\boldsymbol \theta^{k+1}, \mathbf u^{k+1}) = \mathbf 0\text{ for \(\boldsymbol \theta^{k+1}\)}
+$$
+
+or
+
+$$
+\mathbf u^{k+1}  = \mathcal U(\boldsymbol \theta^k),\\
+\boldsymbol \theta^{k+1} = \mathcal T(\mathbf u^{k+1}).
+$$
+
+Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seidel approach.
+
+As from a computational standpoint the block Jacobi and Gauss-Seidel approaches are very similar, the latter is used as the basis for the exposition that follows. Their similarity comes from the fact that the block Jacobi method can be regard as the computation of two simultaneous decoupled block Gauss-Seidel iterations.
+
+ Convergence criteria
+
+For an iterative method to be useful, there must be reasonable criteria to determine its convergence.
+
+With this in view, each full iteration of the strongly coupled scheme is written in a fixed-point notation as
+
+$$
+\tilde{\boldsymbol \theta}^{k+1} = \mathcal T \left(\mathcal U(\boldsymbol \theta^k)\right),
+$$
+
+where $\tilde{\bullet}$ denotes a solution coming directly from the solver, whereas the same symbol without the tilde represents the quantity after post-processing.
+
+The sequence of system solvers can also be inverted, i.e.,
+
+$$
+\tilde{\mathbf u}^{k+1} = \mathcal U\left(\mathcal T(\mathbf u^k)\right).
+$$
+
+The iteration residual is defined as
+
+$$
+\mathbf r^{k+1} = \mathcal T\left(\mathcal U(\boldsymbol\theta^k)\right) - \boldsymbol\theta^k = \tilde{\boldsymbol \theta}^{k+1} - \boldsymbol\theta^k.
+$$
+
+It is equal to zero when the fixed-point $\boldsymbol \theta$ is reached, i.e.,
+
+$$
+\mathbf r = \mathcal T\left(\mathcal U(\boldsymbol \theta)\right) - \boldsymbol \theta = \mathbf 0,
+$$
+
+and hence, a reasonable convergence measure for the fixed-point iteration.
+
+The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual $r=\left(r^{1}, \ldots, r^{m}\right)^{T}$ as
+
+$$
+\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k+1, i}\right)^{2}}=\sqrt{\sum_{i}\left(\tilde{\theta}^{k+1, i}-\theta^{k, i}\right)^{2}}
+$$
+
+Directly using \eqref{} yields an absolute convergence criterion
+
+$$
+\left\|\boldsymbol{r} ^{k+1}\right\|_{L^{2}}<\epsilon_\mathrm{abs}
+$$
+
+with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid. However, since the absolute value of $r$ can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations. A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
+
+$$
+\frac{\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}}{\left\|\tilde{\boldsymbol{\theta}}^{k+1}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
+$$
+
+Since a relative convergence measure can fail to work properly when the coupling iterate values are close to zero and rounding errors come into play, a combination of absolute and relative measure, where the absolute measure takes care of close to zero cases and the relative handles all other cases, is often a good choice.
+
+ Acceleration techniques
+
+ Newton-Raphson schemes
+
+Newton-Raphson schemes, in the following denoted as Newton schemes, can be applied to the partitioned coupled fields either by considering the chained overall fixed-point notation (Equation~\eqref{}) or by writing up a blocked system consisting of coupled structural and fluid fixed-point iterations.
+
+To apply a Newton scheme to the overall chained fixed-point iteration (Equation \eqref{}), the residual operator from (Equation~\eqref{}) is defined as
+
+$$
+\mathcal{R}\equiv\mathcal{U} \circ \mathcal {T}-\boldsymbol{I},
+$$
+
+where $\boldsymbol{I}$ is the identity matrix of suitable size.
+
+The Newton scheme tries to find the root $\boldsymbol \theta$ such that $\mathcal R(\boldsymbol \theta)=0$, assuming a linear behavior of $\mathcal R$ described by its Jacobi matrix $J_{\mathcal R}(\boldsymbol \theta)$.
+
+An iterative scheme, consisting of repeatedly solving
+
+$$
+J_{\mathcal R}\left(\boldsymbol \theta^{k}\right) \Delta \boldsymbol \theta^{k}=-\mathcal R\left(\boldsymbol \theta^{k}\right)
+$$
+
+for $\Delta \boldsymbol \theta^{k}$ and updating the iterate
+
+$$
+\boldsymbol \theta^{k+1}= \boldsymbol \theta^{k}+\Delta \boldsymbol \theta^{k}
+$$
+
+is performed.
+In case of writing up a separate fixed-point iteration for the different fields, a thermal residual operator $\mathcal{R}_{u}(\mathbf{u}, \boldsymbol{\theta})$ and, in addition, a mechanical residual operator $\mathcal{R}_{u}(\mathbf{u}, \boldsymbol{\theta})$ are obtained
+
+$$
+\mathcal{R}_{u}(\mathbf{u}, \boldsymbol{\theta})=\mathbf{u}-\mathcal{U}(\boldsymbol{\theta})=0 \\
+\mathcal{R}_{\theta}(\mathbf{u}, \boldsymbol{\theta})=\boldsymbol{\theta}-\mathcal{T}(\mathbf{u})=0
+$$
+
+From this, a block Newton iteration can be written as
+
+$$
+\left[\begin{array}{ll}J_{\mathcal R_{u}}\left(\mathbf{u}^{k}\right) & J_{\mathcal{R}_{u}}\left(\boldsymbol{\theta}^{k}\right) \\[7pt] J_{\mathcal{R}_{\theta}}\left(\mathbf{u}^{k}\right) & J_{\mathcal{R}_{\theta}}\left(\boldsymbol{\theta}^{k}\right)\end{array}\right]
+\left\{\begin{array}{c}\Delta \boldsymbol{f}{k} \\ \Delta \boldsymbol{s}{k}\end{array}\right\}=-\left\{\begin{array}{l}\mathcal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \mathcal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\}
+$$
+
+and the update of the iteration variables reads
+
+$$
+\left\{\begin{array}{l}
+\mathbf{u}^{k+1} \\
+\boldsymbol{\theta}^{k+1}
+\end{array}\right\}=\left\{\begin{array}{l}
+\mathbf{u}^{k} \\
+\boldsymbol{\theta}^{k}
+\end{array}\right\}+\left\{\begin{array}{c}
+\Delta \mathbf{u}^{k} \\
+\Delta \boldsymbol{\theta}^{k}
+\end{array}\right\}
+$$
+
+Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\mathcal{R}\left(\mathbf{u}^{k}\right)$ or both $\mathcal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\mathcal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
+
+While in \eqref{} the flow and structure solvers have to be executed sequentially, \eqref{} allows for interfield-parallelism, i.e., the solvers can be executed at the same time.
+
+The critical point for black box equation coupling is how to obtain the derivative information in the Jacobi matrices in \eqref{} or \eqref{}. In the following, methods are presented which find approximations for the required Jacobian times vector products in different ways.
+
+ Single residual
+
+ GMRES-inspired approach
+
+In \cite{michler}, a Krylov-subspace method is proposed in the context of FSI. In the present work, it approximates the solution $\Delta \boldsymbol{\theta}^{k}$ of system \eqref{}, which results in a Newton-Krylov solver for the partitioned thermo-mechanical system. This particular nomenclature is however debatable. \cite{kutler} argues that the correct this approach should be instead name a “Krylov-based vector extrapolation” method.
+
+A review of Newton-Krylov methods in general is given in [93].
+
+For the GMRES-inspired approach, the Krylov-based subspace of order $m$ is written as
+
+$$
+\mathcal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{\theta}^{*}_i-\boldsymbol{\theta}^{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{\theta}^*_{i}\right\}_{i=1}^{m}
+$$
+
+where $\Delta \boldsymbol{\theta}^*_{i}:=\boldsymbol{\theta}^*_{i}-\boldsymbol{\theta}^{k}$ and the $\boldsymbol{\theta}^*_{i}$ are generated during the Krylov iterations as $\boldsymbol{\theta}^*_{i+1}=\mathcal{T} \circ \mathcal U\left(\boldsymbol{\theta}^*_{i}\right)$ . $\boldsymbol{\theta}^{k}$ is associated to the outer Newton iteration and fixed during the Krylov iterations.
+
+Residual for the $m^\mathrm{th}$ Krylov iteration can be written as
+
+$$
+J_\mathcal{R}(\boldsymbol \theta^k)\Delta\boldsymbol \theta^*_m - \mathcal R(\boldsymbol \theta^k).
+$$
+
+It is desirable that the $L_2$-norm of this residual be as small as possible. Approximating $\Delta \boldsymbol \theta^*_i$ using $\mathcal K_m$, as $\sum_{i=1}^m \alpha_i \Delta \boldsymbol \theta^*_i$, the coefficients $\alpha_i$ are thus found as
+
+$$
+\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol\alpha} \left\|J_\mathcal{R}(\boldsymbol \theta^k)\sum_{i=1}^m \alpha_i \Delta\boldsymbol \theta^i - \mathcal R(\boldsymbol \theta^k)\right\|.
+$$
+
+Since the Jacobian matrix $J_{\mathcal R}$ is assumed not to be accessible, a finite-difference approach
+
+$$
+J_{\mathcal{R}}\left(\boldsymbol{\theta}^{k}\right) \Delta \boldsymbol{\theta}^*_{i} \approx \mathcal{R}\left(\boldsymbol{\theta}^*_{i}\right)-\mathcal{R}\left(\boldsymbol{\theta}^{k}\right)
+$$
+
+is employed.
+
+Using the notation
+
+$$
+\mathbf r^*_i = \mathcal R(\boldsymbol \theta^*_i),\quad
+\mathbf r^k \equiv  \mathcal R(\boldsymbol \theta^k),\quad
+\Delta \mathbf r_i^* \equiv \mathbf r_i^* - \mathbf r^k,
+$$
+
+Equation~\eqref{} can be rewritten in a more compact form as
+
+$$
+\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol \alpha} \left\|\mathbf r^k+\sum_{i=1}^m\alpha_i\Delta\mathbf r^*_i\right\|,
+$$
+
+with the $\alpha_i$ determined in a least-squares sense. The quality of the approximation is determined from the norm of the residual
+
+$$
+\xi=\left\|\boldsymbol{r}^{k}+\sum_{i=1}^{m} \bar{\alpha}_{i} \Delta \boldsymbol{r}^*_{i}\right\|
+$$
+
+Orthogonalizing a new Krylov-vector $\Delta \boldsymbol{\theta}^*_{m}$ with respect to all previous ones using the Arnoldi process, as shown in Box~\ref{}, completes the connection to the generalized minimal residual method (GMRES). Furthermore, to stabilize the solver subiterations when setting up the Krylov-subspace approximation, constant underrelaxation by $\omega$ can be employed as
+
+$$
+\Delta \boldsymbol{\theta}^*_{m}=\omega \Delta \boldsymbol{\theta}^*_{m}.
+$$
+
+Box~\ref{} puts all parts of the GMRES-inpired method for one coupling timestep in proper order. The Krylov-vectors can be reused between different coupling iterations $k$ or even between different timesteps $n$.
+
+ Quasi-Newton Method
+
+An interface quasi-Newton method based on (2.151) and (2.152) is presented in [43]. The method is called interface quasi Newton with approximation of the inverse of the interface Jacobian matrix by least squares (IQN-ILS). Its origin, the IBQN-LS method presented in [172], is derived from the block Newton method (2.154) and uses two reduced order models for fluid and structure to approximate their interface Jacobians directly.
+
+In contrast, the IQN-ILS method provides one reduced order model for the inverse of the overall interface Jacobian matrix of the Newton system (2.151) applied to the right-hand side vector.
+
+The following elaborations are based on the description of the method in \cite{gatzhammer} and adapted to the thermo-mechanical problem.
+
+The input and output deltas are used to construct a reduced order model. In the interface residual formulation (Equation~\eqref{}) of the chained solvers, the input is given by the structural coupling values $\boldsymbol \theta$ and the output by the interface residual $\boldsymbol{r}$. Input and output deltas are defined by
+
+$$
+\Delta \boldsymbol{r}_{k}=\boldsymbol{r}_{k+1}-\boldsymbol{r}_{k} \\
+\Delta \tilde{\boldsymbol{\theta}}_{k}=\tilde{\boldsymbol{\theta}}_{k+1}-\tilde{\boldsymbol{\theta}}_{k}
+$$
+
+i.e., not the actual input deltas $\Delta \boldsymbol{\theta}$ are gathered, but the intermediate chained solver outputs $\tilde{\boldsymbol{\theta}}$ are used to construct the $\Delta \tilde{\boldsymbol{\theta}}$. This enables to approximate the inverse of the Jacobian applied to the right-hand side vector of the Newton system, as we will see later.
+
+ The deltas are collected in matrices
+
+$$
+\begin{aligned}
+\boldsymbol{V}_{k} &=\left(\Delta \boldsymbol{r}_{k}, \Delta \boldsymbol{r}_{k-1}, \ldots, \Delta \boldsymbol{r}_{1}, \boldsymbol{V}^{n-1}, \ldots, \boldsymbol{V}^{n-l}\right) \\
+\boldsymbol{W}{k} &=\left(\Delta \tilde{\boldsymbol{s}}{k}, \Delta \tilde{\boldsymbol{s}}{k-1}, \ldots, \Delta \tilde{\boldsymbol{s}}{1}, \boldsymbol{W}^{n-1}, \ldots, \boldsymbol{W}^{n-l}\right)
+\end{aligned}
+$$
+
+with inversed ordering of the columns compared to the original IBQN-LS method. The matrices \(\boldsymbol{V}^{n-1}, \ldots, \boldsymbol{V}^{n-l}\) and \(\boldsymbol{W}^{n-1}, \ldots, \boldsymbol{W}^{n-l}\) represent the (optional) reuse of columns
+
+ Partitioned residual
+
+ Block Quasi-Newton Method
+
+Linear reduced order models for the fluid solver and the structure solver are used in [172] to speed up the convergence of the FSI coupling iterations. As important feature, the reduced order models are set up from solver input and output deltas (or sensitivities) during the coupling iterations. The resulting method for two black box solvers is called interface block quasi-Newton method with least-squares approximation (IBQN-LS) in [42].
+
+It application to a thermo-mechanical solver is detailed in what follows based on the version of the method for FSI presented in \cite{gatzhammer}.
+
+In this method, the block Newton system (Equation~\eqref{}) is approximated by
+
+$$
+\left[\begin{array}{cc}
+\widehat{\boldsymbol{U}^{\prime}} & -\boldsymbol{I} \\
+-\boldsymbol{I} & \widehat{\boldsymbol{T}^{\prime}}
+\end{array}\right]\left\{\begin{array}{c}
+\Delta \hat{\mathbf{u}}_k \\
+\Delta \hat{\boldsymbol{\theta}}_k
+\end{array}\right\}=\left\{\begin{array}{l}
+\mathcal{R}_{u}(\mathbf{u}_k, \boldsymbol{\theta}_k) \\
+\mathcal{R}_{\theta}(\mathbf{u}_k, \boldsymbol{\theta}_k)
+\end{array}\right\}
+$$
+
+where $\widehat{\boldsymbol{U}^{\prime}}$ and $\widehat{\boldsymbol{T}}^{\prime}$ are linear reduced order models for the Jacobians of the mechanical and thermal solvers.
+
+Solving Equation~\eqref{}, $\Delta\hat{\mathbf u}$ and $\Delta \hat{\boldsymbol \theta}$  are found to be
+
+$$
+\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}^{\prime} \widehat{\boldsymbol{U}}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\mathcal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{T}}^{\prime} \mathcal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)\\
+\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}^{\prime} \widehat{\boldsymbol{T}}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}_k=-\mathcal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{U}}^{\prime} \mathcal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)
+$$
+
+Since neither $\hat{\mathbf U}’$ nor $\hat{\mathbf T}'$ are known they must be approximated. A Gauss-Seidel like scheme will be employed, in the sense that the equations are solved one after the other with the most up to date values for $\mathbf u$ and $\boldsymbol \theta$ being used for the approximations. Thus assuming that $\mathbf u_k$ and $\boldsymbol \theta_k$ are known, they are used to compute the approximations $\hat{\mathbf U}_k$ and $\hat{\mathbf T}_k$ and $\mathbf u_{k+1}$ is found from
+
+$$
+\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}_{k}^{\prime} \widehat{\boldsymbol{U}}_{k}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\mathcal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{T}}_{k}^{\prime} \mathcal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)\\ \mathbf{u}_{k+1} = \mathbf{u}_k + \Delta \hat{\mathbf{u}}_k
+$$
+
+Now, $\mathbf u_{k+1}$ can be used to improve the approximation of $\hat{\mathbf U}$, denoted $\hat{\mathbf U}_{k+1}$. Thus, $\boldsymbol \theta_{k+1}$ can now be found from
+
+$$
+\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \widehat{\boldsymbol{T}}_{k}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}=-\mathcal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \mathcal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)
+$$
+
+and the approximation to the thermal Jacobian updated to $\hat{\mathbf T}_{k+1}$.
+
+It finally remains to precise how are $\hat{\mathbf U}$ and $\hat{\mathbf T}$ approximated. To achieve this consider the intermediate values for $\mathbf u$ and $\boldsymbol \theta$ computed as
+
+$$
+\begin{array}{l}
+\tilde{\mathbf u}_i = \mathcal U(\boldsymbol \theta_i)\\[5pt]
+\tilde{\boldsymbol \theta}_i = \mathcal T(\mathbf u_i)
+\end{array}\quad \text{for }i=1,\dots,k,
+$$
+
+Firstly, to approximate $\hat{\mathbf U}$, consider the matrices defined as
+
+$$
+\mathbf V_U \equiv \{\Delta \boldsymbol \theta_1, \Delta \boldsymbol \theta_2, \dots, \Delta \boldsymbol \theta_k\},\\
+\mathbf W_U \equiv \{\Delta \tilde{\mathbf u}_1, \Delta \tilde{\mathbf u}_2, \dots, \Delta\tilde{\mathbf u}_k\}
+$$
+
+where the deltas $\Delta \boldsymbol \theta_i = \boldsymbol \theta_{i+1} - \boldsymbol \theta_i$ and $\Delta \tilde{\mathbf u}_i = \tilde{\mathbf u}_{i+1} -\tilde{\mathbf u}_i$ are collected into columns.
+
+A new temperature input delta $\Delta \boldsymbol \theta$ can be approximated by a linear combination of the columns of $\mathbf V_U$ as
+
+$$
+\mathbf V_U\mathbf c_U\approx \Delta \boldsymbol\theta
+$$
+
+and a corresponding output delta $\Delta \mathbf u$ can then be constructed by using the computed coefficients $\mathbf c_U$to linearly combine the columns of $\mathbf W_U$ as
+
+$$
+\Delta\mathbf u = \mathbf W_U\mathbf c_U
+$$
+
+The $\mathbf c_F$ are determined from a minimization
+
+$$
+\mathbf c_U = \arg\min_{\tilde{\mathbf c} } \|\Delta\boldsymbol \theta - \mathbf V_U\tilde{\mathbf c}\|
+$$
+
+which is a least-squares problem, solved in \cite{vierendeels} by the normal equations and in \cite{} using the economy-size $QR$-decomposition. The action of $\hat{\mathbf U}'$ on a vector can then be written as
+
+$$
+\hat{\mathbf U}'\Delta\boldsymbol \theta = \mathbf W_U \mathbf c_U
+$$
+
+Following \cite{vierrendeels}, the solution for the least-squares problem is
+
+$$
+\mathbf c_U = (\mathbf V_U^T\mathbf V_U)^{-1}\mathbf V_U\Delta \boldsymbol \theta
+$$
+
+Thus, $\hat{\mathbf U}'$ is found to be
+
+$$
+\hat{\mathbf U}' = \mathbf W_U(\mathbf V_U^T \mathbf V_U)^{-1}\mathbf V_U
+$$
+
+The process to set up the reduced order model for the Jacobian of the thermal solver $\hat{\mathbf T}$ is analogous to that described for the mechanical solver. Input deltas $\Delta \mathbf u_k \equiv \mathbf u_{k+1} - \mathbf u_k$ and output deltas $\Delta\tilde{\boldsymbol \theta} \equiv \tilde{\boldsymbol \theta}_{k+1} - \tilde{\boldsymbol \theta}_k$ are collected in matrices $\mathbf V_T$ and $\mathbf W_T$. After solving a corresponding least-squares problem to find the optimal coefficients $\mathbf c_T$, the action of $\hat{\mathbf T}'$ on a vector is written as
+
+$$
+\hat{\mathbf S}\Delta \mathbf u = \mathbf W_T\mathbf c_T
+$$
+
+Box~\ref{} shows this method for one timestep. Initially, a prediction $\boldsymbol \theta_p$ is computed by extrapolation from old timesteps and two block Gauss-Seidel iterations are performed using constant underrelaxation. Then, the initial reduced order models for mechanical and thermal systems are set up and the main coupling iteration loop with computation steps as described above starts.
+
+ Quasi-Newton methods
+
+- Vierendeels et al. (2007)
+- Degroote et al. (2008)
+- Haelterman et al. (2009)
+- Erbst and Düster (2012)
+- Gatzhammer (2014)
+- Erbts et al. (2015)
+- Wendt et al. (2015)
+
+ Newton-Krylov methods
+
+- Michler et al. (2005)
+- Küttler and Wall (2009)
+- Gatzhammer (2014)
+- König et al. (2016)
+- Scheufele (2018)
+
+ GMRES
+
+Applying the GMRES to the thermo-mechanical problem, the Krylov-subspace of order $m$ is written as
+
+$$
+\mathcal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{s}_{i}-\boldsymbol{s}_{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{s}_{i}\right\}_{i=1}^{m},
+$$
+
+---
+
+1. $n = 0$
+2. Solve for
+
+ Andersen Acceleration
+
+- Uekermann (2016)
+
+ Generalized Broyden
+
+- Uekermann (2016)
+
+ Filtering
+
+ Multi-Scale
+
+ Mechanical prediction
+
+- Erbts and Düster (2012)
+- Erbts et al. (2015)
+- Wendt et al. (2015)
+
+A very efficient way to increase the chances of stability and reduce computation time is to predict the optimal initial values at the beginning of every time step. This actually means that we take the results of the mechanical field of the converged solution at the end of the last two or more time increments and predict the new solution by polynomial extrapolation. The predicted values can then be used as an improved initial configuration for the electrical and thermal field. This method is based on polynomial vector extrapolation which is quite easy to implement, and the extra computational input involved is negligible.
+
+Here, the maximum polynomial under consideration is of the order two, i.e., we extrapolate the new solution from the results from the last three time steps. Assuming our time increment will be constant over the whole simulation, the mechanical predictors $\mathbf{U}^{*}$ *for the order $p=1$ and $p=2$ read:*
+
+$$
+\begin{array}{l}
+p=1: \mathbf{U}_{n+1}^{*}=2 \mathbf{U}_{n}-\mathbf{U}_{n-1} \\
+p=2: \mathbf{U}_{n+1}^{*}=3 \mathbf{U}_{n}-3 \mathbf{U}_{n-1}+\mathbf{U}_{n-2}
+\end{array}
+$$
+
+The subscript $n$ denotes the time step. Where the time increment is adaptive, we refer to [22], since the predictor has to be constructed in an adaptive manner as well.
+
+ Acceleration/Stabilization techniques
+
+ Constant Underrelaxation
+
+- Gatzhammer (2014)
+
+$$
+\boldsymbol{s}_{k+1}=(1-\omega) \boldsymbol{s}_{k}+\omega \tilde{\boldsymbol{s}}_{k+1}=\boldsymbol{s}_{k}+\omega \boldsymbol{r}_{k+1}
+$$
+
+ Numerical relaxation - Aitken $\Delta^2$-method
+
+- Küttler and Wall (2008)
+- Irons and Tuck (1969)
+- Joosten et al. (2009)
+- Küttler and Wall (2009)
+- Erbts et al. (2015)
+- Wendt et al. (2015)
+
+To improve the coupling algorithm, we apply Aitken's $\Delta^{2}$-method to accelerate the  convergence of series.
+
+Aitken's delta-squared process is a method of acceleration of convergence, and a particular case of a nonlinear sequence transformation.
+
+In the one-dimensional case, this method resembles the secant method, which can be used to solve nonlinear equations without differentiation.
+
+$\left\{x_{n}\right\}{n \in \mathbb{N}}$ *will converge linearly to $\ell$ if there exists a number $\mu \in(0,1)$ such that*
+
+$$
+\lim {n \rightarrow \infty} \frac{\left|x_{n+1}-\ell\right|}{\left|x_{n}-\ell\right|}=\mu .
+$$
+
+The formula for the one-dimensional case is
+
+$$
+AX_n = \frac{x_n x_{n+2} - x_{n+1}^2}{x_n-2x_{n+1}+ x_{n+2} }
+$$
+
+or
+
+$$
+AX_n = x_{n+2} - \frac{x_{n+2} - x_{n+1} }{x_n + x_{n+2} - 2 x_{n+1} }(x_{n+1}-x_{n+2})
+$$
+
+Aitken's method will accelerate the sequence $x_{n}$ if $\lim_{n \rightarrow \infty} \frac{(A x)_{n}-\ell}{x_{n}-\ell}=0$.
+$A$ is not a linear operator, but a constant term drops out, viz: $A[x-\ell]=A x-\ell$, if $\ell$ is a constant. This is clear from the expression of $A x$ in terms of the finite difference operator $\Delta$.
+Although the new process does not in general converge quadratically, it can be shown that for a fixed point process, that is, for an iterated function sequence $x_{n+1}=f\left(x_{n}\right)$ for some function $f$, converging to a fixed point, the convergence is quadratic. In this case, the technique is known as Steffensen's method.
+
+Empirically, the $A$-operation eliminates the "most important error term". One can check this by considering a sequence of the form $x_{n}=\ell+a^{n}+b^{n}$, where $0<b<a<1$: The sequence $A x$ will then go to the limit like $b^{n}$ goes to zero.
+
+Geometrically, the graph of an exponential function $f(t)$ that satisfies \(f(n)=x_{n}, f(n+1)=x_{n+1}\) and \(f(n+2)=x_{n+2}\) has an horizontal asymptote at \(\frac{x_{n} x_{n+2}-x_{n+1}^{2}}{x_{n}-2 x_{n+1}+x_{n+2}}\left(\right.\) if \(\left.x_{n}-2 x_{n+1}+x_{n+2} \neq 0\right)\).
+
+If you want to fit \(a e^{b x}+c\) to 3 points, \(\left(x_{i}, y_{i}\right)*{i=1}^{3}\), you want \(y*{i}=a e^{b x_{i}}+c .\)
+Subtracting the first two, \(y_{2}-y_{1}=a\left(e^{b x_{2}}-e^{b x_{1}}\right)=a e^{b x_{1}}\left(e^{b\left(x_{2}-x_{1}\right)}-1\right)\) and, similarly, \(y_{3}-y_{2}=a\left(e^{b x_{3}}-e^{b x_{2}}\right)=a e^{b x_{2}}\left(e^{b\left(x_{3}-x_{2}\right)}-1\right) .\)
+If \(x_{3}-x_{2}=x_{2}-x_{1}=d\), so the data are equally spaced and \(e^{b\left(x_{2}-x_{1}\right)}-1=e^{b\left(x_{3}-x_{2}\right)}-1\), we can divide these to get
+\(\frac{y_{3}-y_{2}}{y_{2}-y_{1}}=e^{b x_{2}-b x_{1}}=e^{b\left(x_{2}-x_{1}\right)}=e^{b d}\)
+Taking logs, and letting \(r=\frac{y_{3}-y_{2}}{y_{2}-y_{1}}, \ln (r)=b d\) so \(b=\frac{\ln (r)}{d} .\) From this, \(e^{b}=r^{1 / d} .\)
+Note that this requires that \(r>0\), so the points are monotonic.
+Then
+\[
+\begin{aligned}
+y_{2}-y_{1} &=a\left(e^{b x_{2}}-e^{b x_{1}}\right) \\
+&=a\left(r^{x_{2} / d}-r^{x_{1} / d}\right)
+\end{aligned}
+\]
+so that
+\[
+a=\frac{y_{2}-y_{1}}{r^{x_{2} / d}-r^{x_{1} / d}}
+\]
+We also get
+\[
+a=\frac{y_{3}-y_{2}}{r^{x_{3} / d}-r^{x_{2} / d}}=\frac{y_{3}-y_{1}}{r^{x_{3} / d}-r^{x_{1} / d}}
+\]
+Finally, \(c=y_{i}-a e^{b x_{i}}\) for any \(i\).
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/def2fba4-2bd4-4a98-8216-4d44881db9ff/Untitled.png)
+
+One can also show that if \(x\) goes to its limit \(\ell\) at a rate strictly greater than \(1, A x\) does not have a better rate of convergence. (In practice, one rarely has e.g. quadratic convergence which would mean over 30 resp. 100 correct decimal places after 5 resp. 7 iterations (starting with 1 correct digit); usually no acceleration is needed in that case.)
+
+Thus, after rearranging,
+\[
+c=\frac{a b^{*}-a^{*} b}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
+\]
+This can be rewritten as
+\[
+c=\left(1-\beta_{b}\right) b^{*}+\beta_{b} b \quad \text { with } \beta_{b}=\frac{b^{*}-a^{+}}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
+\]
+The difference \(b^{*}-a^{*}\) is computationally inconvenient. Anticipating the next iteration step,
+\[
+d=\left(1-\beta_{c}\right) c^{*}+\beta_{c} c \quad \text { with } \beta_{c}=\frac{c^{*}-b^{*}}{\left(b-b^{*}\right)-\left(c-c^{*}\right)}
+\]
+a convenient expression for updating the relaxation factor may be found, i.e.
+\[
+\beta_{c}=\beta_{b}+\left(\beta_{b}-1\right) \frac{c-c^{*}}{\left(b-b^{+}\right)-\left(c-c^{+}\right)}
+\]
+This expression is used in step 4 of Box 2 .
+
+In practice, \(A x\) converges much faster to the limit than \(x\) does, as demonstrated by the example calculations below. Usually, it is much cheaper to calculate \(A x\) (involving only calculation of differences, one multiplication and one division) than to calculate many more terms of the sequence \(x\). Care must be taken, however, to avoid introducing errors due to insufficient precision when calculating the differences in the numerator and denominator of the expression.
+
+We scrutinize the multi-dimensional case in [38], which forms the basis for the algorithm utilized in many problems, in particular in the field of strongly coupled FSI, see [44] for instance.
+
+The objective is to improve the iteration process so that as few iterations as possible are required to attain a electro-thermo-mechanical problems converged solution.
+
+We now introduce a general vector $\mathbf{D}$, which can either stand for the solution vector of the displacement or the temperature, respectively. The next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{D}^{(k)}$ plus a new increment $\Delta \mathbf{D}^{(k)}$
+
+$$
+\mathbf{D}^{(k+1)}=\mathbf{D}^{(k)}+\Delta \mathbf{D}^{(k)}
+$$
+
+The increment reads
+
+$$
+\Delta \mathbf{D}^{(k)}=\omega^{(k)}\left(\tilde{\mathbf{D}}^{(k+1)}-\mathbf{D}^{(k)}\right)=\omega^{(k)} \mathbf{R}^{(k)}
+$$
+
+with $\omega^{(k)}$ being the relaxation coefficient. From now on, all unmodified values are written with a tilde, like $\tilde{\mathbf{D}}^{(k+1)}$ standing for the unmodified values of the displacement or temperature vector, respectively. The efficiency of this method is mainly due to the relaxation parameter $\omega$. A constant parameter $0<\omega<2$ yields static relaxation (SR), whereas an adaptive parameter results in a dynamic relaxation (DR).
+
+For the dynamic case, we follow [44] where the relaxation coefficient is updated in every iteration cycle as a function of two previous residuals:
+
+$$
+\omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{\mathrm{T}} \mathbf{R}^{(k-1)}}{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{2}}
+$$
+
+Dynamic relaxation is also easy to implement and the additional computational input is acceptable, since only inner vector products have to be performed. Several variations on this method can be found in the literature: A comprehensive study was presented in [47], for instance.
+
+ Vector Extrapolation
+
+$$
+\hat{\boldsymbol{s}}_{k+m}=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i}\left(\boldsymbol{s}_{k+i+1}-\boldsymbol{s}_{k+i}\right)=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i} \Delta \boldsymbol{s}_{k+i+1}
+$$
+
+$$
+\begin{aligned}\Delta \hat{\boldsymbol{s}}_{k+m} &=\sum_{i=0}^{m-1} \gamma_{i} \Delta \boldsymbol{s}_{k+i+1} \\& \sum_{i=0}^{m-1} \gamma_{i}=1\end{aligned}
+$$
+
+\[
+A \gamma=0
+\]
+factors \(\gamma_{i}\). The difference between th f the system matrix \(\boldsymbol{A}\). This is done
+\[
+a_{i j}=\Delta s_{k+i} \cdot \Delta s_{k+j}
+\]
+extrapolation (MPE) method, as
+\[
+a_{i j}=\left(\Delta s_{k+i}-\Delta s_{k+i-1}\right) \cdot \Delta s_{k+j}
+\]
+lation (RRE) method, and as
+\[
+a_{i j}=\boldsymbol{y}^{i} \cdot \Delta \boldsymbol{s}_{k+j}
+\]
+
+ Steepest Descent Relaxation
