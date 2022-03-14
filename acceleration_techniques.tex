@@ -145,7 +145,7 @@ Since a relative convergence measure can fail to work properly when the coupling
 Newton-Raphson schemes, in the following denoted as Newton schemes, can be applied to the partitioned coupled fields either by considering the chained overall fixed-point notation (Equation~\eqref{eq:fixed_point_iteration}) or by writing up a blocked system consisting of coupled structural and fluid fixed-point iterations.
 
 To apply a Newton scheme to the overall chained fixed-point iteration (Equation \eqref{eq:fixed_point_iteration}), the residual operator from (Equation~\eqref{eq:residual_definition}) is defined as
-\begin{equation}
+\begin{equation} \label{eq:residual_fixed_point}
 \pazocal{R}\equiv\pazocal{U} \circ \pazocal {T}-\mathbf{I},
 \end{equation}
 where $\mathbf{I}$ is the identity matrix of suitable size.
@@ -305,7 +305,7 @@ Box~\ref{box:gmres_inspired} puts all parts of the GMRES-inpired method for one 
     \item \(k=k+1\)
     \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
     \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
-    \item If convergence has not been reached, \(\|\mathbf r^k\\| > \epsilon_1\), go to Step (1)
+    \item If convergence has not been reached, \(\|\mathbf r^k\| > \epsilon_1\), go to Step (1)
     \end{enumerate}
     \end{enumerate}
     \end{minipage}
@@ -316,31 +316,87 @@ Box~\ref{box:gmres_inspired} puts all parts of the GMRES-inpired method for one 
 
 \subsection{Quasi-Newton Method}
 
-An interface quasi-Newton method based on (2.151) and (2.152) is presented in [43]. The method is called interface quasi Newton with approximation of the inverse of the interface Jacobian matrix by least squares (IQN-ILS). Its origin, the IBQN-LS method presented in [172], is derived from the block Newton method (2.154) and uses two reduced order models for fluid and structure to approximate their interface Jacobians directly.
+An interface quasi-Newton method based on Equation~\eqref{eq:residual_fixed_point} and Equation~\eqref{eq:newton_raphson} is presented in \cite{degroote_joris_development_2010} for FSI. 
+The method is called interface quasi Newton with approximation of the inverse of the interface Jacobian matrix by least squares (IQN-ILS). 
+Its origin, the IBQN-LS method presented in \cite{vierendeels_implicit_2007}, is derived from the block Newton method Equation~\eqref{eq:block_newton_raphson} and uses two reduced order models for fluid and structure to approximate their interface Jacobians directly.
+In contrast, the IQN-ILS method provides one reduced order model for the inverse of the overall interface Jacobian matrix of the Newton system (Equation~\eqref{eq:newton_raphson}) applied to the right-hand side vector.
+In the following, the method is adapted to the thermo-mechanical problem under analysis and are based on the description of the method in \cite{gatzhammer_efficient_2014}.
 
-In contrast, the IQN-ILS method provides one reduced order model for the inverse of the overall interface Jacobian matrix of the Newton system (2.151) applied to the right-hand side vector.
+As already stated, the Jacobian in Equation~\eqref{eq:newton_raphson} is approximated using a reduced order model.
+More precisely, the quantity to be approximated is
+\begin{equation}
+  \hat{J}_{\pazocal R}^{-1}(\bm\uptheta_k)(-\pazocal R(\bm\uptheta_k))
+\end{equation}
+or
+\begin{equation}
+  \hat{J}_{\pazocal R}^{-1}(\bm\uptheta_k)\Delta\mathbf r^k,
+\end{equation}
+assuming \(\mathbf r^{k+1}\) and thus \(\Delta \mathbf r^k = \mathbf r^{k+1} - \mathbf r^k = 0 -\mathbf r^k\).
 
-The following elaborations are based on the description of the method in \cite{gatzhammer} and adapted to the thermo-mechanical problem.
+Since computing \(\mathcal R\) is expensive the estimate for the inverse of the Jacobian tries to take the most advantage from the values already computed so far during the iterative procedure.
 
-The input and output deltas are used to construct a reduced order model. In the interface residual formulation (Equation~\eqref{}) of the chained solvers, the input is given by the structural coupling values $\boldsymbol \theta$ and the output by the interface residual $\boldsymbol{r}$. Input and output deltas are defined by
 
-$$
-\Delta \boldsymbol{r}_{k}=\boldsymbol{r}_{k+1}-\boldsymbol{r}_{k} \\
-\Delta \tilde{\boldsymbol{\theta}}_{k}=\tilde{\boldsymbol{\theta}}_{k+1}-\tilde{\boldsymbol{\theta}}_{k}
-$$
+Appropriate input and output deltas are used to construct it. 
+In the residual formulation (Equation~\eqref{eq:residual_fixed_point}) of the chained solvers, the input is given by the temperature values $\bm \uptheta$ and the output by the residual $\mathbf{r}$. 
+Input and output deltas are defined by
+\begin{gather}
+\Delta \mathbf{r}^{k}=\mathbf{r}^{k+1}-\mathbf{r}^{k} \\
+\Delta \tilde{\bm{\uptheta}}^{k}=\tilde{\bm{\uptheta}}^{k+1}-\tilde{\bm{\uptheta}}^{k}
+\end{gather}
+i.e., not the actual input deltas $\Delta \bm{\uptheta}$ are gathered, but the intermediate chained solver outputs $\tilde{\bm{\uptheta}}$ are used to construct the $\Delta \tilde{\bm{\uptheta}}$. 
+This enables the approximation the inverse of the Jacobian applied to the right-hand side vector of the Newton system, as is shown below.
 
-i.e., not the actual input deltas $\Delta \boldsymbol{\theta}$ are gathered, but the intermediate chained solver outputs $\tilde{\boldsymbol{\theta}}$ are used to construct the $\Delta \tilde{\boldsymbol{\theta}}$. This enables to approximate the inverse of the Jacobian applied to the right-hand side vector of the Newton system, as we will see later.
+For convenience consider the matrices
+\begin{align}
+\mathbf{V}_{k} &=\left(\Delta \mathbf{r}^{k}, \Delta \mathbf{r}^{k-1}, \ldots, \Delta \mathbf{r}^{1}, \mathbf{V}^{n-1}, \ldots, \mathbf{V}^{n-l}\right)\label{eq:matrix_delta_res} \\
+\mathbf{W}{k} &=\left(\Delta \tilde{\bm{\uptheta}}^{k}, \Delta \tilde{\bm{\uptheta}}^{k-1}, \ldots, \Delta \tilde{\bm{\uptheta}}^{1}, \mathbf{W}^{n-1}, \ldots, \mathbf{W}^{n-l}\right) \label{eq:matrix_delta_theta}
+\end{align}
+with inversed ordering of the columns compared to the original IBQN-LS method (see Section~\ref{}). 
+The matrices \(\mathbf{V}^{n-1}, \ldots, \mathbf{V}^{n-l}\) and \(\mathbf{W}^{n-1}, \ldots, \mathbf{W}^{n-l}\) represent the (optional) reuse of columns from \(l\) old timesteps. 
+Reusing old timestep information can improve the approximation of the inverse of the Jacobian, particularly in the first iterations of a timestep.
 
- The deltas are collected in matrices
+For every pair \(\Delta \mathbf r^i\) and \(\Delta \bm \uptheta^i\), there is a corresponding estimate for the inverse of the Jacobian at \(\bm \uptheta^i\), which can be found from
+\begin{equation}
+  \hat{J}^{-1}_\pazocal{R}(\bm\uptheta^i) \Delta \mathbf r^i = \Delta \bm\uptheta^i.
+\end{equation} 
 
-$$
-\begin{aligned}
-\boldsymbol{V}_{k} &=\left(\Delta \boldsymbol{r}_{k}, \Delta \boldsymbol{r}_{k-1}, \ldots, \Delta \boldsymbol{r}_{1}, \boldsymbol{V}^{n-1}, \ldots, \boldsymbol{V}^{n-l}\right) \\
-\boldsymbol{W}{k} &=\left(\Delta \tilde{\boldsymbol{s}}{k}, \Delta \tilde{\boldsymbol{s}}{k-1}, \ldots, \Delta \tilde{\boldsymbol{s}}{1}, \boldsymbol{W}^{n-1}, \ldots, \boldsymbol{W}^{n-l}\right)
-\end{aligned}
-$$
+Thus, the inverse of the Jacobian at \(\bm \uptheta^k\) is to be approximated by a linear combination of the available estimates for the Jacobian.
+To avoid solving the linear system, the vector \(\hat{J}_\pazocal{R}(\uptheta^k)\Delta \mathbf r^k\) is considered instead, yielding
+\begin{equation}
+  \hat{J}^{-1}_\pazocal{R}(\bm\uptheta^k) \Delta \mathbf r^k = \sum_{i=1}^k c_i \hat{J}^{-1}_\pazocal{R}(\uptheta^i) \Delta \mathbf r^i.
+\end{equation}
+From Equation~\eqref{} we can substitute and find
+\begin{equation}
+  \sum_{i=1}^k c_i \hat{J}^{-1}_\pazocal{R}(\uptheta^i)\Delta \mathbf r^i = \sum_{i=1}  c_i \Delta \bm\uptheta^i = \mathbf W_K\mathbf c,
+\end{equation}
+thus
+\begin{equation}
+  \hat{J}^{-1}_\pazocal{R}(\bm\uptheta^k) \Delta \mathbf r^k = \mathbf W_k \mathbf c.
+\end{equation}
 
-with inversed ordering of the columns compared to the original IBQN-LS method. The matrices \(\boldsymbol{V}^{n-1}, \ldots, \boldsymbol{V}^{n-l}\) and \(\boldsymbol{W}^{n-1}, \ldots, \boldsymbol{W}^{n-l}\) represent the (optional) reuse of columns
+A reasonable choice for \(\mathbf c\) will be one that leads to a good approximation of \(\Delta \mathbf r^k\) by the available \(\Delta \mathbf r^i\), e.g., the minimization of 
+
+
+A linear combination of residual deltas from \(V_{k}\) is used to approximate
+\begin{equation}^{-1}
+\Delta \mathbf r \approx \mathbf V_{k} \mathbf c
+\end{equation}
+which is defined to be \(\Delta \mathbf{r}=\mathbf{0}-\mathbf{r}^{k+1}\), to get a new residual \(\mathbf{r}^{k+2}\) that is zero.
+The desired linear combination is found by the least-squares solution
+\begin{equation}
+\mathbf{c}=\underset{\bar{\mathbf c}}{\arg \min }\left\|\Delta \mathbf{r}-\mathbf{V}_{k} \tilde{\mathbf{c}}\right\|
+\end{equation}
+which can be computed, e.g., by an economy size \(Q R\)-decomposition. 
+Here, a possible problem is that the columns of \(\mathbf{V}_{k}\) can become linearly dependent such that a column removal becomes necessary. 
+Adding new columns as first columns, as in Equations~\eqref{eq:matrix_delta_res} and \eqref{eq:matrix_delta_theta}, enables to detect and remove older columns as linearly dependent during the least-squares solution. 
+This is particularly important when columns are reused from old timesteps since, then, the newer columns better represent the current state of the residual operator (Equation~\eqref{eq:residual_fixed_point}).
+
+A \(\Delta \tilde{\bm{\uptheta}}\) corresponding to a \(\Delta \mathbf{r}\) is then constructed by using the coefficients \(\mathbf{c}\) in combination with the matrix \(\mathbf{W}_{k}\) as
+\begin{equation}
+\Delta \tilde{\bm{\uptheta}}=\mathbf{W}_{k} \mathbf{c}.
+\end{equation}
+To construct an approximation for the inverse of the interface Jacobian, the residual formulation (Equation~\eqref{eq:residual_definition}) using \(\Delta \mathbf{r}\), \(\Delta \tilde{\bm{\uptheta}}\), and \(\Delta \bm{\uptheta}\), reading
+
 
 \subsection{Block Quasi-Newton Method}
 
