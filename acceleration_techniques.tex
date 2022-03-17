@@ -1,9 +1,14 @@
 \chapter{Strongly coupled methods for coupled fields}
 
-In what follows the most common strongly coupled or implicit methods employd for the solution of coupled problems are presented.
-This presentation seeks to provide a literature overview of the available approaches and uses as its basis the work by \cite{gatzhammer_efficient_2014}.
+This chapter presents the most common strongly coupled/implicit methods employd for the solution of coupled field problems.
+This presentation seeks to provide a literature overview of the available approaches and uses as its basis the works by \cite{gatzhammer_efficient_2014} and \cite{uekerman}.
 
-For the sake of clarity, the discretized equations of the thermo-mechanical problem under review are recovered here
+% More thorough description of the chapter
+Two main ways of realizing a strongly coupled approach to the solution of the coupled problem are presented.
+The first focuses on fixed-point solvers, and acceleration/stabilization techniques for them.
+The second deals with approaches based on the Newton-Raphson method, with the main problem tackled being an efficient and accurate approximation to the Jacobian.
+
+For the sake of clarity, the discretized equations of the thermo-mechanical problem, which is the focus of the present work, are recovered here
 \begin{gather}
     \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \label{eq:mech_problem}\\
     \mathbf C \dot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0, \label{eq:therm_problem}
@@ -11,17 +16,13 @@ For the sake of clarity, the discretized equations of the thermo-mechanical prob
 where the complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
 
 As only partitioned approach are being considered, the thermal and mechanical problems are solved separetely.
-To ease the discussion consider, consider the existence of two functions \(\pazocal U\) and \(\pazocal T\) that represent the solution of the mechanical and thermal problems with the temperature or the configuration fixed, respectively.
-These so-called solvers satisfy
+To ease the discussion, consider the existence of two functions \(\pazocal U\) and \(\pazocal T\) that represent the solution of the mechanical and thermal problems with the temperature or the configuration fixed, respectively.
+These so-called mechanical and thermal solvers satisfy
 \begin{equation}
   \mathbf u = \pazocal U(\bm \uptheta),\quad
   \bm \uptheta = \pazocal T(\mathbf u).
 \end{equation}
 See Chapter~\ref{} for detailed information on them.
-
-Two main ways of realizing a strongly coupled approach to the solution of the coupled problem are presented.
-The first focuses on fixed-point solvers, and acceleration/stabilization techniques for them.
-The second deals with approaches based on the Newton-Raphson method, with the main problem tackled being an efficient and accurate approximation to the Jacobian.
 
 
 \section{Fixed-point approaches}
