@@ -1,7 +1,7 @@
 \chapter{Strongly coupled methods for coupled fields}
 
 This chapter presents the most common strongly coupled/implicit methods employd for the solution of coupled field problems.
-This presentation seeks to provide a literature overview of the available approaches and uses as its basis the works by \cite{gatzhammer_efficient_2014} and \cite{uekerman}.
+This presentation seeks to provide a literature overview of the available approaches and uses as its basis the works by \cite{gatzhammer_efficient_2014} and \cite{}.
 
 % More thorough description of the chapter
 Two main ways of realizing a strongly coupled approach to the solution of the coupled problem are presented.
@@ -28,13 +28,16 @@ See Chapter~\ref{} for detailed information on them.
 \section{Fixed-point approaches}
 
 Consider that the $\bm \uptheta_n$ and $\mathbf u_n$ are both known and that $\bm \uptheta_{n+1}$ and $\mathbf u_{n+1}$ are now to be determined.
-A superscript $k$ is introduced to denote the iterations concerning the loop of the implicit scheme. To prevent cluttering, the subscripts concerning the timestep are dropped.
+A superscript $k$ is introduced to denote the iterations concerning the loop of the implicit scheme.
+To prevent cluttering, the subscripts concerning the timestep are dropped.
+
+
 There are two basic Schwarz procedures commonly employed in strongly coupled solution procedures. Both originate from domain decomposition.
-They are the additive and the parallel Scharwz procedures.
+They are the additive and the parallel Scharwz procedures.\jvc{Mention predictors somewhere}
 
 \subsection{Block Jacobi or Schwarz additive}
 
-If both the mechanical (Equation~\eqref{eq:mech_problem}) and the mechanical problem (Equation~\eqref{eq:therm_problem}) are solved in parallel the procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
+If both the mechanical (Equation~\eqref{eq:mech_problem}) and the thermal problem (Equation~\eqref{eq:therm_problem}) are solved in parallel the procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
 \begin{gather}
 \mathbf u^{k+1} = \pazocal U(\bm \uptheta^k),\\
 \bm \uptheta^{k+1} = \pazocal T(\mathbf u^k).
@@ -50,10 +53,9 @@ Box~\ref{box:block_jacobi} shows the pseudo-code for the block Jacobi approach.
     \begin{enumerate}[(i)]
     \item \(\mathbf u^0 = \mathbf u_{n}\)
     \item \(\bm \uptheta^0 = \bm \uptheta_n\)
-    \item \(k=0\)
+    \item Set fixed-point counter to zero: \(k=0\)
     \item Enter the fixed-point loop
     \begin{enumerate}[(1)]
-      \item Set fixed-point counter to zero: \(k=0\)
       \item Solve the mechanical problem at fixed temeperature \(\bm \uptheta^k\): \(\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k)\)
       \item Solve the thermal problem at a fixed configuration \(\mathbf u^k\): \(\bm \uptheta^{k+1} = \pazocal T(\mathbf u^k)\)
       \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
@@ -84,10 +86,9 @@ Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seide
     \begin{enumerate}[(i)]
     \item \(\mathbf u^0 = \mathbf u_{n}\)
     \item \(\bm \uptheta^0 = \bm \uptheta_n\)
-    \item \(k=0\)
+      \item Set fixed-point counter to zero: \(k=0\)
     \item Enter the fixed-point loop
     \begin{enumerate}[(1)]
-      \item Set fixed-point counter to zero: \(k=0\)
       \item Solve the mechanical problem at fixed temeperature \(\bm \uptheta^k\): \(\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k)\)
       \item Solve the thermal problem at a fixed configuration \(\mathbf u^{k+1}\): \(\bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1})\)
       \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
@@ -140,6 +141,256 @@ A relative measure solves this problem by setting the residual in relation with 
 Since a relative convergence measure can fail to work properly when the coupling iterate values are close to zero and rounding errors come into play, a combination of absolute and relative measure, where the absolute measure takes care of close to zero cases and the relative handles all other cases, is often a good choice.
 
 \subsection{Acceleration techniques}
+
+Function whose solution is what we are looking for:
+
+
+
+Looking more broadly
+
+Classification of iteration functions
+one-point
+
+one-point with memory
+
+multipoint
+
+mulipoint with memory
+
+
+We are trying to solve a system of non-linear equations.
+
+- Fixed point
+
+- Cycling using acceleration schemes
+
+
+- Newton-Raphson
+
+- Quasi-Newton methods
+
+
+According to \cite{brezinski}, there is a very strong connection between sequence transformations and fixed point methods for solving \(x=g(x)\) where \(g: R^{p} \to R^{p}\).
+The most well known example of this connection is that between Aitken's \(\Delta^{2}\) process and Steffensen's method in the case \(p=1\).
+We have
+\[T_{n}=S_{n}-\frac{\left(S_{n+1}-S_{n}\right)^{2}}{S_{n+2}-2 S_{n+1}+S_{n}}, \quad n=0,1, \ldots \quad\text{for Aitken's process}\]
+and
+\[x_{n+1}=x_{n}-\frac{\left(g\left(x_{n}\right)-x_{n}\right)^{2}}{g\left(g\left(x_{n}\right)\right)-2 g\left(x_{n}\right)+x_{n}}, n=0,1, \ldots \quad\text{for Steffensen's method.}\]
+More generally let \(T:\left(S_{n}\right) \to\left(T_{n}\right)\) be a quasi-linear sequence transformation defined by
+\[
+T_{n}=F\left(S_{n}, \ldots, S_{n+k}\right), \quad n=0,1, \ldots
+\]
+For solving the fixed point problem \(x=g(x)\) we can associate to it the iterative method
+\[
+x_{n+1}=F\left(x_{n}, g\left(x_{n}\right), \ldots, g_{k}\left(x_{n}\right)\right), \quad n=0,1, \ldots
+\]
+where \(g_{i+1}(t)=g\left(g_{i}(t)\right)\) and \(g_{0}(t)=t\).
+Conversely to any fixed point iteration of this form, we can associate a sequence transformation of the previous form.
+
+Variations on this approach can be found which include \cite{irons_version_1969} and \cite{king}
+
+There is no universal accelerator \cite{brezinski}
+
+%There is a connection between acceleration of series and fixed point methods
+
+% Describe cycling
+% Differnce to common
+
+% Scalar acceleration
+
+% Vector acceleration
+
+\subsubsection{Predictor}
+
+- Erbts and Düster (2012)
+- Erbts et al. (2015)
+- Wendt et al. (2015)
+
+A very efficient way to increase the chances of stability and reduce computation time is to predict the optimal initial values at the beginning of every time step. This actually means that we take the results of the mechanical field of the converged solution at the end of the last two or more time increments and predict the new solution by polynomial extrapolation. The predicted values can then be used as an improved initial configuration for the electrical and thermal field. This method is based on polynomial vector extrapolation which is quite easy to implement, and the extra computational input involved is negligible.
+
+Here, the maximum polynomial under consideration is of the order two, i.e., we extrapolate the new solution from the results from the last three time steps. Assuming our time increment will be constant over the whole simulation, the mechanical predictors $\mathbf{U}^{*}$ *for the order $p=1$ and $p=2$ read:*
+
+$$
+\begin{array}{l}
+p=1: \mathbf{U}_{n+1}^{*}=2 \mathbf{U}_{n}-\mathbf{U}_{n-1} \\
+p=2: \mathbf{U}_{n+1}^{*}=3 \mathbf{U}_{n}-3 \mathbf{U}_{n-1}+\mathbf{U}_{n-2}
+\end{array}
+$$
+
+The subscript $n$ denotes the time step. Where the time increment is adaptive, we refer to [22], since the predictor has to be constructed in an adaptive manner as well.
+
+\subsubsection{Constant Underrelaxation}
+
+One of the most straightforward ways to stabilize an iterative method is to use constant underrelaxation.
+The relaxation is performed by combining the input and output of Equation~\eqref{eq:fixed_point_iteration} as
+\begin{equation} \label{eq:constant_relaxation}
+\bm \uptheta^{k+1}=(1-\omega) \bm\uptheta^{k}+\omega \tilde{\bm\uptheta}^{k+1}=\bm\uptheta^{k}+\omega \mathbf{r}^{k+1},
+\end{equation}
+where \(\omega\) is the relaxation factor chosen in the range \(0<\omega<1\), which corresponds to an underrelaxation, to achieve a stabilizing effect.
+Box~\ref{box:constant_underrelaxation} shows a block Gauss-Seidel scheme enhanced by constant relaxation.
+
+Constant underrelaxation works well if \(\omega\) is close to 1 , but leads to a slow convergence if \(\omega\) has to be chosen close to 0.
+Thus, the constant underrelaxation method leads to unmanageable computational costs for severe instabilities.
+The optimal \(\omega\) is not necessary the largest stable one \citet{gatzhammer_efficient_2014} and has to be set empirically.
+In what follows, alternative methods are discussed, which try to decrease the number of iterations necessary while still keeping stability.
+
+\begin{framedbox}[htb]
+  \caption{Constant underrelaxation applied to the block Gauss-Seidel scheme.}
+  \label{box:constant_underrelaxation}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item \(\bm\uptheta^0 = \bm\uptheta_{n+1}^p\)
+    \item Set fixed-point counter to zero: \(k=0\)
+    \item Enter the fixed-point loop
+    \begin{enumerate}[(1)]
+      \item Solve the mechanical problem at fixed temeperature \(\bm \uptheta^k\): \(\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k)\)
+      \item Solve the thermal problem at a fixed configuration \(\mathbf u^{k+1}\): \(\bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1})\)
+      \item Compute \(\bm \uptheta^{k+1}\) using constant relaxation (Equation~\eqref{eq:constant_relaxation})
+      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
+\subsubsection{Aitken relaxation}
+
+\begin{itemize}
+  \item Küttler and Wall (2008)
+  \item Irons and Tuck (1969)
+  \item Joosten et al. (2009)
+  \item Küttler and Wall (2009)
+  \item Erbts et al. (2015)
+  \item Wendt et al. (2015)
+\end{itemize}
+
+As an alternative to constant underrelaxation, Aitken's \(\Delta^2\) provides a dynamic underrelaxation, which can be used to improve the convergence/stability properties of coupling algorithm.
+It is a method of acceleration of convergence, and a particular case of a nonlinear sequence transformation.
+
+In the one-dimensional case, this method resembles the secant method, which can be used to solve nonlinear equations without differentiation.
+
+The formula for the one-dimensional case is
+
+$$
+AX_n = \frac{x_n x_{n+2} - x_{n+1}^2}{x_n-2x_{n+1}+ x_{n+2} }
+$$
+
+or
+
+$$
+AX_n = x_{n+2} - \frac{x_{n+2} - x_{n+1} }{x_n + x_{n+2} - 2 x_{n+1} }(x_{n+1}-x_{n+2})
+$$
+
+Aitken's method will accelerate the sequence $x_{n}$ if $\lim_{n \rightarrow \infty} \frac{(A x)_{n}-\ell}{x_{n}-\ell}=0$.
+$A$ is not a linear operator, but a constant term drops out, viz: $A[x-\ell]=A x-\ell$, if $\ell$ is a constant. This is clear from the expression of $A x$ in terms of the finite difference operator $\Delta$.
+Although the new process does not in general converge quadratically, it can be shown that for a fixed point process, that is, for an iterated function sequence $x_{n+1}=f\left(x_{n}\right)$ for some function $f$, converging to a fixed point, the convergence is quadratic. In this case, the technique is known as Steffensen's method.
+
+Empirically, the $A$-operation eliminates the "most important error term". One can check this by considering a sequence of the form $x_{n}=\ell+a^{n}+b^{n}$, where $0<b<a<1$: The sequence $A x$ will then go to the limit like $b^{n}$ goes to zero.
+
+Geometrically, the graph of an exponential function $f(t)$ that satisfies \(f(n)=x_{n}, f(n+1)=x_{n+1}\) and \(f(n+2)=x_{n+2}\) has an horizontal asymptote at \(\frac{x_{n} x_{n+2}-x_{n+1}^{2}}{x_{n}-2 x_{n+1}+x_{n+2}}\left(\right.\) if \(\left.x_{n}-2 x_{n+1}+x_{n+2} \neq 0\right)\).
+
+If you want to fit \(a e^{b x}+c\) to 3 points, \(\left(x_{i}, y_{i}\right)*{i=1}^{3}\), you want \(y*{i}=a e^{b x_{i}}+c .\)
+Subtracting the first two, \(y_{2}-y_{1}=a\left(e^{b x_{2}}-e^{b x_{1}}\right)=a e^{b x_{1}}\left(e^{b\left(x_{2}-x_{1}\right)}-1\right)\) and, similarly, \(y_{3}-y_{2}=a\left(e^{b x_{3}}-e^{b x_{2}}\right)=a e^{b x_{2}}\left(e^{b\left(x_{3}-x_{2}\right)}-1\right) .\)
+If \(x_{3}-x_{2}=x_{2}-x_{1}=d\), so the data are equally spaced and \(e^{b\left(x_{2}-x_{1}\right)}-1=e^{b\left(x_{3}-x_{2}\right)}-1\), we can divide these to get
+\(\frac{y_{3}-y_{2}}{y_{2}-y_{1}}=e^{b x_{2}-b x_{1}}=e^{b\left(x_{2}-x_{1}\right)}=e^{b d}\)
+Taking logs, and letting \(r=\frac{y_{3}-y_{2}}{y_{2}-y_{1}}, \ln (r)=b d\) so \(b=\frac{\ln (r)}{d} .\) From this, \(e^{b}=r^{1 / d} .\)
+Note that this requires that \(r>0\), so the points are monotonic.
+Then
+\[
+\begin{aligned}
+y_{2}-y_{1} &=a\left(e^{b x_{2}}-e^{b x_{1}}\right) \\
+&=a\left(r^{x_{2} / d}-r^{x_{1} / d}\right)
+\end{aligned}
+\]
+so that
+\[
+a=\frac{y_{2}-y_{1}}{r^{x_{2} / d}-r^{x_{1} / d}}
+\]
+We also get
+\[
+a=\frac{y_{3}-y_{2}}{r^{x_{3} / d}-r^{x_{2} / d}}=\frac{y_{3}-y_{1}}{r^{x_{3} / d}-r^{x_{1} / d}}
+\]
+Finally, \(c=y_{i}-a e^{b x_{i}}\) for any \(i\).
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/def2fba4-2bd4-4a98-8216-4d44881db9ff/Untitled.png)
+
+One can also show that if \(x\) goes to its limit \(\ell\) at a rate strictly greater than \(1\)\footnote{$\left\{x_{n}\right\}{n \in \mathbb{N}}$ converges linearly to $\ell$ if there exists a number $\mu \in(0,1)$ such that \(\lim_{n \rightarrow \infty} \frac{\left|x_{n+1}-\ell\right|}{\left|x_{n}-\ell\right|}=\mu\).}, \(A x\) does not have a better rate of convergence.
+(In practice, one rarely has e.g. quadratic convergence which would mean over 30 resp. 100 correct decimal places after 5 resp. 7 iterations (starting with 1 correct digit); usually no acceleration is needed in that case.)
+
+Thus, after rearranging,
+\[
+c=\frac{a b^{*}-a^{*} b}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
+\]
+This can be rewritten as
+\[
+c=\left(1-\beta_{b}\right) b^{*}+\beta_{b} b \quad \text { with } \beta_{b}=\frac{b^{*}-a^{+}}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
+\]
+The difference \(b^{*}-a^{*}\) is computationally inconvenient. Anticipating the next iteration step,
+\[
+d=\left(1-\beta_{c}\right) c^{*}+\beta_{c} c \quad \text { with } \beta_{c}=\frac{c^{*}-b^{*}}{\left(b-b^{*}\right)-\left(c-c^{*}\right)}
+\]
+a convenient expression for updating the relaxation factor may be found, i.e.
+\[
+\beta_{c}=\beta_{b}+\left(\beta_{b}-1\right) \frac{c-c^{*}}{\left(b-b^{+}\right)-\left(c-c^{+}\right)}
+\]
+This expression is used in step 4 of Box 2 .
+
+In practice, \(A x\) converges much faster to the limit than \(x\) does, as demonstrated by the example calculations below. Usually, it is much cheaper to calculate \(A x\) (involving only calculation of differences, one multiplication and one division) than to calculate many more terms of the sequence \(x\). Care must be taken, however, to avoid introducing errors due to insufficient precision when calculating the differences in the numerator and denominator of the expression.
+
+We scrutinize the multi-dimensional case in [38], which forms the basis for the algorithm utilized in many problems, in particular in the field of strongly coupled FSI, see [44] for instance.
+
+The objective is to improve the iteration process so that as few iterations as possible are required to attain a electro-thermo-mechanical problems converged solution.
+
+We now introduce a general vector $\mathbf{D}$, which can either stand for the solution vector of the displacement or the temperature, respectively. The next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{D}^{(k)}$ plus a new increment $\Delta \mathbf{D}^{(k)}$
+
+$$
+\mathbf{D}^{(k+1)}=\mathbf{D}^{(k)}+\Delta \mathbf{D}^{(k)}
+$$
+
+The increment reads
+
+$$
+\Delta \mathbf{D}^{(k)}=\omega^{(k)}\left(\tilde{\mathbf{D}}^{(k+1)}-\mathbf{D}^{(k)}\right)=\omega^{(k)} \mathbf{R}^{(k)}
+$$
+
+with $\omega^{(k)}$ being the relaxation coefficient. From now on, all unmodified values are written with a tilde, like $\tilde{\mathbf{D}}^{(k+1)}$ standing for the unmodified values of the displacement or temperature vector, respectively. The efficiency of this method is mainly due to the relaxation parameter $\omega$. A constant parameter $0<\omega<2$ yields static relaxation (SR), whereas an adaptive parameter results in a dynamic relaxation (DR).
+
+For the dynamic case, we follow [44] where the relaxation coefficient is updated in every iteration cycle as a function of two previous residuals:
+
+$$
+\omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{\mathrm{T}} \mathbf{R}^{(k-1)}}{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{2}}
+$$
+
+Dynamic relaxation is also easy to implement and the additional computational input is acceptable, since only inner vector products have to be performed. Several variations on this method can be found in the literature: A comprehensive study was presented in [47], for instance.
+
+ Vector Extrapolation
+
+$$
+\hat{\boldsymbol{s}}_{k+m}=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i}\left(\boldsymbol{s}_{k+i+1}-\boldsymbol{s}_{k+i}\right)=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i} \Delta \boldsymbol{s}_{k+i+1}
+$$
+
+$$
+\begin{aligned}\Delta \hat{\boldsymbol{s}}_{k+m} &=\sum_{i=0}^{m-1} \gamma_{i} \Delta \boldsymbol{s}_{k+i+1} \\& \sum_{i=0}^{m-1} \gamma_{i}=1\end{aligned}
+$$
+
+\[
+A \gamma=0
+\]
+factors \(\gamma_{i}\). The difference between th f the system matrix \(\boldsymbol{A}\). This is done
+\[
+a_{i j}=\Delta s_{k+i} \cdot \Delta s_{k+j}
+\]
+extrapolation (MPE) method, as
+\[
+a_{i j}=\left(\Delta s_{k+i}-\Delta s_{k+i-1}\right) \cdot \Delta s_{k+j}
+\]
+lation (RRE) method, and as
+\[
+a_{i j}=\boldsymbol{y}^{i} \cdot \Delta \boldsymbol{s}_{k+j}
+\]
+
+ Steepest Descent Relaxation
 
 \section{Newton-Raphson schemes}
 
@@ -557,174 +808,3 @@ $$
  Filtering
 
  Multi-Scale
-
- Mechanical prediction
-
-- Erbts and Düster (2012)
-- Erbts et al. (2015)
-- Wendt et al. (2015)
-
-A very efficient way to increase the chances of stability and reduce computation time is to predict the optimal initial values at the beginning of every time step. This actually means that we take the results of the mechanical field of the converged solution at the end of the last two or more time increments and predict the new solution by polynomial extrapolation. The predicted values can then be used as an improved initial configuration for the electrical and thermal field. This method is based on polynomial vector extrapolation which is quite easy to implement, and the extra computational input involved is negligible.
-
-Here, the maximum polynomial under consideration is of the order two, i.e., we extrapolate the new solution from the results from the last three time steps. Assuming our time increment will be constant over the whole simulation, the mechanical predictors $\mathbf{U}^{*}$ *for the order $p=1$ and $p=2$ read:*
-
-$$
-\begin{array}{l}
-p=1: \mathbf{U}_{n+1}^{*}=2 \mathbf{U}_{n}-\mathbf{U}_{n-1} \\
-p=2: \mathbf{U}_{n+1}^{*}=3 \mathbf{U}_{n}-3 \mathbf{U}_{n-1}+\mathbf{U}_{n-2}
-\end{array}
-$$
-
-The subscript $n$ denotes the time step. Where the time increment is adaptive, we refer to [22], since the predictor has to be constructed in an adaptive manner as well.
-
- Acceleration/Stabilization techniques
-
- Constant Underrelaxation
-
-- Gatzhammer (2014)
-
-$$
-\boldsymbol{s}_{k+1}=(1-\omega) \boldsymbol{s}_{k}+\omega \tilde{\boldsymbol{s}}_{k+1}=\boldsymbol{s}_{k}+\omega \boldsymbol{r}_{k+1}
-$$
-
- Numerical relaxation - Aitken $\Delta^2$-method
-
-- Küttler and Wall (2008)
-- Irons and Tuck (1969)
-- Joosten et al. (2009)
-- Küttler and Wall (2009)
-- Erbts et al. (2015)
-- Wendt et al. (2015)
-
-To improve the coupling algorithm, we apply Aitken's $\Delta^{2}$-method to accelerate the  convergence of series.
-
-Aitken's delta-squared process is a method of acceleration of convergence, and a particular case of a nonlinear sequence transformation.
-
-In the one-dimensional case, this method resembles the secant method, which can be used to solve nonlinear equations without differentiation.
-
-$\left\{x_{n}\right\}{n \in \mathbb{N}}$ *will converge linearly to $\ell$ if there exists a number $\mu \in(0,1)$ such that*
-
-$$
-\lim {n \rightarrow \infty} \frac{\left|x_{n+1}-\ell\right|}{\left|x_{n}-\ell\right|}=\mu .
-$$
-
-The formula for the one-dimensional case is
-
-$$
-AX_n = \frac{x_n x_{n+2} - x_{n+1}^2}{x_n-2x_{n+1}+ x_{n+2} }
-$$
-
-or
-
-$$
-AX_n = x_{n+2} - \frac{x_{n+2} - x_{n+1} }{x_n + x_{n+2} - 2 x_{n+1} }(x_{n+1}-x_{n+2})
-$$
-
-Aitken's method will accelerate the sequence $x_{n}$ if $\lim_{n \rightarrow \infty} \frac{(A x)_{n}-\ell}{x_{n}-\ell}=0$.
-$A$ is not a linear operator, but a constant term drops out, viz: $A[x-\ell]=A x-\ell$, if $\ell$ is a constant. This is clear from the expression of $A x$ in terms of the finite difference operator $\Delta$.
-Although the new process does not in general converge quadratically, it can be shown that for a fixed point process, that is, for an iterated function sequence $x_{n+1}=f\left(x_{n}\right)$ for some function $f$, converging to a fixed point, the convergence is quadratic. In this case, the technique is known as Steffensen's method.
-
-Empirically, the $A$-operation eliminates the "most important error term". One can check this by considering a sequence of the form $x_{n}=\ell+a^{n}+b^{n}$, where $0<b<a<1$: The sequence $A x$ will then go to the limit like $b^{n}$ goes to zero.
-
-Geometrically, the graph of an exponential function $f(t)$ that satisfies \(f(n)=x_{n}, f(n+1)=x_{n+1}\) and \(f(n+2)=x_{n+2}\) has an horizontal asymptote at \(\frac{x_{n} x_{n+2}-x_{n+1}^{2}}{x_{n}-2 x_{n+1}+x_{n+2}}\left(\right.\) if \(\left.x_{n}-2 x_{n+1}+x_{n+2} \neq 0\right)\).
-
-If you want to fit \(a e^{b x}+c\) to 3 points, \(\left(x_{i}, y_{i}\right)*{i=1}^{3}\), you want \(y*{i}=a e^{b x_{i}}+c .\)
-Subtracting the first two, \(y_{2}-y_{1}=a\left(e^{b x_{2}}-e^{b x_{1}}\right)=a e^{b x_{1}}\left(e^{b\left(x_{2}-x_{1}\right)}-1\right)\) and, similarly, \(y_{3}-y_{2}=a\left(e^{b x_{3}}-e^{b x_{2}}\right)=a e^{b x_{2}}\left(e^{b\left(x_{3}-x_{2}\right)}-1\right) .\)
-If \(x_{3}-x_{2}=x_{2}-x_{1}=d\), so the data are equally spaced and \(e^{b\left(x_{2}-x_{1}\right)}-1=e^{b\left(x_{3}-x_{2}\right)}-1\), we can divide these to get
-\(\frac{y_{3}-y_{2}}{y_{2}-y_{1}}=e^{b x_{2}-b x_{1}}=e^{b\left(x_{2}-x_{1}\right)}=e^{b d}\)
-Taking logs, and letting \(r=\frac{y_{3}-y_{2}}{y_{2}-y_{1}}, \ln (r)=b d\) so \(b=\frac{\ln (r)}{d} .\) From this, \(e^{b}=r^{1 / d} .\)
-Note that this requires that \(r>0\), so the points are monotonic.
-Then
-\[
-\begin{aligned}
-y_{2}-y_{1} &=a\left(e^{b x_{2}}-e^{b x_{1}}\right) \\
-&=a\left(r^{x_{2} / d}-r^{x_{1} / d}\right)
-\end{aligned}
-\]
-so that
-\[
-a=\frac{y_{2}-y_{1}}{r^{x_{2} / d}-r^{x_{1} / d}}
-\]
-We also get
-\[
-a=\frac{y_{3}-y_{2}}{r^{x_{3} / d}-r^{x_{2} / d}}=\frac{y_{3}-y_{1}}{r^{x_{3} / d}-r^{x_{1} / d}}
-\]
-Finally, \(c=y_{i}-a e^{b x_{i}}\) for any \(i\).
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/def2fba4-2bd4-4a98-8216-4d44881db9ff/Untitled.png)
-
-One can also show that if \(x\) goes to its limit \(\ell\) at a rate strictly greater than \(1, A x\) does not have a better rate of convergence. (In practice, one rarely has e.g. quadratic convergence which would mean over 30 resp. 100 correct decimal places after 5 resp. 7 iterations (starting with 1 correct digit); usually no acceleration is needed in that case.)
-
-Thus, after rearranging,
-\[
-c=\frac{a b^{*}-a^{*} b}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
-\]
-This can be rewritten as
-\[
-c=\left(1-\beta_{b}\right) b^{*}+\beta_{b} b \quad \text { with } \beta_{b}=\frac{b^{*}-a^{+}}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
-\]
-The difference \(b^{*}-a^{*}\) is computationally inconvenient. Anticipating the next iteration step,
-\[
-d=\left(1-\beta_{c}\right) c^{*}+\beta_{c} c \quad \text { with } \beta_{c}=\frac{c^{*}-b^{*}}{\left(b-b^{*}\right)-\left(c-c^{*}\right)}
-\]
-a convenient expression for updating the relaxation factor may be found, i.e.
-\[
-\beta_{c}=\beta_{b}+\left(\beta_{b}-1\right) \frac{c-c^{*}}{\left(b-b^{+}\right)-\left(c-c^{+}\right)}
-\]
-This expression is used in step 4 of Box 2 .
-
-In practice, \(A x\) converges much faster to the limit than \(x\) does, as demonstrated by the example calculations below. Usually, it is much cheaper to calculate \(A x\) (involving only calculation of differences, one multiplication and one division) than to calculate many more terms of the sequence \(x\). Care must be taken, however, to avoid introducing errors due to insufficient precision when calculating the differences in the numerator and denominator of the expression.
-
-We scrutinize the multi-dimensional case in [38], which forms the basis for the algorithm utilized in many problems, in particular in the field of strongly coupled FSI, see [44] for instance.
-
-The objective is to improve the iteration process so that as few iterations as possible are required to attain a electro-thermo-mechanical problems converged solution.
-
-We now introduce a general vector $\mathbf{D}$, which can either stand for the solution vector of the displacement or the temperature, respectively. The next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{D}^{(k)}$ plus a new increment $\Delta \mathbf{D}^{(k)}$
-
-$$
-\mathbf{D}^{(k+1)}=\mathbf{D}^{(k)}+\Delta \mathbf{D}^{(k)}
-$$
-
-The increment reads
-
-$$
-\Delta \mathbf{D}^{(k)}=\omega^{(k)}\left(\tilde{\mathbf{D}}^{(k+1)}-\mathbf{D}^{(k)}\right)=\omega^{(k)} \mathbf{R}^{(k)}
-$$
-
-with $\omega^{(k)}$ being the relaxation coefficient. From now on, all unmodified values are written with a tilde, like $\tilde{\mathbf{D}}^{(k+1)}$ standing for the unmodified values of the displacement or temperature vector, respectively. The efficiency of this method is mainly due to the relaxation parameter $\omega$. A constant parameter $0<\omega<2$ yields static relaxation (SR), whereas an adaptive parameter results in a dynamic relaxation (DR).
-
-For the dynamic case, we follow [44] where the relaxation coefficient is updated in every iteration cycle as a function of two previous residuals:
-
-$$
-\omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{\mathrm{T}} \mathbf{R}^{(k-1)}}{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{2}}
-$$
-
-Dynamic relaxation is also easy to implement and the additional computational input is acceptable, since only inner vector products have to be performed. Several variations on this method can be found in the literature: A comprehensive study was presented in [47], for instance.
-
- Vector Extrapolation
-
-$$
-\hat{\boldsymbol{s}}_{k+m}=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i}\left(\boldsymbol{s}_{k+i+1}-\boldsymbol{s}_{k+i}\right)=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i} \Delta \boldsymbol{s}_{k+i+1}
-$$
-
-$$
-\begin{aligned}\Delta \hat{\boldsymbol{s}}_{k+m} &=\sum_{i=0}^{m-1} \gamma_{i} \Delta \boldsymbol{s}_{k+i+1} \\& \sum_{i=0}^{m-1} \gamma_{i}=1\end{aligned}
-$$
-
-\[
-A \gamma=0
-\]
-factors \(\gamma_{i}\). The difference between th f the system matrix \(\boldsymbol{A}\). This is done
-\[
-a_{i j}=\Delta s_{k+i} \cdot \Delta s_{k+j}
-\]
-extrapolation (MPE) method, as
-\[
-a_{i j}=\left(\Delta s_{k+i}-\Delta s_{k+i-1}\right) \cdot \Delta s_{k+j}
-\]
-lation (RRE) method, and as
-\[
-a_{i j}=\boldsymbol{y}^{i} \cdot \Delta \boldsymbol{s}_{k+j}
-\]
-
- Steepest Descent Relaxation
