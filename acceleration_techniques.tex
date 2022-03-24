@@ -1,43 +1,206 @@
 \chapter{Strongly coupled methods for coupled fields}
 
 This chapter presents the most common strongly coupled/implicit methods employd for the solution of coupled field problems.
-This presentation seeks to provide a literature overview of the available approaches and uses as its basis the works by \cite{gatzhammer_efficient_2014} and \cite{}.
+This presentation seeks to provide a literature overview of the available approaches.
 
 % More thorough description of the chapter
 Two main ways of realizing a strongly coupled approach to the solution of the coupled problem are presented.
 The first focuses on fixed-point solvers, and acceleration/stabilization techniques for them.
-The second deals with approaches based on the Newton-Raphson method, with the main problem tackled being an efficient and accurate approximation to the Jacobian.
+The second deals with approaches based on the Newton-Raphson method, with the main problem tackled being an efficient and accurate approximation to the Jacobian.\jvc{In the end rewrite the description of the Chapter}
 
-For the sake of clarity, the discretized equations of the thermo-mechanical problem, which is the focus of the present work, are recovered here
+\section{Equations to be solved}
+
+For the sake of clarity, the discretized equations of the thermo-mechanical problem at the next time instant \(n+1\), which is the focus of the present work, are recovered here
 \begin{gather}
-    \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \label{eq:mech_problem}\\
+    \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \label{eq:mech_problem} \\
     \mathbf C \dot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0, \label{eq:therm_problem}
 \end{gather}
 where the complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
 
-As only partitioned approach are being considered, the thermal and mechanical problems are solved separetely.
-To ease the discussion, consider the existence of two functions \(\pazocal U\) and \(\pazocal T\) that represent the solution of the mechanical and thermal problems with the temperature or the configuration fixed, respectively.
+As only partitioned approaches are being considered, the thermal and mechanical problems are solved separetely, i.e., Equation~\eqref{eq:mech_problem} is solved considering a fixed temperature and Equations~\eqref{eq:therm_problem} is solved assuming a fixed configuration.
+To ease the discussion, consider the existence of two functions \(\pazocal U_{n+1}\) and \(\pazocal T_{n+1}\) that represent these solution procedures at timestep \(n+1\).
 These so-called mechanical and thermal solvers satisfy
-\begin{equation}
-  \mathbf u = \pazocal U(\bm \uptheta),\quad
-  \bm \uptheta = \pazocal T(\mathbf u).
-\end{equation}
+\begin{highlight}[innertopmargin=-5pt]
+\begin{gather}
+  \pazocal U\colon \mathscr K_{\theta, n+1}\to \mathscr K_{u,n+1},\quad \mathbf u = \pazocal U_{n+1}(\bm \uptheta),\\
+  \pazocal T\colon \mathscr K_{u,n+1}\to \mathscr K_{\theta, n+1},\quad \bm \uptheta = \pazocal T_{n+1}(\mathbf u).
+\end{gather}
+\end{highlight}
 See Chapter~\ref{} for detailed information on them.
+In the following the subscripts on the solvers will be droped to avoid clutter.
+
+The goal now is to consider functions, built using \(\pazocal U\) and \(\pazocal T\), whose roots are also the solutions to the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}).
+Several examples can be provided.
+The most appropriate for the current use-case are presented in what follows.
+They can be found in \cite{uekermann_partitioned_2016} in the context of fluid-structure interaction.
+
+Consider the residues defined as,
+\begin{highlight}
+\begin{equation} \label{eq:def_res_jacobi}
+  \pazocal R_\text{J}\colon \mathscr K_{u,n+1}\times\mathscr K_{\theta,n+1} \to K_{u,n+1}\times\mathscr K_{\theta,n+1},\quad  \pazocal R_\text{J}(\mathbf u, \bm \uptheta) =
+  \left\{\begin{array}{c}
+  \mathbf u - \pazocal U(\bm \theta)\\
+  \bm \uptheta - \pazocal T(\mathbf u)
+  \end{array}\right\},
+\end{equation}
+\end{highlight}
+and
+\begin{highlight}
+\begin{equation} \label{eq:def_res_gauss_seidel}
+  \pazocal R_\text{GS}\colon \mathscr K_{\theta,n+1} \to\mathscr K_{\theta,n+1},\quad \pazocal R_\text{GS}(\bm \uptheta) =
+  \bm \uptheta - \pazocal T\circ \pazocal U(\bm \uptheta),
+\end{equation}
+\end{highlight}
+where the subscript "J" stands for Jacobi and the subscript "GS" for Gauss-Seidel.
+The reason for this choice of subscripts is made clear in Section~\ref{}.
+
+Since the methods described below for the solution of non-linear systems of equations apply to both functions \(\pazocal R_\mathrm{J}\) and \(\pazocal R_\mathrm{GS}\), a general function denoted as \(\pazocal R\), whose variable is \(\mathbf x\), is considered instead.
+As already stated, the solution for the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}) can be abstracted as the solutions of
+\begin{equation} \label{eq:abstract_residue_equation}
+  \pazocal R(\mathbf x) = 0.
+\end{equation}
+
+\jvc{Explain an difference vector/scalar}
+
+\section{A classification scheme for iterative methods}
+\jvc{Should we include more classification schemes? Classifiy by order also? And so on?}
+
+Most methods available for the solution of systems of non-linear equations, such as the one in Equation~\eqref{eq:abstract_residue_equation}, are iterative methods.
+They can be more precisely defined lettting \(\mathbf x^{k},\mathbf x^{k-1}, \ldots\), whose superscripts correspond to the loop of the iteration method, be approximants to \(\mathbf x_{n+1}\), whose subscript concerns the timestep
+
+To better understand the landscape of available methods to solve nonlinear systems of equations, the iteration functions are classified according to the information they require following the classification scheme by \cite{traub}.
+Let \(\mathbf x^{k+1}\) be determined uniquely by information obtained at \(\mathbf x^{k}, \mathbf \mathbf x^{k-1}, \ldots\), including the derivatives of any order of \(\pazocal R\).
+Let the function that maps \(\mathbf x^{k}, \mathbf x^{k-1}, \ldots\) into \(\mathbf x^{k+1}\) be called \(\phi\).
+Thus
+\begin{highlight}
+\begin{equation}
+  \mathbf x^{k+1}=\phi\left(\mathbf x^{k},\pazocal R(\mathbf x^{k}), J_\pazocal{R}(\mathbf x^k), \dots, \mathbf x^{k-1},\pazocal R(\mathbf x^{k-1}), J_\pazocal{R}(\mathbf x^{k-1}) \ldots\right),
+\end{equation}
+\end{highlight}
+where \(\phi\) is called an iteration function, and \(J_\pazocal{R}\) is the Jacobian of \(\pazocal R\).
+To prevent clutering \(\mathbf x^k\) will stand for its value as well as for the values of \(\pazocal R(\mathbf x^k\), \(J_\pazocal{R}(\mathbf x^k)\) and further derivatives of higher order.
+Then \(\phi\) is called a \textit{one-point iteration function}.
+Most iteration functions. which have been used for root-finding are one-point iteration functions. The most commonly known examples are the fixed point schemes and Newton's iteration functions.
+
+Next let \(\mathbf x^{k+1}\) be determined by new information at \(\mathbf x^{k}\) and reused information at \(\mathbf x^{k-1}, \ldots\).
+Thus
+\begin{highlight}
+  \begin{equation}\label{eq:one_point_iteration_function_with_memory}
+    \mathbf x^{k+1}=\phi\left(\mathbf x^{k} ; \mathbf x^{k-1}, \ldots\right) .
+  \end{equation}
+\end{highlight}
+Then \(\phi\) is called a \textit{one-point iteration function with memory}.
+The semicolon in Equation~\eqref{eq:one_point_iteration_function_with_memory} separates the point at which new data are used from the points at which old data are reused.
+The best-known example of a one-point iteration function with memory is the secant iteration function.
+
+Let \(\mathbf x^{k+1}\) be determined by new information at \(\mathbf x^{k}, \omega_{1}\left(\mathbf x^{k}\right), \ldots\), \(\omega_{i}\left(\mathbf x^{k}\right)\), \(i \geq 1\), where \(\omega_i\) denote operations on \(\mathbf x^k\).
+No old information is reused.
+Thus
+\begin{highlight}
+  \begin{equation}
+    \mathbf x^{k+1}=\phi\left[\mathbf x^{k}, \omega_{1}\left(\mathbf x^{k}\right), \ldots, \omega_{i}\left(\mathbf x^{k}\right)\right].
+  \end{equation}
+\end{highlight}
+\jvc{Include where each will be discussed.}
+Then \(\phi\) is called a \textit{multipoint iterative function}.
+Such methods include Aitken-Steffson method.
+
+Finally, let \(\mathbf z_{j}\) represent the quantities \(\mathbf x^{j}, \omega_{1}\left(\mathbf x^{j}\right), \ldots, \omega_{i}\left(\mathbf x^{j}\right)\), \(i \geq 1\).
+Let
+\begin{highlight}
+  \begin{equation} \label{eq:multipoint_iterative_function_with_memory}
+  \mathbf x^{k+1}=\phi\left(\mathbf z^{k} ; \mathbf z^{k-1}, \dots \right) .
+  \end{equation}
+\end{highlight}
+Then \(\phi\) is called a \textit{multipoint iterative function with memory}.
+The semicolon in Equation~\eqref{eq:multipoint_iterative_function_with_memory} separates the points at which new data are used from the points at which old data are reused.
+\jvc{What about Padé approximants?}
+
+In the present work the criteria used for the choice of the iterative method used fit neatly into the ones provided by \cite{fang_two_2009} for problems in the context the electronic structure problems.
+They are
+\begin{enumerate}
+  \item The dimensionality of the problem is large.
+  \item \(\pazocal R(\mathbf x)\) is continuously differentiable, but the analytic form of its derivative is not readily available, or it is very expensive to compute.
+  \item The cost of evaluating \(\pazocal R(\mathbf x)\) is computationally high.
+  \item The problem is noisy. In other words, the evaluated function values of \(\pazocal R(\mathbf x)\) usually contain errors.
+\end{enumerate}
+\jvc{Justify why they fit neatly into our problem?}
+
+As such the methods chosen must minimize the number of calls to \(\pazocal R\), as it is expensive to compute.
+The amount of information saved from previous iterations must also be judiciously chosen as the dimensionality of the problem is large and this can lead to memory limitation.
+Finally, the analytical for of the derivative \(\pazocal{R}\) is also not available, thus methods that use must be discarded.
+
+\subsection{Predictor}
+
+All iterative procedures considered solve the thermo-mechanical problem at a given timestep \(n+1\).
+As the first value approximating \(\mathbf x_{n+1}\), one can employ the converged value of the previous timestep, \(\mathbf x_n\), however a very efficient way to increase the chances of stability and reduce computation time is to predict the optimal initial values at the beginning of every time step \citep{erbts_accelerated_2012, erbts_partitioned_2015, wendt_partitioned_2015}.
+The prediction of the new solution by polynomial extrapolation is based on the converged solution of the last two or three timesteps.
+This method is based on polynomial vector extrapolation which is quite easy to implement, and the extra computational input involved is negligible.
+
+The maximum polynomial under consideration is of the order two, i.e., the new solution is extrapolated from the results from the last three time steps.
+The predictors $\mathbf{x}^{*}$ for the order $p=1$ and $p=2$ polynomials read:
+\begin{highlight}[innertopmargin=-5pt]
+\begin{gather}
+p=1:\quad \mathbf{x}_{n+1}^{*}=2 \mathbf{x}_{n}-\mathbf{x}_{n-1}, \\
+p=2:\quad \mathbf{x}_{n+1}^{*}=3 \mathbf{x}_{n}-3 \mathbf{x}_{n-1}+\mathbf{x}_{n-2}.
+\end{gather}
+\end{highlight}
+
+\subsection{Convergence criteria}
+
+For an iterative method to be useful, there must be reasonable criteria to determine its convergence.
+The iteration residual is defined as
+\begin{equation}
+\mathbf r^{k+1} = \pazocal R(\mathbf x^{k}),
+\end{equation}
+and if it is equal to zero then $\mathbf x$ is the solution to the system of nonlinear equations, i.e.,
+\begin{equation} \label{eq:residual_definition}
+\mathbf r = \pazocal R(\mathbf x) = \mathbf 0,
+\end{equation}
+and hence, a reasonable convergence measure for the iteration procedure.
+
+The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k+1}=\left(r^{k+1,1}, \ldots, r^{k+1,m}\right)^{T}\) as
+\begin{equation} \label{eq:absolute_residual_criterion}
+\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k+1, i}\right)^{2}}.
+\end{equation}
+
+Directly using \eqref{eq:absolute_residual_criterion} yields an absolute convergence criterion
+\begin{equation}
+\left\|\boldsymbol{r} ^{k+1}\right\|_{L^{2}}<\epsilon_\mathrm{abs}.
+\end{equation}
+with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid.
+However, since the absolute value of $r$ can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations.
+A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
+\begin{equation}
+\frac{\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}}{\left\|\mathbf{x}^{k+1}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
+\end{equation}
+
+Since a relative convergence measure can fail to work properly when the coupling iterate values are close to zero and rounding errors come into play, a combination of absolute and relative measure, where the absolute measure takes care of close to zero cases and the relative handles all other cases, is often a good choice.
 
 
-\section{Fixed-point approaches}
 
-Consider that the $\bm \uptheta_n$ and $\mathbf u_n$ are both known and that $\bm \uptheta_{n+1}$ and $\mathbf u_{n+1}$ are now to be determined.
-A superscript $k$ is introduced to denote the iterations concerning the loop of the implicit scheme.
-To prevent cluttering, the subscripts concerning the timestep are dropped.
+\section{One-point iteration function}
 
+\jvc{Write small description of the one-point iteration functions we are going to look at}
 
-There are two basic Schwarz procedures commonly employed in strongly coupled solution procedures. Both originate from domain decomposition.
-They are the additive and the parallel Scharwz procedures.\jvc{Mention predictors somewhere}
+\subsection{Fixed-point approaches}
 
-\subsection{Block Jacobi or Schwarz additive}
+The application of the fixed-point method to obtain the roots of \(\mathcal R\) yields
+\begin{equation}
+  \mathbf x^{k+1} = \mathbf x^k - \pazocal R(\mathbf x^k).
+\end{equation}
+If the particular functions defined on Equations~\eqref{eq:def_res_jacobi} and \eqref{eq:def_res_gauss_seidel} are used, one finds the  two basic Schwarz procedures commonly employed in strongly coupled solution procedures.
+They are the additive or block Jacobi and the parallel Scharwz or Gauss-Seidel procedures.
+The names originate from domain decomposition, and justify the subscripts employ in Equations~\eqref{eq:def_res_jacobi} and \eqref{eq:def_res_gauss_seidel}.
 
-If both the mechanical (Equation~\eqref{eq:mech_problem}) and the thermal problem (Equation~\eqref{eq:therm_problem}) are solved in parallel the procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
+\subsubsection{Block Jacobi or Schwarz additive}
+
+Applying the fixed-point approach to \(\pazocal R_\mathrm{J}\) (Equation~\eqref{eq:def_res_jacobi}), yields
+\begin{equation}
+  \left\{\mathbf u^{k+1}, \bm\uptheta^{k+1}\right\}^T = \left\{\mathbf u^k, \bm\uptheta^k\right\}^T - \pazocal R_\mathrm{J}(\mathbf u^k, \bm \uptheta^k).
+\end{equation}
+This is the same as solving both the mechanical (Equation~\eqref{eq:mech_problem}) and the thermal problem (Equation~\eqref{eq:therm_problem}) in parallel.
+Such a procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
 \begin{gather}
 \mathbf u^{k+1} = \pazocal U(\bm \uptheta^k),\\
 \bm \uptheta^{k+1} = \pazocal T(\mathbf u^k).
@@ -66,15 +229,20 @@ Box~\ref{box:block_jacobi} shows the pseudo-code for the block Jacobi approach.
   \end{center}
 \end{framedbox}
 
-\subsection{Block Gauss-Seidel or Schwarz multiplicative}
+\subsubsection{Block Gauss-Seidel or Schwarz multiplicative}
 
-If the fields are solved sequentially, where the output of the first solver is used as the input for the second solver, the solution procedure is said to be Scharwz multiplicative or block Gauss-Seidel.
+Applying the fixed-point approach to \(\pazocal R_\mathrm{GS}\) (Equation~\eqref{eq:def_res_jacobi}), yields
+\begin{equation}
+  \bm\uptheta^{k+1} = \bm\uptheta^k - \pazocal R_\mathrm{GS}(\bm \uptheta^k).
+\end{equation}
+Thus, the fields are solved sequentially, where the output of the first solver is used as the input for the second solver.
+This the solution procedure is said to be Scharwz multiplicative or block Gauss-Seidel.
 \begin{gather}
 \mathbf u^{k+1}  = \pazocal U(\bm \uptheta^k),\\
 \bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1}).
 \end{gather}
 One of the fields must be chosen as the first and this may be important \citep{joosten_analysis_2009}.
-Here, the focus is on the sequence coinciding with the isothermic splict, i.e., first the mechanical problem is solved at a fixed temeprature, and then the thermal problem is fixed at a fixed configuration.
+Here, the focus is on the sequence coinciding with the isothermic split, i.e., first the mechanical problem is solved at a fixed temeprature, and then the thermal problem is fixed at a fixed configuration.
 
 Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seidel approach.
 
@@ -99,125 +267,60 @@ Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seide
   \end{center}
 \end{framedbox}
 
-As from a computational standpoint the block Jacobi and Gauss-Seidel approaches are very similar, the latter is used as the basis for the exposition that follows.
-Their similarity comes from the fact that the block Jacobi method can be regard as the computation of two simultaneous decoupled block Gauss-Seidel iterations.
+\subsection{Newton's method}
 
-\paragraph{Convergence criteria}
+Newton-Raphson schemes, in the following denoted as Newton schemes, can be applied to the partitioned coupled fields either by considering the chained overall fixed-point notation (Equation~\eqref{eq:fixed_point_iteration}) or by writing up a blocked system consisting of coupled structural and fluid fixed-point iterations.
 
-For an iterative method to be useful, there must be reasonable criteria to determine its convergence.
-With this in view, each full iteration of the strongly coupled scheme is written in a fixed-point notation as
-\begin{equation} \label{eq:fixed_point_iteration}
-\tilde{\bm \uptheta}^{k+1} = \pazocal T \left(\pazocal U(\bm \uptheta^k)\right),
+To apply a Newton scheme to the overall chained fixed-point iteration (Equation \eqref{eq:fixed_point_iteration}), the residual operator from (Equation~\eqref{eq:residual_definition}) is defined as
+\begin{equation} \label{eq:residual_fixed_point}
+\pazocal{R}\equiv\pazocal{U} \circ \pazocal {T}-\mathbf{I},
 \end{equation}
-where $\tilde{\bullet}$ denotes a solution coming directly from the solver, whereas the same symbol without the tilde represents the quantity after post-processing.
+where $\mathbf{I}$ is the identity matrix of suitable size.
+The Newton scheme tries to find the root $\bm \uptheta$ such that $\pazocal R(\bm \uptheta)=0$, assuming a linear behavior of $\pazocal R$ described by its Jacobi matrix $J_{\pazocal R}(\bm \uptheta)$.
 
-The iteration residual is defined as
+An iterative scheme, consisting of repeatedly solving
+\begin{equation} \label{eq:newton_raphson}
+J_{\pazocal R}\left(\bm \uptheta^{k}\right) \Delta \bm \uptheta^{k}=-\pazocal R\left(\bm \uptheta^{k}\right)
+\end{equation}
+for $\Delta \bm \uptheta^{k}$ and updating the iterate
 \begin{equation}
-\mathbf r^{k+1} = \pazocal T\left(\pazocal U(\bm\uptheta^k)\right) - \bm\uptheta^k = \tilde{\bm \uptheta}^{k+1} - \bm\uptheta^k.
+\bm \uptheta^{k+1}= \bm \uptheta^{k}+\Delta \bm \uptheta^{k}
 \end{equation}
+is performed.
+In case of writing up a separate fixed-point iteration for the different fields, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and, in addition, a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ are obtained
+\begin{gather}
+\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})=\mathbf{u}-\pazocal{U}(\bm{\uptheta})=0, \\
+\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})=\bm{\uptheta}-\pazocal{T}(\mathbf{u})=0.
+\end{gather}
 
-It is equal to zero when the fixed-point $\bm \uptheta$ is reached, i.e.,
-\begin{equation} \label{eq:residual_definition}
-\mathbf r = \pazocal T\left(\pazocal U(\bm \uptheta)\right) - \bm \uptheta = \mathbf 0,
+From this, a block Newton iteration can be written as
+\begin{equation} \label{eq:block_newton_raphson}
+\left[\begin{array}{ll}J_{\pazocal R_{u}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{u}}\left(\boldsymbol{\theta}^{k}\right) \\[7pt] J_{\pazocal{R}_{\theta}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{\theta}}\left(\boldsymbol{\theta}^{k}\right)\end{array}\right]
+\left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
+=-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
 \end{equation}
-and hence, a reasonable convergence measure for the fixed-point iteration.
-
-The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k+1}=\left(r^{k+1,1}, \ldots, r^{k+1,m}\right)^{T}\) as
-\begin{equation} \label{eq:absolute_residual_criterion}
-\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k+1, i}\right)^{2}}=\sqrt{\sum_{i}\left(\tilde{\uptheta}^{k+1, i}-\uptheta^{k, i}\right)^{2}}.
-\end{equation}
-
-Directly using \eqref{eq:absolute_residual_criterion} yields an absolute convergence criterion
+and the update of the iteration variables reads
 \begin{equation}
-\left\|\boldsymbol{r} ^{k+1}\right\|_{L^{2}}<\epsilon_\mathrm{abs}.
+\left\{\begin{array}{l}
+\mathbf{u}^{k+1} \\
+\boldsymbol{\theta}^{k+1}
+\end{array}\right\}=\left\{\begin{array}{l}
+\mathbf{u}^{k} \\
+\boldsymbol{\theta}^{k}
+\end{array}\right\}+\left\{\begin{array}{c}
+\Delta \mathbf{u}^{k} \\
+\Delta \boldsymbol{\theta}^{k}
+\end{array}\right\}.
 \end{equation}
-with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid.
-However, since the absolute value of $r$ can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations.
-A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
-\begin{equation}
-\frac{\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}}{\left\|\tilde{\bm{\uptheta}}^{k+1}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
-\end{equation}
 
-Since a relative convergence measure can fail to work properly when the coupling iterate values are close to zero and rounding errors come into play, a combination of absolute and relative measure, where the absolute measure takes care of close to zero cases and the relative handles all other cases, is often a good choice.
+Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\pazocal{R}\left(\mathbf{u}^{k}\right)$ or both $\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
 
-\subsection{Acceleration techniques}
-
-Function whose solution is what we are looking for:
+The critical point for black box equation coupling is how to obtain the derivative information in the Jacobi matrices in \eqref{eq:newton_raphson} or \eqref{eq:block_newton_raphson}.
+In the following, methods are presented which find approximations for the required Jacobian times vector products in different ways.
 
 
+\section{One-point iteration function with memory}
 
-Looking more broadly
-
-Classification of iteration functions
-one-point
-
-one-point with memory
-
-multipoint
-
-mulipoint with memory
-
-
-We are trying to solve a system of non-linear equations.
-
-- Fixed point
-
-- Cycling using acceleration schemes
-
-
-- Newton-Raphson
-
-- Quasi-Newton methods
-
-
-According to \cite{brezinski}, there is a very strong connection between sequence transformations and fixed point methods for solving \(x=g(x)\) where \(g: R^{p} \to R^{p}\).
-The most well known example of this connection is that between Aitken's \(\Delta^{2}\) process and Steffensen's method in the case \(p=1\).
-We have
-\[T_{n}=S_{n}-\frac{\left(S_{n+1}-S_{n}\right)^{2}}{S_{n+2}-2 S_{n+1}+S_{n}}, \quad n=0,1, \ldots \quad\text{for Aitken's process}\]
-and
-\[x_{n+1}=x_{n}-\frac{\left(g\left(x_{n}\right)-x_{n}\right)^{2}}{g\left(g\left(x_{n}\right)\right)-2 g\left(x_{n}\right)+x_{n}}, n=0,1, \ldots \quad\text{for Steffensen's method.}\]
-More generally let \(T:\left(S_{n}\right) \to\left(T_{n}\right)\) be a quasi-linear sequence transformation defined by
-\[
-T_{n}=F\left(S_{n}, \ldots, S_{n+k}\right), \quad n=0,1, \ldots
-\]
-For solving the fixed point problem \(x=g(x)\) we can associate to it the iterative method
-\[
-x_{n+1}=F\left(x_{n}, g\left(x_{n}\right), \ldots, g_{k}\left(x_{n}\right)\right), \quad n=0,1, \ldots
-\]
-where \(g_{i+1}(t)=g\left(g_{i}(t)\right)\) and \(g_{0}(t)=t\).
-Conversely to any fixed point iteration of this form, we can associate a sequence transformation of the previous form.
-
-Variations on this approach can be found which include \cite{irons_version_1969} and \cite{king}
-
-There is no universal accelerator \cite{brezinski}
-
-%There is a connection between acceleration of series and fixed point methods
-
-% Describe cycling
-% Differnce to common
-
-% Scalar acceleration
-
-% Vector acceleration
-
-\subsubsection{Predictor}
-
-- Erbts and Düster (2012)
-- Erbts et al. (2015)
-- Wendt et al. (2015)
-
-A very efficient way to increase the chances of stability and reduce computation time is to predict the optimal initial values at the beginning of every time step. This actually means that we take the results of the mechanical field of the converged solution at the end of the last two or more time increments and predict the new solution by polynomial extrapolation. The predicted values can then be used as an improved initial configuration for the electrical and thermal field. This method is based on polynomial vector extrapolation which is quite easy to implement, and the extra computational input involved is negligible.
-
-Here, the maximum polynomial under consideration is of the order two, i.e., we extrapolate the new solution from the results from the last three time steps. Assuming our time increment will be constant over the whole simulation, the mechanical predictors $\mathbf{U}^{*}$ *for the order $p=1$ and $p=2$ read:*
-
-$$
-\begin{array}{l}
-p=1: \mathbf{U}_{n+1}^{*}=2 \mathbf{U}_{n}-\mathbf{U}_{n-1} \\
-p=2: \mathbf{U}_{n+1}^{*}=3 \mathbf{U}_{n}-3 \mathbf{U}_{n-1}+\mathbf{U}_{n-2}
-\end{array}
-$$
-
-The subscript $n$ denotes the time step. Where the time increment is adaptive, we refer to [22], since the predictor has to be constructed in an adaptive manner as well.
 
 \subsubsection{Constant Underrelaxation}
 
@@ -270,53 +373,7 @@ It is a method of acceleration of convergence, and a particular case of a nonlin
 
 In the one-dimensional case, this method resembles the secant method, which can be used to solve nonlinear equations without differentiation.
 
-The formula for the one-dimensional case is
 
-$$
-AX_n = \frac{x_n x_{n+2} - x_{n+1}^2}{x_n-2x_{n+1}+ x_{n+2} }
-$$
-
-or
-
-$$
-AX_n = x_{n+2} - \frac{x_{n+2} - x_{n+1} }{x_n + x_{n+2} - 2 x_{n+1} }(x_{n+1}-x_{n+2})
-$$
-
-Aitken's method will accelerate the sequence $x_{n}$ if $\lim_{n \rightarrow \infty} \frac{(A x)_{n}-\ell}{x_{n}-\ell}=0$.
-$A$ is not a linear operator, but a constant term drops out, viz: $A[x-\ell]=A x-\ell$, if $\ell$ is a constant. This is clear from the expression of $A x$ in terms of the finite difference operator $\Delta$.
-Although the new process does not in general converge quadratically, it can be shown that for a fixed point process, that is, for an iterated function sequence $x_{n+1}=f\left(x_{n}\right)$ for some function $f$, converging to a fixed point, the convergence is quadratic. In this case, the technique is known as Steffensen's method.
-
-Empirically, the $A$-operation eliminates the "most important error term". One can check this by considering a sequence of the form $x_{n}=\ell+a^{n}+b^{n}$, where $0<b<a<1$: The sequence $A x$ will then go to the limit like $b^{n}$ goes to zero.
-
-Geometrically, the graph of an exponential function $f(t)$ that satisfies \(f(n)=x_{n}, f(n+1)=x_{n+1}\) and \(f(n+2)=x_{n+2}\) has an horizontal asymptote at \(\frac{x_{n} x_{n+2}-x_{n+1}^{2}}{x_{n}-2 x_{n+1}+x_{n+2}}\left(\right.\) if \(\left.x_{n}-2 x_{n+1}+x_{n+2} \neq 0\right)\).
-
-If you want to fit \(a e^{b x}+c\) to 3 points, \(\left(x_{i}, y_{i}\right)*{i=1}^{3}\), you want \(y*{i}=a e^{b x_{i}}+c .\)
-Subtracting the first two, \(y_{2}-y_{1}=a\left(e^{b x_{2}}-e^{b x_{1}}\right)=a e^{b x_{1}}\left(e^{b\left(x_{2}-x_{1}\right)}-1\right)\) and, similarly, \(y_{3}-y_{2}=a\left(e^{b x_{3}}-e^{b x_{2}}\right)=a e^{b x_{2}}\left(e^{b\left(x_{3}-x_{2}\right)}-1\right) .\)
-If \(x_{3}-x_{2}=x_{2}-x_{1}=d\), so the data are equally spaced and \(e^{b\left(x_{2}-x_{1}\right)}-1=e^{b\left(x_{3}-x_{2}\right)}-1\), we can divide these to get
-\(\frac{y_{3}-y_{2}}{y_{2}-y_{1}}=e^{b x_{2}-b x_{1}}=e^{b\left(x_{2}-x_{1}\right)}=e^{b d}\)
-Taking logs, and letting \(r=\frac{y_{3}-y_{2}}{y_{2}-y_{1}}, \ln (r)=b d\) so \(b=\frac{\ln (r)}{d} .\) From this, \(e^{b}=r^{1 / d} .\)
-Note that this requires that \(r>0\), so the points are monotonic.
-Then
-\[
-\begin{aligned}
-y_{2}-y_{1} &=a\left(e^{b x_{2}}-e^{b x_{1}}\right) \\
-&=a\left(r^{x_{2} / d}-r^{x_{1} / d}\right)
-\end{aligned}
-\]
-so that
-\[
-a=\frac{y_{2}-y_{1}}{r^{x_{2} / d}-r^{x_{1} / d}}
-\]
-We also get
-\[
-a=\frac{y_{3}-y_{2}}{r^{x_{3} / d}-r^{x_{2} / d}}=\frac{y_{3}-y_{1}}{r^{x_{3} / d}-r^{x_{1} / d}}
-\]
-Finally, \(c=y_{i}-a e^{b x_{i}}\) for any \(i\).
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/def2fba4-2bd4-4a98-8216-4d44881db9ff/Untitled.png)
-
-One can also show that if \(x\) goes to its limit \(\ell\) at a rate strictly greater than \(1\)\footnote{$\left\{x_{n}\right\}{n \in \mathbb{N}}$ converges linearly to $\ell$ if there exists a number $\mu \in(0,1)$ such that \(\lim_{n \rightarrow \infty} \frac{\left|x_{n+1}-\ell\right|}{\left|x_{n}-\ell\right|}=\mu\).}, \(A x\) does not have a better rate of convergence.
-(In practice, one rarely has e.g. quadratic convergence which would mean over 30 resp. 100 correct decimal places after 5 resp. 7 iterations (starting with 1 correct digit); usually no acceleration is needed in that case.)
 
 Thus, after rearranging,
 \[
@@ -336,7 +393,6 @@ a convenient expression for updating the relaxation factor may be found, i.e.
 \]
 This expression is used in step 4 of Box 2 .
 
-In practice, \(A x\) converges much faster to the limit than \(x\) does, as demonstrated by the example calculations below. Usually, it is much cheaper to calculate \(A x\) (involving only calculation of differences, one multiplication and one division) than to calculate many more terms of the sequence \(x\). Care must be taken, however, to avoid introducing errors due to insufficient precision when calculating the differences in the numerator and denominator of the expression.
 
 We scrutinize the multi-dimensional case in [38], which forms the basis for the algorithm utilized in many problems, in particular in the field of strongly coupled FSI, see [44] for instance.
 
@@ -364,84 +420,9 @@ $$
 
 Dynamic relaxation is also easy to implement and the additional computational input is acceptable, since only inner vector products have to be performed. Several variations on this method can be found in the literature: A comprehensive study was presented in [47], for instance.
 
- Vector Extrapolation
+\subsubsection{Steepest Descent Relaxation}
 
-$$
-\hat{\boldsymbol{s}}_{k+m}=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i}\left(\boldsymbol{s}_{k+i+1}-\boldsymbol{s}_{k+i}\right)=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i} \Delta \boldsymbol{s}_{k+i+1}
-$$
-
-$$
-\begin{aligned}\Delta \hat{\boldsymbol{s}}_{k+m} &=\sum_{i=0}^{m-1} \gamma_{i} \Delta \boldsymbol{s}_{k+i+1} \\& \sum_{i=0}^{m-1} \gamma_{i}=1\end{aligned}
-$$
-
-\[
-A \gamma=0
-\]
-factors \(\gamma_{i}\). The difference between th f the system matrix \(\boldsymbol{A}\). This is done
-\[
-a_{i j}=\Delta s_{k+i} \cdot \Delta s_{k+j}
-\]
-extrapolation (MPE) method, as
-\[
-a_{i j}=\left(\Delta s_{k+i}-\Delta s_{k+i-1}\right) \cdot \Delta s_{k+j}
-\]
-lation (RRE) method, and as
-\[
-a_{i j}=\boldsymbol{y}^{i} \cdot \Delta \boldsymbol{s}_{k+j}
-\]
-
- Steepest Descent Relaxation
-
-\section{Newton-Raphson schemes}
-
-Newton-Raphson schemes, in the following denoted as Newton schemes, can be applied to the partitioned coupled fields either by considering the chained overall fixed-point notation (Equation~\eqref{eq:fixed_point_iteration}) or by writing up a blocked system consisting of coupled structural and fluid fixed-point iterations.
-
-To apply a Newton scheme to the overall chained fixed-point iteration (Equation \eqref{eq:fixed_point_iteration}), the residual operator from (Equation~\eqref{eq:residual_definition}) is defined as
-\begin{equation} \label{eq:residual_fixed_point}
-\pazocal{R}\equiv\pazocal{U} \circ \pazocal {T}-\mathbf{I},
-\end{equation}
-where $\mathbf{I}$ is the identity matrix of suitable size.
-The Newton scheme tries to find the root $\bm \uptheta$ such that $\pazocal R(\bm \uptheta)=0$, assuming a linear behavior of $\pazocal R$ described by its Jacobi matrix $J_{\pazocal R}(\bm \uptheta)$.
-
-An iterative scheme, consisting of repeatedly solving
-\begin{equation} \label{eq:newton_raphson}
-J_{\pazocal R}\left(\bm \uptheta^{k}\right) \Delta \bm \uptheta^{k}=-\pazocal R\left(\bm \uptheta^{k}\right)
-\end{equation}
-for $\Delta \bm \uptheta^{k}$ and updating the iterate
-\begin{equation}
-\bm \uptheta^{k+1}= \bm \uptheta^{k}+\Delta \bm \uptheta^{k}
-\end{equation}
-is performed.
-In case of writing up a separate fixed-point iteration for the different fields, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and, in addition, a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ are obtained
-\begin{gather}
-\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})=\mathbf{u}-\pazocal{U}(\bm{\uptheta})=0, \\
-\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})=\bm{\uptheta}-\pazocal{T}(\mathbf{u})=0.
-\end{gather}
-
-From this, a block Newton iteration can be written as
-\begin{equation} \label{eq:block_newton_raphson}
-\left[\begin{array}{ll}J_{\pazocal R_{u}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{u}}\left(\boldsymbol{\theta}^{k}\right) \\[7pt] J_{\pazocal{R}_{\theta}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{\theta}}\left(\boldsymbol{\theta}^{k}\right)\end{array}\right]
-\left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
-=-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
-\end{equation}
-and the update of the iteration variables reads
-\begin{equation}
-\left\{\begin{array}{l}
-\mathbf{u}^{k+1} \\
-\boldsymbol{\theta}^{k+1}
-\end{array}\right\}=\left\{\begin{array}{l}
-\mathbf{u}^{k} \\
-\boldsymbol{\theta}^{k}
-\end{array}\right\}+\left\{\begin{array}{c}
-\Delta \mathbf{u}^{k} \\
-\Delta \boldsymbol{\theta}^{k}
-\end{array}\right\}.
-\end{equation}
-
-Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\pazocal{R}\left(\mathbf{u}^{k}\right)$ or both $\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
-
-The critical point for black box equation coupling is how to obtain the derivative information in the Jacobi matrices in \eqref{eq:newton_raphson} or \eqref{eq:block_newton_raphson}.
-In the following, methods are presented which find approximations for the required Jacobian times vector products in different ways.
+\subsection{Multi-secant methods}
 
 \subsection{GMRES-inspired approach}
 
@@ -808,3 +789,132 @@ $$
  Filtering
 
  Multi-Scale
+
+
+\section{Multipoint iteration functions}
+
+\subsection{Extrapolation tecniques with cycling}
+
+According to \cite{brezinski}, there is a very strong connection between sequence transformations and fixed point methods for solving \(x=g(x)\) where \(g: R^{p} \to R^{p}\).
+The most well known example of this connection is that between Aitken's \(\Delta^{2}\) process and Steffensen's method in the case \(p=1\).
+We have
+\[T_{n}=S_{n}-\frac{\left(S_{n+1}-S_{n}\right)^{2}}{S_{n+2}-2 S_{n+1}+S_{n}}, \quad n=0,1, \ldots \quad\text{for Aitken's process}\]
+and
+\[x_{n+1}=x_{n}-\frac{\left(g\left(x_{n}\right)-x_{n}\right)^{2}}{g\left(g\left(x_{n}\right)\right)-2 g\left(x_{n}\right)+x_{n}}, n=0,1, \ldots \quad\text{for Steffensen's method.}\]
+More generally let \(T:\left(S_{n}\right) \to\left(T_{n}\right)\) be a quasi-linear sequence transformation defined by
+\[
+T_{n}=F\left(S_{n}, \ldots, S_{n+k}\right), \quad n=0,1, \ldots
+\]
+For solving the fixed point problem \(x=g(x)\) we can associate to it the iterative method
+\[
+x_{n+1}=F\left(x_{n}, g\left(x_{n}\right), \ldots, g_{k}\left(x_{n}\right)\right), \quad n=0,1, \ldots
+\]
+where \(g_{i+1}(t)=g\left(g_{i}(t)\right)\) and \(g_{0}(t)=t\).
+Conversely to any fixed point iteration of this form, we can associate a sequence transformation of the previous form.
+
+Variations on this approach can be found which include \cite{irons_version_1969} and \cite{king}
+
+There is no universal accelerator \cite{brezinski}
+
+%There is a connection between acceleration of series and fixed point methods
+
+% Describe cycling
+% Differnce to common
+
+% Scalar acceleration
+
+% Vector acceleration
+
+More generally let \(T:\left(S_{n}\right) \longmapsto\left(T_{n}\right)\) be a quasi-linear sequence transformation defined by
+\[
+T_{n}=F\left(S_{n}, \ldots, S_{n+k}\right), \quad n=0,1, \ldots
+\]
+For solving the fixed point problem \(x=g(x)\) we can associate to it the iterative method
+\[
+x_{n+1}=F\left(x_{n}, g\left(x_{n}\right), \ldots, g_{k}\left(x_{n}\right)\right), \quad n=0,1, \ldots
+\]
+where \(g_{i+1}(t)=g\left(g_{i}(t)\right)\) and \(g_{0}(t)=t\). Conversely to any fixed point iteration of this form, we can associate a sequence transformation of the previous form.
+\jvc{Include Aitken-Steffson connection?}
+
+\subsubsection{Aitken \(\delta^2\) method}
+
+The formula for the one-dimensional case is
+
+$$
+AX_n = \frac{x_n x_{n+2} - x_{n+1}^2}{x_n-2x_{n+1}+ x_{n+2} }
+$$
+
+or
+
+$$
+AX_n = x_{n+2} - \frac{x_{n+2} - x_{n+1} }{x_n + x_{n+2} - 2 x_{n+1} }(x_{n+1}-x_{n+2})
+$$
+
+Aitken's method will accelerate the sequence $x_{n}$ if $\lim_{n \rightarrow \infty} \frac{(A x)_{n}-\ell}{x_{n}-\ell}=0$.
+$A$ is not a linear operator, but a constant term drops out, viz: $A[x-\ell]=A x-\ell$, if $\ell$ is a constant. This is clear from the expression of $A x$ in terms of the finite difference operator $\Delta$.
+Although the new process does not in general converge quadratically, it can be shown that for a fixed point process, that is, for an iterated function sequence $x_{n+1}=f\left(x_{n}\right)$ for some function $f$, converging to a fixed point, the convergence is quadratic. In this case, the technique is known as Steffensen's method.
+
+Empirically, the $A$-operation eliminates the "most important error term". One can check this by considering a sequence of the form $x_{n}=\ell+a^{n}+b^{n}$, where $0<b<a<1$: The sequence $A x$ will then go to the limit like $b^{n}$ goes to zero.
+
+Geometrically, the graph of an exponential function $f(t)$ that satisfies \(f(n)=x_{n}, f(n+1)=x_{n+1}\) and \(f(n+2)=x_{n+2}\) has an horizontal asymptote at \(\frac{x_{n} x_{n+2}-x_{n+1}^{2}}{x_{n}-2 x_{n+1}+x_{n+2}}\left(\right.\) if \(\left.x_{n}-2 x_{n+1}+x_{n+2} \neq 0\right)\).
+
+If you want to fit \(a e^{b x}+c\) to 3 points, \(\left(x_{i}, y_{i}\right)*{i=1}^{3}\), you want \(y*{i}=a e^{b x_{i}}+c .\)
+Subtracting the first two, \(y_{2}-y_{1}=a\left(e^{b x_{2}}-e^{b x_{1}}\right)=a e^{b x_{1}}\left(e^{b\left(x_{2}-x_{1}\right)}-1\right)\) and, similarly, \(y_{3}-y_{2}=a\left(e^{b x_{3}}-e^{b x_{2}}\right)=a e^{b x_{2}}\left(e^{b\left(x_{3}-x_{2}\right)}-1\right) .\)
+If \(x_{3}-x_{2}=x_{2}-x_{1}=d\), so the data are equally spaced and \(e^{b\left(x_{2}-x_{1}\right)}-1=e^{b\left(x_{3}-x_{2}\right)}-1\), we can divide these to get
+\(\frac{y_{3}-y_{2}}{y_{2}-y_{1}}=e^{b x_{2}-b x_{1}}=e^{b\left(x_{2}-x_{1}\right)}=e^{b d}\)
+Taking logs, and letting \(r=\frac{y_{3}-y_{2}}{y_{2}-y_{1}}, \ln (r)=b d\) so \(b=\frac{\ln (r)}{d} .\) From this, \(e^{b}=r^{1 / d} .\)
+Note that this requires that \(r>0\), so the points are monotonic.
+Then
+\[
+\begin{aligned}
+y_{2}-y_{1} &=a\left(e^{b x_{2}}-e^{b x_{1}}\right) \\
+&=a\left(r^{x_{2} / d}-r^{x_{1} / d}\right)
+\end{aligned}
+\]
+so that
+\[
+a=\frac{y_{2}-y_{1}}{r^{x_{2} / d}-r^{x_{1} / d}}
+\]
+We also get
+\[
+a=\frac{y_{3}-y_{2}}{r^{x_{3} / d}-r^{x_{2} / d}}=\frac{y_{3}-y_{1}}{r^{x_{3} / d}-r^{x_{1} / d}}
+\]
+Finally, \(c=y_{i}-a e^{b x_{i}}\) for any \(i\).
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/def2fba4-2bd4-4a98-8216-4d44881db9ff/Untitled.png)
+
+One can also show that if \(x\) goes to its limit \(\ell\) at a rate strictly greater than \(1\)\footnote{$\left\{x_{n}\right\}{n \in \mathbb{N}}$ converges linearly to $\ell$ if there exists a number $\mu \in(0,1)$ such that \(\lim_{n \rightarrow \infty} \frac{\left|x_{n+1}-\ell\right|}{\left|x_{n}-\ell\right|}=\mu\).}, \(A x\) does not have a better rate of convergence.
+(In practice, one rarely has e.g. quadratic convergence which would mean over 30 resp. 100 correct decimal places after 5 resp. 7 iterations (starting with 1 correct digit); usually no acceleration is needed in that case.)
+
+In practice, \(A x\) converges much faster to the limit than \(x\) does, as demonstrated by the example calculations below. Usually, it is much cheaper to calculate \(A x\) (involving only calculation of differences, one multiplication and one division) than to calculate many more terms of the sequence \(x\). Care must be taken, however, to avoid introducing errors due to insufficient precision when calculating the differences in the numerator and denominator of the expression.
+
+
+\subsubsection{Vector Extrapolation}
+
+$$
+\hat{\boldsymbol{s}}_{k+m}=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i}\left(\boldsymbol{s}_{k+i+1}-\boldsymbol{s}_{k+i}\right)=\boldsymbol{s}_{k+1}+\sum_{i=1}^{m-1} \omega_{i} \Delta \boldsymbol{s}_{k+i+1}
+$$
+
+$$
+\begin{aligned}\Delta \hat{\boldsymbol{s}}_{k+m} &=\sum_{i=0}^{m-1} \gamma_{i} \Delta \boldsymbol{s}_{k+i+1} \\& \sum_{i=0}^{m-1} \gamma_{i}=1\end{aligned}
+$$
+
+\[
+A \gamma=0
+\]
+factors \(\gamma_{i}\). The difference between th f the system matrix \(\boldsymbol{A}\). This is done
+\[
+a_{i j}=\Delta s_{k+i} \cdot \Delta s_{k+j}
+\]
+extrapolation (MPE) method, as
+\[
+a_{i j}=\left(\Delta s_{k+i}-\Delta s_{k+i-1}\right) \cdot \Delta s_{k+j}
+\]
+lation (RRE) method, and as
+\[
+a_{i j}=\boldsymbol{y}^{i} \cdot \Delta \boldsymbol{s}_{k+j}
+\]
+
+
+
+\section{Multipoint iteration functions with memory}
