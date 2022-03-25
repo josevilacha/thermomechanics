@@ -54,11 +54,17 @@ and
 where the subscript "J" stands for Jacobi and the subscript "GS" for Gauss-Seidel.
 The reason for this choice of subscripts is made clear in Section~\ref{}.
 
+
 Since the methods described below for the solution of non-linear systems of equations apply to both functions \(\pazocal R_\mathrm{J}\) and \(\pazocal R_\mathrm{GS}\), a general function denoted as \(\pazocal R\), whose variable is \(\mathbf x\), is considered instead.
 As already stated, the solution for the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}) can be abstracted as the solutions of
 \begin{equation} \label{eq:abstract_residue_equation}
   \pazocal R(\mathbf x) = 0.
 \end{equation}
+To make some explanation furhter down the line simpler, consider also the fucntion
+\begin{gather}
+\pazocal S = \mathbf x - \pazocal R(\mathbf x),\\
+\end{gather}
+whose fixed point is the solution to the nonlinear system of equation in Equation~\eqref{}.
 
 \jvc{Explain an difference vector/scalar}
 
@@ -185,9 +191,9 @@ Since a relative convergence measure can fail to work properly when the coupling
 
 \subsection{Fixed-point approaches}
 
-The application of the fixed-point method to obtain the roots of \(\mathcal R\) yields
+The application of the fixed-point method to obtain the roots of \(\pazocal R\) yields
 \begin{equation}
-  \mathbf x^{k+1} = \mathbf x^k - \pazocal R(\mathbf x^k).
+  \mathbf x^{k+1} = \pazocal S(\mathbf x^k) = \mathbf x^k - \pazocal R(\mathbf x^k).
 \end{equation}
 If the particular functions defined on Equations~\eqref{eq:def_res_jacobi} and \eqref{eq:def_res_gauss_seidel} are used, one finds the  two basic Schwarz procedures commonly employed in strongly coupled solution procedures.
 They are the additive or block Jacobi and the parallel Scharwz or Gauss-Seidel procedures.
@@ -196,9 +202,10 @@ The names originate from domain decomposition, and justify the subscripts employ
 \subsubsection{Block Jacobi or Schwarz additive}
 
 Applying the fixed-point approach to \(\pazocal R_\mathrm{J}\) (Equation~\eqref{eq:def_res_jacobi}), yields
-\begin{equation}
-  \left\{\mathbf u^{k+1}, \bm\uptheta^{k+1}\right\}^T = \left\{\mathbf u^k, \bm\uptheta^k\right\}^T - \pazocal R_\mathrm{J}(\mathbf u^k, \bm \uptheta^k).
-\end{equation}
+\begin{align}
+  \left\{\mathbf u^{k+1}, \bm\uptheta^{k+1}\right\}^T &= \pazocal S_\mathrm{J}(\mathbf u^k, \bm\uptheta^k)\\
+   &= \left\{\mathbf u^k, \bm\uptheta^k\right\}^T - \pazocal R_\mathrm{J}(\mathbf u^k, \bm \uptheta^k),
+\end{align}
 This is the same as solving both the mechanical (Equation~\eqref{eq:mech_problem}) and the thermal problem (Equation~\eqref{eq:therm_problem}) in parallel.
 Such a procedure is said to be Schwarz additive or block Jacobi, refering to the similarities with the procedure for the solution of linear systems of equations with the same name i.e.,
 \begin{gather}
@@ -233,7 +240,7 @@ Box~\ref{box:block_jacobi} shows the pseudo-code for the block Jacobi approach.
 
 Applying the fixed-point approach to \(\pazocal R_\mathrm{GS}\) (Equation~\eqref{eq:def_res_jacobi}), yields
 \begin{equation}
-  \bm\uptheta^{k+1} = \bm\uptheta^k - \pazocal R_\mathrm{GS}(\bm \uptheta^k).
+  \bm\uptheta^{k+1} = \pazocal S_\mathrm{GS}(\bm\uptheta^k) =  \bm\uptheta^k - \pazocal R_\mathrm{GS}(\bm \uptheta^k).
 \end{equation}
 Thus, the fields are solved sequentially, where the output of the first solver is used as the input for the second solver.
 This the solution procedure is said to be Scharwz multiplicative or block Gauss-Seidel.
@@ -269,33 +276,28 @@ Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seide
 
 \subsection{Newton's method}
 
-Newton-Raphson schemes, in the following denoted as Newton schemes, can be applied to the partitioned coupled fields either by considering the chained overall fixed-point notation (Equation~\eqref{eq:fixed_point_iteration}) or by writing up a blocked system consisting of coupled structural and fluid fixed-point iterations.
+Newton-Raphson or Newton scheme is a very popular iterative solution procedure for nonlinear systems of equations, which under appropriate conditions converges quadratically.
+It can be applied to Equation~\eqref{eq:residual_fixed_point} yielding
+\begin{highlight}[innertopmargin=-5pt]
+  \begin{gather}
+    J_\pazocal{R}(\mathbf x^k)\Delta \mathbf x^k = - \pazocal R(\mathbf x^k),\\
+    \mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k.
+  \end{gather}
+\end{highlight}
 
-To apply a Newton scheme to the overall chained fixed-point iteration (Equation \eqref{eq:fixed_point_iteration}), the residual operator from (Equation~\eqref{eq:residual_definition}) is defined as
-\begin{equation} \label{eq:residual_fixed_point}
-\pazocal{R}\equiv\pazocal{U} \circ \pazocal {T}-\mathbf{I},
-\end{equation}
-where $\mathbf{I}$ is the identity matrix of suitable size.
-The Newton scheme tries to find the root $\bm \uptheta$ such that $\pazocal R(\bm \uptheta)=0$, assuming a linear behavior of $\pazocal R$ described by its Jacobi matrix $J_{\pazocal R}(\bm \uptheta)$.
-
-An iterative scheme, consisting of repeatedly solving
-\begin{equation} \label{eq:newton_raphson}
-J_{\pazocal R}\left(\bm \uptheta^{k}\right) \Delta \bm \uptheta^{k}=-\pazocal R\left(\bm \uptheta^{k}\right)
-\end{equation}
-for $\Delta \bm \uptheta^{k}$ and updating the iterate
-\begin{equation}
-\bm \uptheta^{k+1}= \bm \uptheta^{k}+\Delta \bm \uptheta^{k}
-\end{equation}
-is performed.
-In case of writing up a separate fixed-point iteration for the different fields, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and, in addition, a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ are obtained
+In particular, using \(\pazocal R_\mathrm{GS}\), a few simplifications can be obtain. \jvc{Find the proper citations}
+To ease the explanation, consider, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ defined to be the first and second components in the definition of \(\pazocal R_\mathrm{GS}\) (Equation~\eqref{eq:def_res_gauss_seidel}).
+Written in full
 \begin{gather}
 \pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})=\mathbf{u}-\pazocal{U}(\bm{\uptheta})=0, \\
-\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})=\bm{\uptheta}-\pazocal{T}(\mathbf{u})=0.
+\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})=\bm{\uptheta}-\pazocal{T}(\mathbf{u})=0,
 \end{gather}
 
 From this, a block Newton iteration can be written as
 \begin{equation} \label{eq:block_newton_raphson}
-\left[\begin{array}{ll}J_{\pazocal R_{u}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{u}}\left(\boldsymbol{\theta}^{k}\right) \\[7pt] J_{\pazocal{R}_{\theta}}\left(\mathbf{u}^{k}\right) & J_{\pazocal{R}_{\theta}}\left(\boldsymbol{\theta}^{k}\right)\end{array}\right]
+\left[\begin{array}{l}
+J_{\pazocal{R}_{u}}\left(\mathbf u^k, \bm{\uptheta}^{k}\right) \\[7pt] J_{\pazocal{R}_{\theta}}\left(\mathbf{u}^{k}, \bm\uptheta^k\right)
+\end{array}\right]
 \left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
 =-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
 \end{equation}
@@ -313,241 +315,102 @@ and the update of the iteration variables reads
 \end{array}\right\}.
 \end{equation}
 
+
+The system of equations in Equation~\eqref{} can be further symplified following \cite{degroote_development_2010} considering the defintions of the mechanical and thermal residuals and taking their derivatives.
+It yields
+\begin{equation}
+\left[\begin{array}{cc}
+\mathbf I & J_{\pazocal{U}}\left(\bm{\uptheta}^{k}\right) \\[7pt] J_{\pazocal{T}}\left(\mathbf{u}^{k}\right) & \mathbf I
+\end{array}\right]
+\left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
+=-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
+\end{equation}
+Written in the form of a system of equations
+\begin{align}
+  \Delta \mathbf u^k + J_\pazocal{U}(\bm \uptheta^k) \Delta \bm\uptheta^k &= - \pazocal R_u(\mathbf u^k, \bm \uptheta^k),\\
+  J_\pazocal{T}(\mathbf u^k) \Delta \mathbf u^k + \Delta \bm\uptheta^k &= - \pazocal R_\theta(\mathbf u^k, \bm \uptheta^k).
+\end{align}
+
+Solving for \(\Delta \mathbf u^k\) and \(\Delta \bm \uptheta^k\), one finds
+\begin{align}
+  \left(\mathbf I- J_\pazocal{U}(\bm\uptheta^k)J_\pazocal{T}(\mathbf u^k)\right)\Delta \mathbf u^k &= - \pazocal R_u(\mathbf u^k, \bm \uptheta^k)+J_\pazocal{U}(\bm\uptheta^k)\pazocal R_u(\mathbf u^k, \bm\uptheta^k),\\
+  \left(\mathbf I- J_\pazocal{T}(\mathbf u^k)J_\pazocal{U}(\bm\uptheta^k)\right)\Delta \bm\uptheta^k &= - \pazocal R_\theta(\bm \uptheta^k, \mathbf u^k)+J_\pazocal{\theta}(\mathbf u^k)\pazocal R_\theta(\mathbf u^k, \bm\uptheta^k).
+\end{align}
+Thus, the Jacobians now needed are now \(J_\pazocal{U}\) and \(J_\pazocal{T}\).
+See Section~\ref{} for the practical application of this.
+
 Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\pazocal{R}\left(\mathbf{u}^{k}\right)$ or both $\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
 
-The critical point for black box equation coupling is how to obtain the derivative information in the Jacobi matrices in \eqref{eq:newton_raphson} or \eqref{eq:block_newton_raphson}.
-In the following, methods are presented which find approximations for the required Jacobian times vector products in different ways.
+The critical point for black box equation coupling is how to obtain the derivative information in the Jacobi matrices.
+Some of the methods presented in the following find approximations for the required Jacobian times vector products in different ways.
 
 
 \section{One-point iteration function with memory}
 
-
-\subsubsection{Constant Underrelaxation}
-
-One of the most straightforward ways to stabilize an iterative method is to use constant underrelaxation.
-The relaxation is performed by combining the input and output of Equation~\eqref{eq:fixed_point_iteration} as
-\begin{equation} \label{eq:constant_relaxation}
-\bm \uptheta^{k+1}=(1-\omega) \bm\uptheta^{k}+\omega \tilde{\bm\uptheta}^{k+1}=\bm\uptheta^{k}+\omega \mathbf{r}^{k+1},
-\end{equation}
-where \(\omega\) is the relaxation factor chosen in the range \(0<\omega<1\), which corresponds to an underrelaxation, to achieve a stabilizing effect.
-Box~\ref{box:constant_underrelaxation} shows a block Gauss-Seidel scheme enhanced by constant relaxation.
-
-Constant underrelaxation works well if \(\omega\) is close to 1 , but leads to a slow convergence if \(\omega\) has to be chosen close to 0.
-Thus, the constant underrelaxation method leads to unmanageable computational costs for severe instabilities.
-The optimal \(\omega\) is not necessary the largest stable one \citet{gatzhammer_efficient_2014} and has to be set empirically.
-In what follows, alternative methods are discussed, which try to decrease the number of iterations necessary while still keeping stability.
-
-\begin{framedbox}[htb]
-  \caption{Constant underrelaxation applied to the block Gauss-Seidel scheme.}
-  \label{box:constant_underrelaxation}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-    \item \(\bm\uptheta^0 = \bm\uptheta_{n+1}^p\)
-    \item Set fixed-point counter to zero: \(k=0\)
-    \item Enter the fixed-point loop
-    \begin{enumerate}[(1)]
-      \item Solve the mechanical problem at fixed temeperature \(\bm \uptheta^k\): \(\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k)\)
-      \item Solve the thermal problem at a fixed configuration \(\mathbf u^{k+1}\): \(\bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1})\)
-      \item Compute \(\bm \uptheta^{k+1}\) using constant relaxation (Equation~\eqref{eq:constant_relaxation})
-      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
-    \end{enumerate}
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
+\jvc{Description of the methods}
 
 \subsubsection{Aitken relaxation}
 
-\begin{itemize}
-  \item Küttler and Wall (2008)
-  \item Irons and Tuck (1969)
-  \item Joosten et al. (2009)
-  \item Küttler and Wall (2009)
-  \item Erbts et al. (2015)
-  \item Wendt et al. (2015)
-\end{itemize}
-
-As an alternative to constant underrelaxation, Aitken's \(\Delta^2\) provides a dynamic underrelaxation, which can be used to improve the convergence/stability properties of coupling algorithm.
-It is a method of acceleration of convergence, and a particular case of a nonlinear sequence transformation.
-
-In the one-dimensional case, this method resembles the secant method, which can be used to solve nonlinear equations without differentiation.
+\citep{irons_version_1969, kuttler_fixed-point_2008, joosten_analysis_2009, kuttler_vector_2009, erbts_partitioned_2015, wendt_partitioned_2015}
 
 
+The so-called Aitken \(\Delta^2\) relaxation method was introduced by \cite{irons_version_1969}, as a modified Aitken \(\Delta^2\) that doesn't require the computation of the function twice per iteration as in the original method.
+It also provides a generalization to the vector case.
+In the one-dimensional case, this method resembles the secant method applied to the fixed point problem, which can be used to solve nonlinear equations without differentiation.
+Calling it an Aitken method is perhaps a misnommer since in the Aitken-Steffson method, the values of the function are computed twice prer iterartion.
+It is more closely related to secant methods, where values from previous iterations.
+This version of Aitken's \(\Delta^2\) method provides a dynamic underrelaxation, which can be used to improve the convergence/stability properties of coupling algorithm.
 
+Assume that \(f\) is the function whose fixed point is sought.
+The linear interpolation between two points already known of the function, \((a, f(a))\) and \((b, f(b)\) is
+\begin{equation}
+  y = \frac{f(b)-f(a)}{b-a}(x-a) - f(a).
+\end{equation}
+The fixed point of this approximation is
+\begin{equation}
+  c = \frac{f(b)-f(a)}{b-a}(x-c) - f(a).
+\end{equation}
 Thus, after rearranging,
-\[
-c=\frac{a b^{*}-a^{*} b}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
-\]
+\begin{equation}
+c=\frac{a f(b)- b f(a)}{\left(a-f(a)\right)-\left(b-f(b)\right)}
+\end{equation}
 This can be rewritten as
-\[
-c=\left(1-\beta_{b}\right) b^{*}+\beta_{b} b \quad \text { with } \beta_{b}=\frac{b^{*}-a^{+}}{\left(a-a^{+}\right)-\left(b-b^{+}\right)}
-\]
-The difference \(b^{*}-a^{*}\) is computationally inconvenient. Anticipating the next iteration step,
-\[
-d=\left(1-\beta_{c}\right) c^{*}+\beta_{c} c \quad \text { with } \beta_{c}=\frac{c^{*}-b^{*}}{\left(b-b^{*}\right)-\left(c-c^{*}\right)}
-\]
+\begin{equation}
+c=\left(1-\omega_{b}\right) f(b)+\omega_{b} b \quad \text { with } \omega_{b}=\frac{f(b)-f(a)}{\left(a-f(a)\right)-\left(b-f(b)\right)}
+\end{equation}
+
+The difference \(f(b)-f(a)\) is computationally inconvenient.\jvc{Why?}
+Anticipating the next iteration step,
+\begin{equation}
+d=\left(1-\omega_{c}\right) f(c)+\omega_{c} c \quad \text { with } \omega_{c}=\frac{f(c)-f(b)}{\left(b-f(b)\right)-\left(c-f(c)\right)}
+\end{equation}
 a convenient expression for updating the relaxation factor may be found, i.e.
-\[
-\beta_{c}=\beta_{b}+\left(\beta_{b}-1\right) \frac{c-c^{*}}{\left(b-b^{+}\right)-\left(c-c^{+}\right)}
-\]
-This expression is used in step 4 of Box 2 .
+\begin{equation}
+\omega_{c}=\omega_{c}+\left(\omega_{b}-1\right) \frac{c-f(c)}{\left(b-f(b)\right)-\left(c-f(c)\right)}.
+\end{equation}
 
-
-We scrutinize the multi-dimensional case in [38], which forms the basis for the algorithm utilized in many problems, in particular in the field of strongly coupled FSI, see [44] for instance.
-
-The objective is to improve the iteration process so that as few iterations as possible are required to attain a electro-thermo-mechanical problems converged solution.
-
-We now introduce a general vector $\mathbf{D}$, which can either stand for the solution vector of the displacement or the temperature, respectively. The next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{D}^{(k)}$ plus a new increment $\Delta \mathbf{D}^{(k)}$
-
-$$
-\mathbf{D}^{(k+1)}=\mathbf{D}^{(k)}+\Delta \mathbf{D}^{(k)}
-$$
-
+Now, a general vector $\mathbf{D}$ is introduced, which can either stand for a solution vector, respectively.
+The next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{D}^{(k)}$ plus a new increment $\Delta \mathbf{D}^{(k)}$
+\begin{equation}
+\mathbf{D}^{(k+1)}=\mathbf{D}^{(k)}+\Delta \mathbf{D}^{(k)}.
+\end{equation}
 The increment reads
+\begin{equation}
+\Delta \mathbf{D}^{(k)}=\omega^{(k)}\left(\pazocal S(\mathbf{D}^{(k)})-\mathbf{D}^{(k)}\right)=\omega^{(k)} \mathbf r^{(k)}.
+\end{equation}
+with $\omega^{(k)}$ being the relaxation coefficient.
+This coefficient is updated in every iteration cycle as a function of two previous residuals
+\begin{equation}
+\omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{\mathrm{T}} \mathbf{R}^{(k-1)}}{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{2}}.
+\end{equation}
 
-$$
-\Delta \mathbf{D}^{(k)}=\omega^{(k)}\left(\tilde{\mathbf{D}}^{(k+1)}-\mathbf{D}^{(k)}\right)=\omega^{(k)} \mathbf{R}^{(k)}
-$$
-
-with $\omega^{(k)}$ being the relaxation coefficient. From now on, all unmodified values are written with a tilde, like $\tilde{\mathbf{D}}^{(k+1)}$ standing for the unmodified values of the displacement or temperature vector, respectively. The efficiency of this method is mainly due to the relaxation parameter $\omega$. A constant parameter $0<\omega<2$ yields static relaxation (SR), whereas an adaptive parameter results in a dynamic relaxation (DR).
-
-For the dynamic case, we follow [44] where the relaxation coefficient is updated in every iteration cycle as a function of two previous residuals:
-
-$$
-\omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{\mathrm{T}} \mathbf{R}^{(k-1)}}{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{2}}
-$$
-
-Dynamic relaxation is also easy to implement and the additional computational input is acceptable, since only inner vector products have to be performed. Several variations on this method can be found in the literature: A comprehensive study was presented in [47], for instance.
+Dynamic relaxation is also easy to implement and the additional computational input is acceptable, since only inner vector products have to be performed. 
 
 \subsubsection{Steepest Descent Relaxation}
 
 \subsection{Multi-secant methods}
 
-\subsection{GMRES-inspired approach}
-
-In \cite{michler_interface_2005}, a Krylov-subspace method is proposed in the context of FSI.
-In the present document, this mehod is adapted to the thermo-mechanical problem.
-It approximates the solution $\Delta \bm{\uptheta}^{k}$ of system \eqref{eq:newton_raphson}, which results in a Newton-Krylov solver for the partitioned thermo-mechanical system.
-This particular nomenclature is however debatable.
-\cite{kuttler_vector_2009} argues that the correct term for this approach should be instead a “Krylov-based vector extrapolation” method. \jvc{Later take a closer look a this and link to the section on vector extrapolation.}
-
-% A review of Newton-Krylov methods in general is given in [93].
-
-For the GMRES-inspired approach, the Krylov-based subspace of order $m$ is written as
-\begin{equation}
-\pazocal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{\theta}^{*}_i-\boldsymbol{\theta}^{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{\theta}^*_{i}\right\}_{i=1}^{m},
-\end{equation}
-where $\Delta \bm{\uptheta}^*_{i}:=\bm{\uptheta}^*_{i}-\bm{\uptheta}^{k}$ and the $\bm{\uptheta}^*_{i}$ are generated during the Krylov iterations as $\bm{\uptheta}^*_{i+1}=\pazocal{T} \circ \pazocal U\left(\bm{\uptheta}^*_{i}\right)$ . $\bm{\uptheta}^{k}$ is associated to the outer Newton iteration and fixed during the Krylov iterations.
-
-The residual for the $m^\mathrm{th}$ Krylov iteration can be written as
-\begin{equation}
-J_\pazocal{R}(\boldsymbol \theta^k)\Delta\boldsymbol \theta^*_m - \pazocal R(\boldsymbol \theta^k).
-\end{equation}
-It is desirable that the $L_2$-norm of this residual be as small as possible.
-Approximating $\Delta \bm \uptheta^*_i$ using $\pazocal K_m$, as $\sum_{i=1}^m \alpha_i \Delta \bm \uptheta^*_i$, the coefficients $\alpha_i$ are thus found as
-\begin{equation} \label{eq:gmres_1st_ls}
-\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol\alpha} \left\|J_\pazocal{R}(\bm \uptheta^k)\sum_{i=1}^m \alpha_i \Delta\bm \uptheta^i - \pazocal R(\bm \uptheta^k)\right\|.
-\end{equation}
-
-Since the Jacobian matrix $J_{\pazocal R}$ is assumed not to be accessible, a finite-difference approach
-\begin{equation}
-J_{\pazocal{R}}\left(\boldsymbol{\theta}^{k}\right) \Delta \boldsymbol{\theta}^*_{i} \approx \pazocal{R}\left(\boldsymbol{\theta}^*_{i}\right)-\pazocal{R}\left(\boldsymbol{\theta}^{k}\right)
-\end{equation}
-is employed.
-Using the notation
-\begin{equation}
-\mathbf r^*_i = \pazocal R(\boldsymbol \theta^*_i),\quad
-\mathbf r^k \equiv  \pazocal R(\boldsymbol \theta^k),\quad
-\Delta \mathbf r_i^* \equiv \mathbf r_i^* - \mathbf r^k,
-\end{equation}
-Equation~\eqref{eq:gmres_1st_ls} can be rewritten in a more compact form as
-\begin{equation} \label{eq:gmres_ls_condition}
-\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol \alpha} \left\|\mathbf r^k+\sum_{i=1}^m\alpha_i\Delta\mathbf r^*_i\right\|,
-\end{equation}
-with the $\alpha_i$ determined in a least-squares sense.
-The quality of the approximation is determined from the norm of the residual
-\begin{equation} \label{eq:gmres_residual}
-\xi=\left\|\boldsymbol{r}^{k}+\sum_{i=1}^{m} \bar{\alpha}_{i} \Delta \boldsymbol{r}^*_{i}\right\|.
-\end{equation}
-
-Orthogonalizing a new Krylov-vector $\Delta \bm{\uptheta}^*_{m}$ with respect to all previous ones using the Arnoldi process, as shown in Box~\ref{box:arnoldi_process}, completes the connection to the generalized minimal residual method (GMRES).
-Furthermore, to stabilize the solver subiterations when setting up the Krylov-subspace approximation, constant underrelaxation by $\omega$ can be employed as
-\begin{equation}
-\Delta \boldsymbol{\theta}^*_{m}=\omega \Delta \boldsymbol{\theta}^*_{m}.
-\end{equation}
-
-\begin{framedbox}[htbp]
-  \caption{Arnoldi process to orthonormalize temperature deltas}
-  \label{box:arnoldi_process}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-      \item \(j=1\)
-      \item \(\Delta \bm\uptheta^*_m = \Delta \bm\uptheta^*_m - \Delta \bm\uptheta^*_j\frac{\Delta\bm\uptheta^*_m\cdot\Delta\bm\uptheta^*_j}{\Delta\bm \uptheta^*_j\cdot\Delta\bm\uptheta^*_j}\)
-      \item \(j=j+1\)
-      \item If \(j<m-1\) go to Step (ii)
-      \item \(\Delta\bm \uptheta^*_m = \Delta\bm\uptheta^*_m/\|\Delta \bm \uptheta^*_m\|\)
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
-
-
-Box~\ref{box:gmres_inspired} puts all parts of the GMRES-inpired method for one coupling timestep in proper order. The Krylov-vectors can be reused between different coupling iterations $k$ or even between different timesteps $n$.
-
-\begin{framedbox}[htbp]
-  \caption{Timestep \(n\) of the GMRES-inspired approach.}
-  \label{box:gmres_inspired}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-    \item \(k=0\)
-    \item If no previous timesteps are to be reused or \(n=0\) then
-    \begin{itemize}
-      \item Clear all \(\Delta \bm \uptheta^*_i\), \(\Delta \mathbf r^*_i\)
-      \item \(m=0\)
-    \end{itemize}
-    \item \(\bm \uptheta^*_1 = \pazocal T\circ \pazocal U(\bm \uptheta^0)\)
-    \item \(\mathbf r^0 = \bm \uptheta^*_1 - \bm \uptheta^0\)
-    \item Enter the Newton loop
-    \begin{enumerate}[(1)]
-      \item If no previous iterations are to be reused
-      \begin{itemize}
-        \item Clear all \(\Delta \bm\uptheta^*_i\), \(\Delta \mathbf r^*_i\)
-        \item \(m=0\)
-        \item \(\xi = \|\mathbf r^*_k\|\)
-      \end{itemize}
-      else
-      \begin{itemize}
-        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
-        \item \(\bm \uptheta^*_{m+1} = \bm \uptheta^*_1\)
-      \end{itemize}
-      \item Enter the Krylov loop
-      \begin{enumerate}[(a)]
-        \item \(m=m+1\)
-        \item \(\Delta \bm\uptheta^*_m = \bm\uptheta^*_m - \bm\uptheta^k\)
-        \item Orthogonalize (Box~\ref{box:arnoldi_process}) and relax \(\Delta \bm\uptheta^*_m\) (Equation~\eqref{})
-        \item \(\bm\uptheta^*_m = \bm\uptheta^k + \Delta\bm\uptheta^*_m\)
-        \item \(\bm \uptheta^*_{m+1} = \pazocal T \circ \pazocal U(\bm \uptheta^*_m)\)
-        \item \(\Delta \mathbf r^*_m = (\bm\uptheta^*_{m+1} - \bm \uptheta^*_m) - \mathbf r^k\)
-        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
-        \item If convergence has not been reached, \(\xi>\epsilon_2\), go to Step (a)
-      \end{enumerate}
-    \item \(\bm\uptheta^{k+1} = \bm\uptheta^k + \sum_{i=1}^m \bar{\alpha}_i \Delta\bm\uptheta_i\)
-    \item \(k=k+1\)
-    \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
-    \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
-    \item If convergence has not been reached, \(\|\mathbf r^k\| > \epsilon_1\), go to Step (1)
-    \end{enumerate}
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
-
-% \Floatbarrier
-
-\subsection{Quasi-Newton Method}
+\subsubsection{Quasi-Newton Method}
 
 An interface quasi-Newton method based on Equation~\eqref{eq:residual_fixed_point} and Equation~\eqref{eq:newton_raphson} is presented in \cite{degroote_joris_development_2010} for FSI.
 The method is called interface quasi Newton with approximation of the inverse of the interface Jacobian matrix by least squares (IQN-ILS).
@@ -836,6 +699,63 @@ x_{n+1}=F\left(x_{n}, g\left(x_{n}\right), \ldots, g_{k}\left(x_{n}\right)\right
 where \(g_{i+1}(t)=g\left(g_{i}(t)\right)\) and \(g_{0}(t)=t\). Conversely to any fixed point iteration of this form, we can associate a sequence transformation of the previous form.
 \jvc{Include Aitken-Steffson connection?}
 
+\subsubsection{Constant Underrelaxation}
+
+One of the most straightforward ways to stabilize an iterative method is to use constant underrelaxation. \cite{gatzhammer_efficient_2014}
+The relaxation is performed as follows
+\begin{equation} \label{eq:constant_relaxation}
+\mathbf x^{k+1}=(1-\omega) \mathbf x^{k}+\omega(\mathbf x^k - \pazocal R(\mathbf x^k))=\mathbf x^{k} -\omega \mathbf{r}^{k+1},
+\end{equation}
+where \(\omega\) is the relaxation factor chosen in the range \(0<\omega<1\), which corresponds to an underrelaxation, to achieve a stabilizing effect.
+
+Applying to Equation~\eqref{eq:def_res_jacobi}
+\begin{equation}
+  \left\{\begin{array}{c}
+    \mathbf u^{k+1}\\
+    \bm \uptheta^{k+1}
+  \end{array}\right\} =
+  (1-\omega)
+  \left\{\begin{array}{c}
+    \mathbf u^{k}\\
+    \bm \uptheta^{k}
+  \end{array}\right\}
+  + \omega
+  \left\{\begin{array}{c}
+    \pazocal U(\bm\uptheta^k)\\
+    \pazocal T(\mathbf u^k)
+  \end{array}\right\}
+\end{equation}
+Applying to Equation~\eqref{eq:def_res_gauss_seidel}
+\begin{equation}
+  \bm\uptheta^{k+1} = (1-\omega)\bm\uptheta^k + \omega \pazocal T\left(\pazocal U(\bm \uptheta^k)\right).
+\end{equation}
+
+
+Constant underrelaxation works well if \(\omega\) is close to 1 , but leads to a slow convergence if \(\omega\) has to be chosen close to 0.
+Thus, the constant underrelaxation method leads to unmanageable computational costs for severe instabilities.
+The optimal \(\omega\) is not necessary the largest stable one \citet{gatzhammer_efficient_2014} and has to be set empirically.
+In what follows, alternative methods are discussed, which try to decrease the number of iterations necessary while still keeping stability.
+
+\begin{framedbox}[htb]
+  \caption{Constant underrelaxation applied to the block Gauss-Seidel scheme.}
+  \label{box:constant_underrelaxation}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item \(\bm\uptheta^0 = \bm\uptheta_{n+1}^p\)
+    \item Set fixed-point counter to zero: \(k=0\)
+    \item Enter the fixed-point loop
+    \begin{enumerate}[(1)]
+      \item Solve the mechanical problem at fixed temeperature \(\bm \uptheta^k\): \(\mathbf u^{k+1} = \pazocal U(\bm \uptheta^k)\)
+      \item Solve the thermal problem at a fixed configuration \(\mathbf u^{k+1}\): \(\bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1})\)
+      \item Compute \(\bm \uptheta^{k+1}\) using constant relaxation (Equation~\eqref{eq:constant_relaxation})
+      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
 \subsubsection{Aitken \(\delta^2\) method}
 
 The formula for the one-dimensional case is
@@ -915,6 +835,127 @@ lation (RRE) method, and as
 a_{i j}=\boldsymbol{y}^{i} \cdot \Delta \boldsymbol{s}_{k+j}
 \]
 
+\subsection{GMRES-inspired approach}
 
+In \cite{michler_interface_2005}, a Krylov-subspace method is proposed in the context of FSI.
+In the present document, this mehod is adapted to the thermo-mechanical problem.
+It approximates the solution $\Delta \bm{\uptheta}^{k}$ of system \eqref{eq:newton_raphson}, which results in a Newton-Krylov solver for the partitioned thermo-mechanical system.
+This particular nomenclature is however debatable.
+\cite{kuttler_vector_2009} argues that the correct term for this approach should be instead a “Krylov-based vector extrapolation” method. \jvc{Later take a closer look a this and link to the section on vector extrapolation.}
+
+% A review of Newton-Krylov methods in general is given in [93].
+
+For the GMRES-inspired approach, the Krylov-based subspace of order $m$ is written as
+\begin{equation}
+\pazocal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{\theta}^{*}_i-\boldsymbol{\theta}^{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{\theta}^*_{i}\right\}_{i=1}^{m},
+\end{equation}
+where $\Delta \bm{\uptheta}^*_{i}:=\bm{\uptheta}^*_{i}-\bm{\uptheta}^{k}$ and the $\bm{\uptheta}^*_{i}$ are generated during the Krylov iterations as $\bm{\uptheta}^*_{i+1}=\pazocal{T} \circ \pazocal U\left(\bm{\uptheta}^*_{i}\right)$ . $\bm{\uptheta}^{k}$ is associated to the outer Newton iteration and fixed during the Krylov iterations.
+
+The residual for the $m^\mathrm{th}$ Krylov iteration can be written as
+\begin{equation}
+J_\pazocal{R}(\boldsymbol \theta^k)\Delta\boldsymbol \theta^*_m - \pazocal R(\boldsymbol \theta^k).
+\end{equation}
+It is desirable that the $L_2$-norm of this residual be as small as possible.
+Approximating $\Delta \bm \uptheta^*_i$ using $\pazocal K_m$, as $\sum_{i=1}^m \alpha_i \Delta \bm \uptheta^*_i$, the coefficients $\alpha_i$ are thus found as
+\begin{equation} \label{eq:gmres_1st_ls}
+\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol\alpha} \left\|J_\pazocal{R}(\bm \uptheta^k)\sum_{i=1}^m \alpha_i \Delta\bm \uptheta^i - \pazocal R(\bm \uptheta^k)\right\|.
+\end{equation}
+
+Since the Jacobian matrix $J_{\pazocal R}$ is assumed not to be accessible, a finite-difference approach
+\begin{equation}
+J_{\pazocal{R}}\left(\boldsymbol{\theta}^{k}\right) \Delta \boldsymbol{\theta}^*_{i} \approx \pazocal{R}\left(\boldsymbol{\theta}^*_{i}\right)-\pazocal{R}\left(\boldsymbol{\theta}^{k}\right)
+\end{equation}
+is employed.
+Using the notation
+\begin{equation}
+\mathbf r^*_i = \pazocal R(\boldsymbol \theta^*_i),\quad
+\mathbf r^k \equiv  \pazocal R(\boldsymbol \theta^k),\quad
+\Delta \mathbf r_i^* \equiv \mathbf r_i^* - \mathbf r^k,
+\end{equation}
+Equation~\eqref{eq:gmres_1st_ls} can be rewritten in a more compact form as
+\begin{equation} \label{eq:gmres_ls_condition}
+\bar{\boldsymbol \alpha} = \arg\min_{\boldsymbol \alpha} \left\|\mathbf r^k+\sum_{i=1}^m\alpha_i\Delta\mathbf r^*_i\right\|,
+\end{equation}
+with the $\alpha_i$ determined in a least-squares sense.
+The quality of the approximation is determined from the norm of the residual
+\begin{equation} \label{eq:gmres_residual}
+\xi=\left\|\boldsymbol{r}^{k}+\sum_{i=1}^{m} \bar{\alpha}_{i} \Delta \boldsymbol{r}^*_{i}\right\|.
+\end{equation}
+
+Orthogonalizing a new Krylov-vector $\Delta \bm{\uptheta}^*_{m}$ with respect to all previous ones using the Arnoldi process, as shown in Box~\ref{box:arnoldi_process}, completes the connection to the generalized minimal residual method (GMRES).
+Furthermore, to stabilize the solver subiterations when setting up the Krylov-subspace approximation, constant underrelaxation by $\omega$ can be employed as
+\begin{equation}
+\Delta \boldsymbol{\theta}^*_{m}=\omega \Delta \boldsymbol{\theta}^*_{m}.
+\end{equation}
+
+\begin{framedbox}[htbp]
+  \caption{Arnoldi process to orthonormalize temperature deltas}
+  \label{box:arnoldi_process}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+      \item \(j=1\)
+      \item \(\Delta \bm\uptheta^*_m = \Delta \bm\uptheta^*_m - \Delta \bm\uptheta^*_j\frac{\Delta\bm\uptheta^*_m\cdot\Delta\bm\uptheta^*_j}{\Delta\bm \uptheta^*_j\cdot\Delta\bm\uptheta^*_j}\)
+      \item \(j=j+1\)
+      \item If \(j<m-1\) go to Step (ii)
+      \item \(\Delta\bm \uptheta^*_m = \Delta\bm\uptheta^*_m/\|\Delta \bm \uptheta^*_m\|\)
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
+
+Box~\ref{box:gmres_inspired} puts all parts of the GMRES-inpired method for one coupling timestep in proper order. The Krylov-vectors can be reused between different coupling iterations $k$ or even between different timesteps $n$.
+
+\begin{framedbox}[htbp]
+  \caption{Timestep \(n\) of the GMRES-inspired approach.}
+  \label{box:gmres_inspired}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item \(k=0\)
+    \item If no previous timesteps are to be reused or \(n=0\) then
+    \begin{itemize}
+      \item Clear all \(\Delta \bm \uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+      \item \(m=0\)
+    \end{itemize}
+    \item \(\bm \uptheta^*_1 = \pazocal T\circ \pazocal U(\bm \uptheta^0)\)
+    \item \(\mathbf r^0 = \bm \uptheta^*_1 - \bm \uptheta^0\)
+    \item Enter the Newton loop
+    \begin{enumerate}[(1)]
+      \item If no previous iterations are to be reused
+      \begin{itemize}
+        \item Clear all \(\Delta \bm\uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+        \item \(m=0\)
+        \item \(\xi = \|\mathbf r^*_k\|\)
+      \end{itemize}
+      else
+      \begin{itemize}
+        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+        \item \(\bm \uptheta^*_{m+1} = \bm \uptheta^*_1\)
+      \end{itemize}
+      \item Enter the Krylov loop
+      \begin{enumerate}[(a)]
+        \item \(m=m+1\)
+        \item \(\Delta \bm\uptheta^*_m = \bm\uptheta^*_m - \bm\uptheta^k\)
+        \item Orthogonalize (Box~\ref{box:arnoldi_process}) and relax \(\Delta \bm\uptheta^*_m\) (Equation~\eqref{})
+        \item \(\bm\uptheta^*_m = \bm\uptheta^k + \Delta\bm\uptheta^*_m\)
+        \item \(\bm \uptheta^*_{m+1} = \pazocal T \circ \pazocal U(\bm \uptheta^*_m)\)
+        \item \(\Delta \mathbf r^*_m = (\bm\uptheta^*_{m+1} - \bm \uptheta^*_m) - \mathbf r^k\)
+        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+        \item If convergence has not been reached, \(\xi>\epsilon_2\), go to Step (a)
+      \end{enumerate}
+    \item \(\bm\uptheta^{k+1} = \bm\uptheta^k + \sum_{i=1}^m \bar{\alpha}_i \Delta\bm\uptheta_i\)
+    \item \(k=k+1\)
+    \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
+    \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
+    \item If convergence has not been reached, \(\|\mathbf r^k\| > \epsilon_1\), go to Step (1)
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
+% \Floatbarrier
 
 \section{Multipoint iteration functions with memory}
