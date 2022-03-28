@@ -17,7 +17,7 @@ For the sake of clarity, the discretized equations of the thermo-mechanical prob
 \end{gather}
 where the complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
 
-As only partitioned approaches are being considered, the thermal and mechanical problems are solved separetely, i.e., Equation~\eqref{eq:mech_problem} is solved considering a fixed temperature and Equations~\eqref{eq:therm_problem} is solved assuming a fixed configuration.
+As only partitioned approaches are being considered, the thermal and mechanical problems are solved separetely, i.e., Equation~\eqref{eq:mech_problem} is solved considering a fixed temperature and Equation~\eqref{eq:therm_problem} is solved assuming a fixed configuration.
 To ease the discussion, consider the existence of two functions \(\pazocal U_{n+1}\) and \(\pazocal T_{n+1}\) that represent these solution procedures at timestep \(n+1\).
 These so-called mechanical and thermal solvers satisfy
 \begin{highlight}[innertopmargin=-5pt]
@@ -60,10 +60,10 @@ As already stated, the solution for the thermo-mechanical problem (Equations~\eq
 \begin{equation} \label{eq:abstract_residue_equation}
   \pazocal R(\mathbf x) = 0.
 \end{equation}
-To make some explanation furhter down the line simpler, consider also the fucntion
-\begin{gather}
-\pazocal S = \mathbf x - \pazocal R(\mathbf x),\\
-\end{gather}
+To obtain simpler expressions in what follows, consider also the function
+\begin{equation}
+\pazocal S = \mathbf x - \pazocal R(\mathbf x),
+\end{equation}
 whose fixed point is the solution to the nonlinear system of equation in Equation~\eqref{}.
 
 \jvc{Explain an difference vector/scalar}
@@ -74,7 +74,7 @@ whose fixed point is the solution to the nonlinear system of equation in Equatio
 Most methods available for the solution of systems of non-linear equations, such as the one in Equation~\eqref{eq:abstract_residue_equation}, are iterative methods.
 They can be more precisely defined lettting \(\mathbf x^{k},\mathbf x^{k-1}, \ldots\), whose superscripts correspond to the loop of the iteration method, be approximants to \(\mathbf x_{n+1}\), whose subscript concerns the timestep
 
-To better understand the landscape of available methods to solve nonlinear systems of equations, the iteration functions are classified according to the information they require following the classification scheme by \cite{traub}.
+To better understand the landscape of available methods to solve nonlinear systems of equations, the iteration functions are classified according to the information they require following the classification scheme by \cite{traub_iterative_1982}.
 Let \(\mathbf x^{k+1}\) be determined uniquely by information obtained at \(\mathbf x^{k}, \mathbf \mathbf x^{k-1}, \ldots\), including the derivatives of any order of \(\pazocal R\).
 Let the function that maps \(\mathbf x^{k}, \mathbf x^{k-1}, \ldots\) into \(\mathbf x^{k+1}\) be called \(\phi\).
 Thus
@@ -86,7 +86,7 @@ Thus
 where \(\phi\) is called an iteration function, and \(J_\pazocal{R}\) is the Jacobian of \(\pazocal R\).
 To prevent clutering \(\mathbf x^k\) will stand for its value as well as for the values of \(\pazocal R(\mathbf x^k\), \(J_\pazocal{R}(\mathbf x^k)\) and further derivatives of higher order.
 Then \(\phi\) is called a \textit{one-point iteration function}.
-Most iteration functions. which have been used for root-finding are one-point iteration functions. The most commonly known examples are the fixed point schemes and Newton's iteration functions.
+Most iteration functions. which have been used for root-finding are one-point iteration functions. The most commonly known examples are the fixed point schemes and Newton's iteration method.
 
 Next let \(\mathbf x^{k+1}\) be determined by new information at \(\mathbf x^{k}\) and reused information at \(\mathbf x^{k-1}, \ldots\).
 Thus
@@ -157,7 +157,7 @@ p=2:\quad \mathbf{x}_{n+1}^{*}=3 \mathbf{x}_{n}-3 \mathbf{x}_{n-1}+\mathbf{x}_{n
 For an iterative method to be useful, there must be reasonable criteria to determine its convergence.
 The iteration residual is defined as
 \begin{equation}
-\mathbf r^{k+1} = \pazocal R(\mathbf x^{k}),
+\mathbf r^{k} = \pazocal R(\mathbf x^{k}),
 \end{equation}
 and if it is equal to zero then $\mathbf x$ is the solution to the system of nonlinear equations, i.e.,
 \begin{equation} \label{eq:residual_definition}
@@ -165,20 +165,20 @@ and if it is equal to zero then $\mathbf x$ is the solution to the system of non
 \end{equation}
 and hence, a reasonable convergence measure for the iteration procedure.
 
-The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k+1}=\left(r^{k+1,1}, \ldots, r^{k+1,m}\right)^{T}\) as
+The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k}=\left(r^{k,1}, \ldots, r^{k,m}\right)^{T}\) as
 \begin{equation} \label{eq:absolute_residual_criterion}
-\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k+1, i}\right)^{2}}.
+\left\|\mathbf{r}^{k}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k, i}\right)^{2}}.
 \end{equation}
 
 Directly using \eqref{eq:absolute_residual_criterion} yields an absolute convergence criterion
 \begin{equation}
-\left\|\boldsymbol{r} ^{k+1}\right\|_{L^{2}}<\epsilon_\mathrm{abs}.
+\left\|\boldsymbol{r} ^{k}\right\|_{L^{2}}<\epsilon_\mathrm{abs}.
 \end{equation}
 with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid.
 However, since the absolute value of $r$ can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations.
 A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
 \begin{equation}
-\frac{\left\|\mathbf{r}^{k+1}\right\|_{L^{2}}}{\left\|\mathbf{x}^{k+1}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
+\frac{\left\|\mathbf{r}^{k}\right\|_{L^{2}}}{\left\|\mathbf{x}^{k}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
 \end{equation}
 
 Since a relative convergence measure can fail to work properly when the coupling iterate values are close to zero and rounding errors come into play, a combination of absolute and relative measure, where the absolute measure takes care of close to zero cases and the relative handles all other cases, is often a good choice.
@@ -276,8 +276,8 @@ Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seide
 
 \subsection{Newton's method}
 
-Newton-Raphson or Newton scheme is a very popular iterative solution procedure for nonlinear systems of equations, which under appropriate conditions converges quadratically.
-It can be applied to Equation~\eqref{eq:residual_fixed_point} yielding
+The Newton-Raphson or Newton scheme is a very popular iterative solution procedure for nonlinear systems of equations, which under appropriate conditions converges quadratically.
+It can be applied to Equation~\eqref{eq:abstract_residue_equation} yielding
 \begin{highlight}[innertopmargin=-5pt]
   \begin{gather}
     J_\pazocal{R}(\mathbf x^k)\Delta \mathbf x^k = - \pazocal R(\mathbf x^k),\\
@@ -286,7 +286,7 @@ It can be applied to Equation~\eqref{eq:residual_fixed_point} yielding
 \end{highlight}
 
 In particular, using \(\pazocal R_\mathrm{GS}\), a few simplifications can be obtain. \jvc{Find the proper citations}
-To ease the explanation, consider, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ defined to be the first and second components in the definition of \(\pazocal R_\mathrm{GS}\) (Equation~\eqref{eq:def_res_gauss_seidel}).
+To ease the explanation, consider, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ defined to be the first and second components in the definition of \(\pazocal R_\mathrm{J}\) (Equation~\eqref{eq:def_res_gauss_seidel}).
 Written in full
 \begin{gather}
 \pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})=\mathbf{u}-\pazocal{U}(\bm{\uptheta})=0, \\
@@ -336,7 +336,7 @@ Solving for \(\Delta \mathbf u^k\) and \(\Delta \bm \uptheta^k\), one finds
   \left(\mathbf I- J_\pazocal{U}(\bm\uptheta^k)J_\pazocal{T}(\mathbf u^k)\right)\Delta \mathbf u^k &= - \pazocal R_u(\mathbf u^k, \bm \uptheta^k)+J_\pazocal{U}(\bm\uptheta^k)\pazocal R_u(\mathbf u^k, \bm\uptheta^k),\\
   \left(\mathbf I- J_\pazocal{T}(\mathbf u^k)J_\pazocal{U}(\bm\uptheta^k)\right)\Delta \bm\uptheta^k &= - \pazocal R_\theta(\bm \uptheta^k, \mathbf u^k)+J_\pazocal{\theta}(\mathbf u^k)\pazocal R_\theta(\mathbf u^k, \bm\uptheta^k).
 \end{align}
-Thus, the Jacobians now needed are now \(J_\pazocal{U}\) and \(J_\pazocal{T}\).
+Thus, the Jacobians now needed are \(J_\pazocal{U}\) and \(J_\pazocal{T}\).
 See Section~\ref{} for the practical application of this.
 
 Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\pazocal{R}\left(\mathbf{u}^{k}\right)$ or both $\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
@@ -379,7 +379,7 @@ This can be rewritten as
 c=\left(1-\omega_{b}\right) f(b)+\omega_{b} b \quad \text { with } \omega_{b}=\frac{f(b)-f(a)}{\left(a-f(a)\right)-\left(b-f(b)\right)}
 \end{equation}
 
-The difference \(f(b)-f(a)\) is computationally inconvenient.\jvc{Why?}
+The difference \(f(b)-f(a)\) is computationally inconvenient.\jvc{Why?} 
 Anticipating the next iteration step,
 \begin{equation}
 d=\left(1-\omega_{c}\right) f(c)+\omega_{c} c \quad \text { with } \omega_{c}=\frac{f(c)-f(b)}{\left(b-f(b)\right)-\left(c-f(c)\right)}
@@ -389,26 +389,208 @@ a convenient expression for updating the relaxation factor may be found, i.e.
 \omega_{c}=\omega_{c}+\left(\omega_{b}-1\right) \frac{c-f(c)}{\left(b-f(b)\right)-\left(c-f(c)\right)}.
 \end{equation}
 
-Now, a general vector $\mathbf{D}$ is introduced, which can either stand for a solution vector, respectively.
-The next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{D}^{(k)}$ plus a new increment $\Delta \mathbf{D}^{(k)}$
+Now, for the vector case, the next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{x}^{(k)}$ plus a new increment $\Delta \mathbf{x}^{(k)}$
 \begin{equation}
-\mathbf{D}^{(k+1)}=\mathbf{D}^{(k)}+\Delta \mathbf{D}^{(k)}.
+\mathbf{x}^{(k+1)}=\mathbf{x}^{(k)}+\Delta \mathbf{x}^{(k)}.
 \end{equation}
 The increment reads
 \begin{equation}
-\Delta \mathbf{D}^{(k)}=\omega^{(k)}\left(\pazocal S(\mathbf{D}^{(k)})-\mathbf{D}^{(k)}\right)=\omega^{(k)} \mathbf r^{(k)}.
+\Delta \mathbf{x}^{(k)}=\omega^{(k)}\left(\pazocal S(\mathbf{x}^{(k)})-\mathbf{x}^{(k)}\right)=\omega^{(k)} \mathbf r^{(k)}.
 \end{equation}
 with $\omega^{(k)}$ being the relaxation coefficient.
 This coefficient is updated in every iteration cycle as a function of two previous residuals
-\begin{equation}
-\omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{\mathrm{T}} \mathbf{R}^{(k-1)}}{\left(\mathbf{R}^{(k)}-\mathbf{R}^{(k-1)}\right)^{2}}.
-\end{equation}
+\begin{highlight}
+  \begin{equation}
+    \omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{\mathrm{T}} \mathbf{r}^{(k-1)}}{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{2}}.
+  \end{equation}
+\end{highlight}
 
 Dynamic relaxation is also easy to implement and the additional computational input is acceptable, since only inner vector products have to be performed. 
 
+\subsection{Broyden's method and Broyden's family}
+
+In quasi-Newton methods the Jacobian is updated in each iteration using a rank-one update.
+Standard quasi-Newton methods require the updated \(J_{k+1}\) to satisfy the following secant condition
+\begin{equation} \label{eq:secant_condition}
+J_{k+1} \Delta x_{k}=\Delta f_{k},
+\end{equation}
+where \(\Delta f_{k}:=f\left(x_{k+1}\right)-f\left(x_{k}\right)\).
+Furthermore, another common requirement is the following so-called no-change condition:
+\begin{equation} \label{eq:no_change_condition}
+J_{k+1} q=J_{k} q \quad \forall q \text { such that } q^{\mathrm{T}} \Delta x_{k}=0,
+\end{equation}
+which stipulates that there be no new information from \(J_{k}\) to \(J_{k+1}\) along any direction \(q\) orthogonal to \(\Delta x_{k}\).
+
+\cite{broyden} developed a method satisfying both secant condition (Equation~\eqref{eq:secant_condition}) and the no-change condition (Equation~\eqref{eq:no_change_condition}). 
+By simply imposing these conditions he arrived at the update formula
+\begin{highlight}
+\begin{equation} \label{eq:good_update_broyden}
+J_{k+1}=J_{k}+\left(\Delta f_{k}-J_{k} \Delta x_{k}\right) \frac{\Delta x_{k}^{\mathrm{T}}}{\Delta x_{k}^{\mathrm{T}} \Delta x_{k}}.
+\end{equation}
+\end{highlight}
+
+Matrix \(J_{k+1}\) in (6) is the unique matrix satisfying both conditions (4) and (5). Dennis and Moré [13] showed that the Broyden update can also be obtained by minimizing \(E\left(J_{k+1}\right)=\left\|J_{k+1}-J_{k}\right\|_{F}^{2}\) with respect to terms of \(J_{k+1}\), subject to the secant condition (4).
+
+It may seem at first that Broyden's first method can be expensive since computing the quasi-Newton step \(\Delta x_{k}\) requires solving a linear system at each iteration. 
+However, note that, typically, the approximate Jacobian is a small rank modification of a diagonal matrix (or a matrix that is easy to invert); hence, the cost to obtain this solution is actually not too high as long as the number of steps is not too large.
+
+An alternative is Broyden's second method that approximates the inverse Jacobian instead of the Jacobian itself. 
+\(G_{k}\) is used to denote the estimated inverse Jacobian at the \(k\) th iteration. 
+The secant condition (Equation~\eqref{eq:secant_condition}) now reads
+\begin{equation} \label{eq:inverse_secant_cond}
+G_{k+1} \Delta f_{k}=\Delta x_{k}
+\end{equation}
+By minimizing \(E\left(G_{k+1}\right)=\left\|G_{k+1}-G_{k}\right\|_{F}^{2}\) with respect to \(G_{k+1}\) subject to Equation~\eqref{eq:inverse_secant_cond}, the following update formula is found for the inverse Jacobian
+\begin{highlight}
+  \begin{equation} \label{eq:bad_update_broyden}
+  G_{k+1}=G_{k}+\left(\Delta x_{k}-G_{k} \Delta f_{k}\right) \frac{\Delta f_{k}^{\mathrm{T}}}{\Delta f_{k}^{\mathrm{T}} \Delta f_{k}}
+  \end{equation}
+\end{highlight}
+which is also the only update satisfying both the secant condition (Equation~\eqref{eq:inverse_secant_cond}) and the no-change condition for the inverse Jacobian
+\begin{equation}
+  G_{k} q=G_{k+1} q \quad \forall q \text { such that } q^{\mathrm{T}} \Delta f_{k}=0.
+\end{equation}
+The update formula in Equation~\eqref{eq:good_update_broyden} can also be obtained in terms of \(G_{k} \equiv J_{k}^{-1}\) by applying the Sherman-Morrison formula
+\begin{equation}
+G_{k+1}=G_{k}+\left(\Delta x_{k}-G_{k} \Delta f_{k}\right) \frac{\Delta x_{k}^{\mathrm{T}} G_{k}}{\Delta x_{k}^{\mathrm{T}} G_{k} \Delta f_{k}}
+\end{equation}
+This shows, as was explained earlier, that to solve the Jacobian system associated with Broyden's first approach can be reduced to a set of update operations that are not more costly than those required by the second update. 
+Note, however, that the above formula requires the inverse of the initial Jacobian.
+
+From Equation~\eqref{eq:good_update_broyden} and Equation~\eqref{eq:bad_update_broyden} it is possible to define Broyden's family of updates, in which an update formula takes the general form
+\begin{equation}
+G_{k+1}=G_{k}+\left(\Delta x_{k}-G_{k} \Delta f_{k}\right) v_{k}^{\mathrm{T}}
+\end{equation}
+where \(v_{k}^{\mathrm{T}} \Delta f_{k}=1\) so that the secant condition (7) holds [6]. Note that the secant condition \eqref{eq:inverse_secant_cond} is equivalent to condition \eqref{eq:secant_condition}. 
+The pseudo-code of Broyden's two methods is given in Box~\ref{}.
+Some authors called Broyden's first method as Broyden's good update, and Broyden's second method as Broyden's bad update. 
+These are two particular members in Broyden's family.
+
 \subsubsection{Steepest Descent Relaxation}
 
+In [97], a steepest descent based relaxation method is investigated. The goal is to find an optimal value \(\omega_{k}\) for every iteration \(k\) and to use it in the relaxation (2.112). A convex scalar merit function \(\phi(\boldsymbol{s})\) is assumed to exist, to be minimal at the solution \(\boldsymbol{s}^{n+1}\), and to be sufficiently smooth. This merit function is not defined in [97], only its derivative is used within the algorithm which is defined to be the coupling iteration residual
+\[
+\phi^{\prime}\left(\boldsymbol{s}_{k}\right):=\boldsymbol{r}_{k+1},
+\]
+
+such that \(\phi^{\prime}\left(s^{n+1}\right)=\mathbf{0}\). Using the merit function, an optimal relaxation factor can be found by
+\[
+\omega_{k}=\underset{\omega}{\arg \min } \phi\left(\boldsymbol{s}_{k}+\omega \boldsymbol{r}_{k+1}\right)
+\]
+and a sufficient condition for the optimal \(\omega_{k}\) is given by
+\[
+\frac{d \phi}{d \omega_{k}}=\left(\phi^{\prime}\left(\boldsymbol{s}_{k}+\omega_{k} \boldsymbol{r}_{k+1}\right)\right)^{T} \boldsymbol{r}_{k+1} \stackrel{!}{=} \mathbf{0} .
+\]
+An approximation for the optimal relaxation factor can be obtained from a truncated Taylor expansion of its first derivative
+\[
+\phi^{\prime}\left(\boldsymbol{s}_{k}+\omega_{k} \boldsymbol{r}_{k+1}\right) \approx \underbrace{\phi^{\prime}\left(\boldsymbol{s}_{k}\right)}_{=\boldsymbol{r}_{k+1}}+\omega_{k} \phi^{\prime \prime}\left(\boldsymbol{s}_{k}\right) \boldsymbol{r}_{k+1},
+\]
+where \(\phi^{\prime \prime}\left(s_{k}\right)\) is the symmetric matrix of second order partial derivatives of \(\phi\left(s_{k}\right)\) or the Jacobian of \(r_{k}\) with respect to \(s_{k}{ }^{5}\) Transposing (2.133) and multiplying it from the right with \(r_{k+1}\), the optimal relaxation factor can be obtained by
+\[
+\omega_{k}=-\frac{\left(\boldsymbol{r}_{k+1}\right)^{T} \boldsymbol{r}^{k+1}}{\left(\boldsymbol{r}^{k+1}\right)^{T} J_{\boldsymbol{r}_{k}}(\boldsymbol{s}) \boldsymbol{r}_{k+1}} .
+\]
+The remaining problem is how to determine the interface Jacobian \(J_{r_{k}}(s)\), since it is not accessible when black box solvers are used. Two approximations for the matrix vector product \(J_{\boldsymbol{r}_{k}}(s) \boldsymbol{r}_{k+1}\) are proposed in [97]. The first approximation is obtained by using a finite difference approach as
+\[
+J_{\boldsymbol{r}_{k}}(\boldsymbol{s}) \boldsymbol{y} \approx \frac{\boldsymbol{S} \circ \boldsymbol{F}\left(\boldsymbol{s}_{k}+\delta \boldsymbol{y}\right)-\boldsymbol{s}_{k}-\delta \boldsymbol{y}-\boldsymbol{r}_{k+1}}{\delta},
+\]
+with
+\[
+\delta=\frac{\lambda\left(\lambda+\left\|\boldsymbol{s}_{k}\right\|_{L_{2}}\right)}{\left\|\boldsymbol{r}_{k+1}\right\|_{L_{2}}}
+\]
+and \(\lambda\) chosen small enough \({ }^{6}\). The evaluation of (2.135) needs one more call of fluid and structure solvers per coupling iteration. To decrease the computational costs for the extra evaluation, it is proposed to reduce the accuracy within the field solvers. The second approximation uses approximated fluid derivatives and exact structure derivatives, which are not available for black box coupling and, thus, this alternative is not considered here.
+
 \subsection{Multi-secant methods}
+
+The multi-secant methods provide an approximation to the Jacobian in Equation~\eqref{} or Equation~\eqref{} using information from previous iterations.
+The following exposing follows closely \cite{fang_two_2009}.
+
+\subsubsection{Generalized Broyden}
+
+Inspired by the work of Vanderbilt and Louie [11], Eyert [9] proposed a generalized Broyden's method with a flexible rank of update on the inverse Jacobian, satisfying a set of \(m\) secant equations
+\begin{equation} \label{eq:multi_secant_eqs}
+  G_{k} \Delta f_{i}=\Delta x_{i} \quad \text { for } i=k-m, \ldots, k-1
+\end{equation}
+where it is assumed \(\Delta f_{k-m}, \ldots, \Delta f_{k-1}\) are linearly independent and \(m \leqslant n\). 
+Aggregating Equations~\eqref{eq:multi_secant_eqs} in matrix form, they can be rewriten it as
+\begin{equation} \label{eq:multi_secant_eqs_mat}
+  G_{k} \mathscr{F}_{k}=\mathscr{X}_{k}.
+\end{equation}
+where
+\begin{equation}
+\mathscr{F}_{k}=\left[\Delta f_{k-m} \cdots \Delta f_{k-1}\right], \quad \mathscr{X}_{k}=\left[\Delta x_{k-m} \cdots \Delta x_{k-1}\right] \in \mathbb{R}^{n \times m}
+\end{equation}
+The no-change condition corresponding to \((9)\) is
+\begin{equation}
+  \left(G_{k}-G_{k-m}\right) q=0
+\end{equation}
+for all \(q\) orthogonal to the subspace spanned by \(\Delta f_{k-m}, \ldots, \Delta f_{k-1}\), the columns of \(\mathscr{F}_{k}\). 
+This means that the null space of \(G_{k}-G_{k-m}\) is the orthogonal of \(\mathscr{F}_{k}\). 
+Since \(\operatorname{Null}(X)^{\perp}=\operatorname{Range}\left(X^{\mathrm{T}}\right)\) this is equivalent to the condition that \(\left(G_{k}-G_{k-m}\right)^{\mathrm{T}}=\mathscr{F}_{k} Z^{\mathrm{T}}\) for a certain unknown matrix \(Z\).
+ This matrix \(Z\) can now be obtained from condition \eqref{eq:multi_secant_eqs_mat}. Multiplying \(G_{k}-G_{k-m}=Z \mathscr{F}_{k}^{\mathrm{T}}\) to the right by \(\mathscr{F}_{k}\), we get
+\begin{equation}
+  \left(G_{k}-G_{k-m}\right) \mathscr{F}_{k}=Z \mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k} \Rightarrow Z=\left(\mathscr{X}_{k}-G_{k-m} \mathscr{F}_{k}\right)\left(\mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k}\right)^{-1}
+\end{equation}
+where we assume that \(\mathscr{F}_{k}\) has full column rank. 
+In the end, this yields
+\begin{equation}
+  G_{k}=G_{k-m}+\left(\mathscr{X}_{k}-G_{k-m} \mathscr{F}_{k}\right)\left(\mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k}\right)^{-1} \mathscr{F}_{k}^{\mathrm{T}}
+\end{equation}
+a rank-\(m\) update formula. 
+Note that \(\operatorname{rank}\left(\mathscr{F}_{k}\right)=m\).
+The update formula for \(x_{k+1}\) is obtained by substituting (16) into (3)
+\begin{align}
+x_{k+1} &=x_{k}-G_{k} f_{k} \\
+&=x_{k}-G_{k-m} f_{k}-\left(\mathscr{X}_{k}-G_{k-m} \mathscr{F}_{k}\right)\left(\mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k}\right)^{-1} \mathscr{F}_{k}^{\mathrm{T}} f_{k} \\
+&=x_{k}-G_{k-m} f_{k}-\left(\mathscr{X}_{k}-G_{k-m} \mathscr{F}_{k}\right) \gamma_{k}
+\end{align}
+where the column vector \(\gamma_{k}\) is obtained by solving the normal equations \(\left(\mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k}\right) \gamma_{k}=\mathscr{F}_{k}^{\mathrm{T}} f_{k}\), which is equivalent to solving the least squares problem
+\begin{equation}
+  \min _{\gamma}\left\|\mathscr{F}_{k} \gamma-f_{k}\right\|_{2}
+\end{equation}
+Note that in (17), if \(\mathscr{F}_{k}\) is square and of full rank, then for any \(G_{k-m}\),
+\begin{equation}
+  x_{k+1}=x_{k}-\mathscr{x}_{k} \mathscr{F}_{k}^{-1} f_{k}
+\end{equation}
+the same form as that in the standard secant method (see, e.g. [20]).
+
+\subsubsection{Anderson mixing}
+
+Consider a procedure for solving a large nonlinear system of equations \(f(x)=0\) by an iterative process. 
+The most recent iterates are denoted by \(x_{k-m}, \ldots, x_{k} \in \mathbb{R}^{n}\) and the corresponding outputs \(f_{k-m}, \ldots, f_{k} \in \mathbb{R}^{n}\). 
+Assuming evaluating \(f(x)\) is expensive and no explicit analytic form of \(f(x)\) is available, the challenge is to determine the next estimate \(x_{k+1}\) that approximates the solution to \(f(x)=0\) without additional evaluations of \(f(x)\).
+The Anderson mixing scheme [5] takes the latest \(m\) steps into account \({ }^{\ddagger}\) 
+\begin{align}
+  \bar{x}_{k}=x_{k}-\sum_{i=k-m}^{k-1} \gamma_{i}^{(k)} \Delta x_{i}=x_{k}-\mathscr{X}_{k} \gamma_{k} \\
+  \bar{f}_{k}=f_{k}-\sum_{i=k-m}^{k-1} \gamma_{i}^{(k)} \Delta f_{i}=f_{k}-\mathscr{F}_{k} \gamma_{k}
+\end{align}
+where \(\Delta x_{i}=x_{i+1}-x_{i}\) and \(\Delta f_{i}=f_{i+1}-f_{i}\), \(\mathscr{X}_{k}=\left[\Delta x_{k-m} \cdots \Delta x_{k-1}\right]\), \(\mathscr{F}_{k}=\left[\Delta f_{k-m} \cdots \Delta f_{k-1}\right]\), and \(\gamma_{k}=\left[\gamma_{k-m}^{(k)} \cdots \gamma_{k-1}^{(k)}\right]^{\mathrm{T}}\). Expressing the equations in the form \(\bar{x}_{k}=\sum_{j=k-m}^{k} w_{j} x_{j}\) and \(\bar{f}_{k}=\) \(\sum_{j=k-m}^{k} w_{j} f_{j}\), we find that \(\sum_{j=k-m}^{k} w_{j}=1\). In other words, \(\bar{x}_{k}\) and \(\bar{f}_{k}\) are weighted averages of \(x_{k-m}, \ldots, x_{k}\) and \(f_{k-m}, \ldots, f_{k}\), respectively.
+The arguments \(\gamma_{i}=\left[\gamma_{k-m}^{(k)} \cdots \gamma_{k-1}^{(k)}\right]^{\mathrm{T}}\) are determined by minimizing
+\begin{equation}
+E\left(\gamma_{k}\right)=\left\langle\bar{f}_{k}, \bar{f}_{k}\right\rangle=\left\|f_{k}-\mathscr{F}_{k} \gamma_{k}\right\|_{2}^{2}
+\end{equation}
+whose solution can (but should not in practice) be obtained by solving the normal equations
+\begin{equation}
+\left(\mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k}\right) \gamma_{k}=\mathscr{F}_{k}^{\mathrm{T}} f_{k}
+\end{equation}
+Combining (20), (21), and (23), we obtain
+\begin{align}
+x_{k+1} &=\bar{x}_{k}+\beta \bar{f}_{k} \\
+&=x_{k}+\beta f_{k}-\left(\mathscr{X}_{k}+\beta \mathscr{F}_{k}\right) \gamma_{k} \\
+&=x_{k}+\beta f_{k}-\left(\mathscr{X}_{k}+\beta \mathscr{F}_{k}\right)\left(\mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k}\right)^{-1} \mathscr{F}_{k}^{\mathrm{T}} f_{k}
+\end{align}
+where \(\beta\) is the preset mixing parameter \({ }^{\S}\) and \(\mathscr{F}_{k}^{\mathrm{T}} \mathscr{F}_{k}\) is assumed to be nonsingular. 
+In particular, if no previous iterate is taken into account (i.e. \(m=0\) ), then (24) reads
+\begin{equation}
+  x_{k+1}=x_{k}+\beta f_{k}
+\end{equation}
+This scheme is referred to as simple mixing.
+The update formula (24) is the same as (17) by setting \(G_{k-m}=-\beta I\). In this respect Anderson mixing implicitly forms an approximate inverse Jacobian \(G_{k}\) that minimizes \(\left\|G_{k}+\beta I\right\|_{F}\) subject to (13). In the context of mixing, generalized Broyden's second method is equivalent to Anderson mixing. This equivalence relation was shown by Eyert [9]. Note that if \(\mathscr{F}_{k}\) is square and nonsingular, then (24) matches formula (19) of the standard secant method.
+
+\subsubsection{Generalized Broyden's family}
+
+\subsubsection{Anderson's family}
+
+\subsubsection{The Broyden-like class}
 
 \subsubsection{Quasi-Newton Method}
 
