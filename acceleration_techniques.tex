@@ -62,7 +62,7 @@ As already stated, the solution for the thermo-mechanical problem (Equations~\eq
 \end{equation}
 To obtain simpler expressions in what follows, consider also the function
 \begin{equation}
-\pazocal S = \mathbf x - \pazocal R(\mathbf x),
+\pazocal S(\mathbf x) = \mathbf x - \pazocal R(\mathbf x),
 \end{equation}
 whose fixed point is the solution to the nonlinear system of equation in Equation~\eqref{eq:abstract_residue_equation}.
 
@@ -320,21 +320,22 @@ The system of equations in Equation~\eqref{} can be further symplified following
 It yields
 \begin{equation}
 \left[\begin{array}{cc}
-\mathbf I & J_{\pazocal{U}}\left(\bm{\uptheta}^{k}\right) \\[7pt] J_{\pazocal{T}}\left(\mathbf{u}^{k}\right) & \mathbf I
+\mathbf I & -J_{\pazocal{U}}\left(\bm{\uptheta}^{k}\right) \\[7pt] 
+-J_{\pazocal{T}}\left(\mathbf{u}^{k}\right) & \mathbf I
 \end{array}\right]
 \left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
 =-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
 \end{equation}
 Written in the form of a system of equations
 \begin{align}
-  \Delta \mathbf u^k + J_\pazocal{U}(\bm \uptheta^k) \Delta \bm\uptheta^k &= - \pazocal R_u(\mathbf u^k, \bm \uptheta^k),\\
-  J_\pazocal{T}(\mathbf u^k) \Delta \mathbf u^k + \Delta \bm\uptheta^k &= - \pazocal R_\theta(\mathbf u^k, \bm \uptheta^k).
+  \Delta \mathbf u^k - J_\pazocal{U}(\bm \uptheta^k) \Delta \bm\uptheta^k &= - \pazocal R_u(\mathbf u^k, \bm \uptheta^k),\\
+  - J_\pazocal{T}(\mathbf u^k) \Delta \mathbf u^k + \Delta \bm\uptheta^k &= - \pazocal R_\theta(\mathbf u^k, \bm \uptheta^k).
 \end{align}
 
 Solving for \(\Delta \mathbf u^k\) and \(\Delta \bm \uptheta^k\), one finds
 \begin{align}
-  \left(\mathbf I- J_\pazocal{U}(\bm\uptheta^k)J_\pazocal{T}(\mathbf u^k)\right)\Delta \mathbf u^k &= - \pazocal R_u(\mathbf u^k, \bm \uptheta^k)+J_\pazocal{U}(\bm\uptheta^k)\pazocal R_u(\mathbf u^k, \bm\uptheta^k),\\
-  \left(\mathbf I- J_\pazocal{T}(\mathbf u^k)J_\pazocal{U}(\bm\uptheta^k)\right)\Delta \bm\uptheta^k &= - \pazocal R_\theta(\bm \uptheta^k, \mathbf u^k)+J_\pazocal{\theta}(\mathbf u^k)\pazocal R_\theta(\mathbf u^k, \bm\uptheta^k).
+  \left(\mathbf I + J_\pazocal{U}(\bm\uptheta^k)J_\pazocal{T}(\mathbf u^k)\right)\Delta \mathbf u^k &= - \pazocal R_u(\mathbf u^k, \bm \uptheta^k)+J_\pazocal{U}(\bm\uptheta^k)\pazocal R_\theta(\mathbf u^k, \bm\uptheta^k), \label{eq:explicit_eq_delta_u_newton}\\
+  \left(\mathbf I + J_\pazocal{T}(\mathbf u^k)J_\pazocal{U}(\bm\uptheta^k)\right)\Delta \bm\uptheta^k &= - \pazocal R_\theta(\bm \uptheta^k, \mathbf u^k)+J_\pazocal{\theta}(\mathbf u^k)\pazocal R_u(\mathbf u^k, \bm\uptheta^k). \label{eq:explicit_eq_delta_theta_newton}
 \end{align}
 Thus, the Jacobians now needed are \(J_\pazocal{U}\) and \(J_\pazocal{T}\).
 See Section~\ref{} for the practical application of this.
@@ -643,240 +644,85 @@ Note that if \(\mathscr{R}^{k}\) is square and nonsingular, then Equation~\eqref
 \subsubsection{Generalized Broyden's family}
 
 Now we can write down the generalized Broyden family, in which an update algorithm is in the form
-\begin{equation}
+\begin{equation} \label{eq:inv_jacob_gen_broyden}
 G_\pazocal R^{k}=G_\pazocal R^{k-m}+\left(\mathscr{X}^{k}-G_\pazocal R^{k-m} \mathscr{R}^{k}\right) {V^{k}}^{\mathrm{T}}
 \end{equation}
 where \({V^{k}}^{\mathrm{T}} \mathscr{R}^{k}=I\) so that the secant condition \(G_\pazocal R^{k} \mathscr{R}^{k}=\mathscr{X}^{k}\) holds.
 The two optimal choices of \({V^k}^T = {M^k}^{-1}{N^k}^T\) are
 \begin{equation}
-  {M^k} = {\mathscr X^k}^T G_\pazocal R^k \mathscr R^k,\quad {N^k}^T = {\mathscr X^k}^T G_\pazocal R^k,
-\end{equation}
-minimizaing \(\left\|J_\pazocal R^k - J_\pazocal R^{k-m}\right\|_F\) and
-\begin{equation}
   {M^k} = {\mathscr R^k}^T \mathscr R^k,\quad {N^k}^T = {\mathscr R^k}^T,
 \end{equation}
-minimizaing \(\left\|G_\pazocal R^k - J_\pazocal G^{k-m}\right\|_F\).
+minimizaing \(\left\|G_\pazocal R^k - G_\pazocal R^{k-m}\right\|_F\) and
+\begin{equation}
+  {M^k} = {\mathscr X^k}^T G_\pazocal R^k \mathscr R^k,\quad {N^k}^T = {\mathscr X^k}^T G_\pazocal R^k,
+\end{equation}
+minimizaing \(\left\|J_\pazocal R^k - J_\pazocal R^{k-m}\right\|_F\).
+This last choice yields as the approximation for the Jacobian
+\begin{equation}
+  J_\pazocal R^{k}=J_\pazocal R^{k-m}+\left(\mathscr{R}^{k}-J_\pazocal R^{k-m} \mathscr{X}^{k}\right)\left({\mathscr{X}^{k}}^{\mathrm{T}} \mathscr{X}^{k}\right)^{-1} {\mathscr{X}^{k}}^{\mathrm{T}},
+\end{equation}
+after applying the Woodbury formula.\jvc{See if this is really the correct name.}
+The first choice is said to correspond to a Type-I update and a the second to a Type-II update \citep{fang_two_2009}.
 %
 \subsubsection{Anderson's family}
 
-Now we can write down the generalized Broyden family, in which an update algorithm is in the form
-\begin{equation}
-G_\pazocal R^{k}=G_\pazocal R^{k-m}+\left(\mathscr{X}^{k}-G_\pazocal R^{k-m} \mathscr{R}^{k}\right) {V^{k}}^{\mathrm{T}}
+The udpate formula for Anderson's family can be found from Equation~\eqref{eq:inv_jacob_gen_broyden} using as the approximation to the previous Jacobian the identity matrix multiplied by a constant \(\beta\), i.e.,
+\begin{equation} \label{eq:andersons_family_update}
+  \mathbf x^{k+1} = \mathbf x^{k} + \beta \pazocal R^k - (\mathscr X^k + \beta\mathscr R^k){\mathbf V^k}^T \pazocal R^k.
 \end{equation}
-where \({V^{k}}^{\mathrm{T}} \mathscr{R}^{k}=I\) so that the secant condition \(G_\pazocal R^{k} \mathscr{R}^{k}=\mathscr{X}^{k}\) holds.
-The two optimal choices of \({V^k}^T = {M^k}^{-1}{N^k}^T\) are
-\begin{equation}
-  {M^k} = {\mathscr X^k}^T G_\pazocal R^k \mathscr R^k,\quad {N^k}^T = {\mathscr X^k}^T G_\pazocal R^k,
-\end{equation}
-minimizaing \(\left\|J_\pazocal R^k - J_\pazocal R^{k-m}\right\|_F\) and
-\begin{equation}
-  {M^k} = {\mathscr R^k}^T \mathscr R^k,\quad {N^k}^T = {\mathscr R^k}^T,
-\end{equation}
-minimizaing \(\left\|G_\pazocal R^k - J_\pazocal G^{k-m}\right\|_F\).
+The two choices for \(\mathbf V^k\) remain the same, replacing \(G_\pazocal R^{k-m}\) by \(-\beta\mathbf I\).
+They now minimize \(\|G_\pazocal R^k+\beta\mathbf I\|\) and \(\|J_\pazocal R^k + (1/\beta)\mathbf I\|\).
 
+Both the generalized Broyden's family and Anderson's family can be understood as methods in the Broyden-like class as described in \cite{fang_two_2009}.
+This more general description is not reproduced here.
 %
 % \subsubsection{The Broyden-like class}
 
 \paragraph{In the context of FSI}
 
-The multi-secant quasi-Newton have been used in the context of FSI.
-Applying the generalized Broyden method to approximate the Jacobians in Equation~\eqref{}, \(J_\pazocal U\) and \(J_\pazocal T\), the approach employed by \cite{vierendeels_implicit_2007}, \cite{degroote_stability_2008}.
-Linear reduced order models for the fluid solver and the structure solver are used in [172] to speed up the convergence of the FSI coupling iterations.
-As important feature, the reduced order models are set up from solver input and output deltas (or sensitivities) during the coupling iterations. The resulting method for two black box solvers is called interface block quasi-Newton method with least-squares approximation (IBQN-LS) in [42].
+The multi-secant quasi-Newton methods have been used in the context of FSI, although not always presented as such.
+ \cite{vierendeels_implicit_2007} and \cite{degroote_stability_2008} consider the system of equations \eqref{eq:explicit_eq_delta_u_newton} and \eqref{eq:explicit_eq_delta_theta_newton}, where recall that an estimate for the Jacobians \(J_\pazocal{U}\) and \(J_\pazocal{T}\) are needed.
+The authors achieve this through the used of linear reduced order models for the fluid solver and the structure solver.
+These are set up from solver input and output deltas or sensitivities during the coupling iterations. 
+The resulting method for two black box solvers is called interface block quasi-Newton method with least-squares approximation (IBQN-LS) in \cite{degroote_development_2010}.
 
-In this method, the block Newton system (Equation~\eqref{}) is approximated by
+This approach can be understood in the framework of the multi-secant quasi-Newton methods presented above and originating in \cite{fang_two_2009} as follows.
+If one looks at \(\beta\mathbf I - (\mathscr X^k + \beta\mathscr R^k){\mathbf V^k}^T\) in Equation~\eqref{eq:andersons_family_update} as, in a sense, an approximation to the inverse of the Jacobian (compare with Equation~\eqref{eq:inv_jacob_gen_broyden}). 
+The corresponding Jacobian is given by
+\begin{equation}
+  J_\pazocal R^k = \alpha\mathbf I + (\mathscr R^k - \alpha\mathbf I\mathscr X^k )({\mathscr X^k}^T\mathscr X^k)^{-1}{\mathscr X^k}^T,
+\end{equation}
+where \(\alpha=1/\beta\).
+If one sets \(\alpha=0\), the approximation to the Jacobian obtained is
+\begin{equation}
+  J_\pazocal R^k = \mathscr R^k({\mathscr X^k}^T\mathscr X^k)^{-1}{\mathscr X^k}^T.
+\end{equation}
+This corresponds to the linear reduced order models in \cite{vierendeels_implicit_2007}, where \(\pazocal R\) is replaced by the functions corresponding to the fluid and structure solvers.
+If the functions considered are instead the mechanical and thermal solvers, this method can easily be applied to the thermomechanical problem.
+The block \(({\mathscr X^k}^T\mathscr X^k)^{-1}{\mathscr X^k}^T\) can be understood as being a part of a least-squares solution, the so-called normal equations, e.g.,
+\begin{equation}
+  \arg\min_{\tilde{\gamma}} \|\Delta \mathbf x - \mathscr{X}^k\tilde{\gamma}\|_2.
+\end{equation}
+As such one can avoid the use of the normal equations and employ more numerically stable and efficient methods such economy size \(QR\)-decomposition.
+In addition, \cite{vierendeels_implicit_2007} solves the system of equation \eqref{eq:explicit_eq_delta_u_newton} and \eqref{eq:explicit_eq_delta_theta_newton} in a Gauss-Seidel manner, using always the most recent values available to estimate the Jacobians.
 
-$$
-\left[\begin{array}{cc}
-\widehat{\boldsymbol{U}^{\prime}} & -\boldsymbol{I} \\
--\boldsymbol{I} & \widehat{\boldsymbol{T}^{\prime}}
-\end{array}\right]\left\{\begin{array}{c}
-\Delta \hat{\mathbf{u}}_k \\
-\Delta \hat{\boldsymbol{\theta}}_k
-\end{array}\right\}=\left\{\begin{array}{l}
-\pazocal{R}_{u}(\mathbf{u}_k, \boldsymbol{\theta}_k) \\
-\pazocal{R}_{\theta}(\mathbf{u}_k, \boldsymbol{\theta}_k)
-\end{array}\right\}
-$$
-
-where $\widehat{\boldsymbol{U}^{\prime}}$ and $\widehat{\boldsymbol{T}}^{\prime}$ are linear reduced order models for the Jacobians of the mechanical and thermal solvers.
-
-Solving Equation~\eqref{}, $\Delta\hat{\mathbf u}$ and $\Delta \hat{\boldsymbol \theta}$  are found to be
-
-$$
-\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}^{\prime} \widehat{\boldsymbol{U}}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\pazocal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{T}}^{\prime} \pazocal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)\\
-\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}^{\prime} \widehat{\boldsymbol{T}}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}_k=-\pazocal{R}_{u}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)-\widehat{\boldsymbol{U}}^{\prime} \pazocal{R}_{\theta}\left(\mathbf{u}_k, \boldsymbol{\theta}_k\right)
-$$
-
-Since neither $\hat{\mathbf U}’$ nor $\hat{\mathbf T}'$ are known they must be approximated. A Gauss-Seidel like scheme will be employed, in the sense that the equations are solved one after the other with the most up to date values for $\mathbf u$ and $\boldsymbol \theta$ being used for the approximations. Thus assuming that $\mathbf u_k$ and $\boldsymbol \theta_k$ are known, they are used to compute the approximations $\hat{\mathbf U}_k$ and $\hat{\mathbf T}_k$ and $\mathbf u_{k+1}$ is found from
-
-$$
-\left(\boldsymbol{I}-\widehat{\boldsymbol{T}}_{k}^{\prime} \widehat{\boldsymbol{U}}_{k}^{\prime}\right) \Delta \hat{\mathbf{u}}_k=-\pazocal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{T}}_{k}^{\prime} \pazocal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)\\ \mathbf{u}_{k+1} = \mathbf{u}_k + \Delta \hat{\mathbf{u}}_k
-$$
-
-Now, $\mathbf u_{k+1}$ can be used to improve the approximation of $\hat{\mathbf U}$, denoted $\hat{\mathbf U}_{k+1}$. Thus, $\boldsymbol \theta_{k+1}$ can now be found from
-
-$$
-\left(\boldsymbol{I}-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \widehat{\boldsymbol{T}}_{k}^{\prime}\right) \Delta \hat{\boldsymbol{\theta}}=-\pazocal{R}_{u}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)-\widehat{\boldsymbol{U}}_{k+1}^{\prime} \pazocal{R}_{\theta}\left(\mathbf{u}_{k}, \boldsymbol{\theta}_{k}\right)
-$$
-
-and the approximation to the thermal Jacobian updated to $\hat{\mathbf T}_{k+1}$.
-
-It finally remains to precise how are $\hat{\mathbf U}$ and $\hat{\mathbf T}$ approximated. To achieve this consider the intermediate values for $\mathbf u$ and $\boldsymbol \theta$ computed as
-
-$$
-\begin{array}{l}
-\tilde{\mathbf u}_i = \pazocal U(\boldsymbol \theta_i)\\[5pt]
-\tilde{\boldsymbol \theta}_i = \pazocal T(\mathbf u_i)
-\end{array}\quad \text{for }i=1,\dots,k,
-$$
-
-Firstly, to approximate $\hat{\mathbf U}$, consider the matrices defined as
-
-$$
-\mathbf V_U \equiv \{\Delta \boldsymbol \theta_1, \Delta \boldsymbol \theta_2, \dots, \Delta \boldsymbol \theta_k\},\\
-\mathbf W_U \equiv \{\Delta \tilde{\mathbf u}_1, \Delta \tilde{\mathbf u}_2, \dots, \Delta\tilde{\mathbf u}_k\}
-$$
-
-where the deltas $\Delta \boldsymbol \theta_i = \boldsymbol \theta_{i+1} - \boldsymbol \theta_i$ and $\Delta \tilde{\mathbf u}_i = \tilde{\mathbf u}_{i+1} -\tilde{\mathbf u}_i$ are collected into columns.
-
-A new temperature input delta $\Delta \boldsymbol \theta$ can be approximated by a linear combination of the columns of $\mathbf V_U$ as
-
-$$
-\mathbf V_U\mathbf c_U\approx \Delta \boldsymbol\theta
-$$
-
-and a corresponding output delta $\Delta \mathbf u$ can then be constructed by using the computed coefficients $\mathbf c_U$to linearly combine the columns of $\mathbf W_U$ as
-
-$$
-\Delta\mathbf u = \mathbf W_U\mathbf c_U
-$$
-
-The $\mathbf c_F$ are determined from a minimization
-
-$$
-\mathbf c_U = \arg\min_{\tilde{\mathbf c} } \|\Delta\boldsymbol \theta - \mathbf V_U\tilde{\mathbf c}\|
-$$
-
-which is a least-squares problem, solved in \cite{vierendeels} by the normal equations and in \cite{} using the economy-size $QR$-decomposition. The action of $\hat{\mathbf U}'$ on a vector can then be written as
-
-$$
-\hat{\mathbf U}'\Delta\boldsymbol \theta = \mathbf W_U \mathbf c_U
-$$
-
-Following \cite{vierrendeels}, the solution for the least-squares problem is
-
-$$
-\mathbf c_U = (\mathbf V_U^T\mathbf V_U)^{-1}\mathbf V_U\Delta \boldsymbol \theta
-$$
-
-Thus, $\hat{\mathbf U}'$ is found to be
-
-$$
-\hat{\mathbf U}' = \mathbf W_U(\mathbf V_U^T \mathbf V_U)^{-1}\mathbf V_U
-$$
-
-The process to set up the reduced order model for the Jacobian of the thermal solver $\hat{\mathbf T}$ is analogous to that described for the mechanical solver. Input deltas $\Delta \mathbf u_k \equiv \mathbf u_{k+1} - \mathbf u_k$ and output deltas $\Delta\tilde{\boldsymbol \theta} \equiv \tilde{\boldsymbol \theta}_{k+1} - \tilde{\boldsymbol \theta}_k$ are collected in matrices $\mathbf V_T$ and $\mathbf W_T$. After solving a corresponding least-squares problem to find the optimal coefficients $\mathbf c_T$, the action of $\hat{\mathbf T}'$ on a vector is written as
-
-$$
-\hat{\mathbf S}\Delta \mathbf u = \mathbf W_T\mathbf c_T
-$$
-
-Box~\ref{} shows this method for one timestep. Initially, a prediction $\boldsymbol \theta_p$ is computed by extrapolation from old timesteps and two block Gauss-Seidel iterations are performed using constant underrelaxation. Then, the initial reduced order models for mechanical and thermal systems are set up and the main coupling iteration loop with computation steps as described above starts.
-
-An interface quasi-Newton method based on Equation~\eqref{eq:residual_fixed_point} and Equation~\eqref{eq:newton_raphson} is presented in \cite{degroote_joris_development_2010} for FSI.
+An interface quasi-Newton method based on Equation~\eqref{eq:newton_system} and Equation~\eqref{eq:newton_iter} is presented in \cite{degroote_development_2010} for FSI.
 The method is called interface quasi Newton with approximation of the inverse of the interface Jacobian matrix by least squares (IQN-ILS).
-Its origin, the IBQN-LS method presented in \cite{vierendeels_implicit_2007}, is derived from the block Newton method Equation~\eqref{eq:block_newton_raphson} and uses two reduced order models for fluid and structure to approximate their interface Jacobians directly.
-In contrast, the IQN-ILS method provides one reduced order model for the inverse of the overall interface Jacobian matrix of the Newton system (Equation~\eqref{eq:newton_raphson}) applied to the right-hand side vector.
-In the following, the method is adapted to the thermo-mechanical problem under analysis and are based on the description of the method in \cite{gatzhammer_efficient_2014}.
-It is henceforth denominated as quasi Newton with approximation of the inverse of the Jacobian matrix by least squares (QN-LS).
+Its origin is the IBQN-LS method presented in \cite{vierendeels_implicit_2007} and it employs only one reduced order model for the inverse of the overall interface Jacobian matrix of the Newton system (Equation~\eqref{eq:newton_system}) applied to the right-hand side vector.
 
-As already stated, the Jacobian in Equation~\eqref{eq:newton_raphson} is approximated using a reduced order model.
-Since computing \(\pazocal R\) is expensive the estimate for the inverse of the Jacobian tries to take the most advantage from the values already computed so far during the iterative procedure.
-Appropriate input and output deltas are used to construct it.
-In the residual formulation (Equation~\eqref{eq:residual_fixed_point}) of the chained solvers, the input is given by the temperature values $\bm \uptheta$ and the output by the residual $\mathbf{r}$.
-Input and output deltas are defined by
-\begin{gather}
-\Delta \mathbf{r}^{k}=\mathbf{r}^{k+1}-\mathbf{r}^{k} \\
-\Delta \tilde{\bm{\uptheta}}^{k}=\tilde{\bm{\uptheta}}^{k+1}-\tilde{\bm{\uptheta}}^{k}
-\end{gather}
-i.e., not the actual input deltas $\Delta \bm{\uptheta}$ are gathered, but the intermediate chained solver outputs $\tilde{\bm{\uptheta}}$ are used to construct the $\Delta \tilde{\bm{\uptheta}}$.
-This enables the approximation the inverse of the Jacobian applied to the right-hand side vector of the Newton system, as is shown below.
-
-For convenience consider the matrices
-\begin{align}
-\mathbf{V}_{k} &=\left(\Delta \mathbf{r}^{k}, \Delta \mathbf{r}^{k-1}, \ldots, \Delta \mathbf{r}^{1}, \mathbf{V}^{n-1}, \ldots, \mathbf{V}^{n-l}\right)\label{eq:matrix_delta_res} \\
-\mathbf{W}{k} &=\left(\Delta \tilde{\bm{\uptheta}}^{k}, \Delta \tilde{\bm{\uptheta}}^{k-1}, \ldots, \Delta \tilde{\bm{\uptheta}}^{1}, \mathbf{W}^{n-1}, \ldots, \mathbf{W}^{n-l}\right) \label{eq:matrix_delta_theta}
-\end{align}
-with inversed ordering of the columns compared to the original IBQN-LS method (see Section~\ref{}).
-The matrices \(\mathbf{V}^{n-1}, \ldots, \mathbf{V}^{n-l}\) and \(\mathbf{W}^{n-1}, \ldots, \mathbf{W}^{n-l}\) represent the (optional) reuse of columns from \(l\) old timesteps.
-Reusing old timestep information can improve the approximation of the inverse of the Jacobian, particularly in the first iterations of a timestep.
-
-% The quantity to be approximated is
-% \begin{equation}
-%   \hat{J}_{\pazocal R}^{-1}(\bm\uptheta_k)(-\pazocal R(\bm\uptheta_k)),
-% \end{equation}
-% i.e., the solution to the system of equations in Equation~\eqref{eq:newton_raphson}.
-% Employing a slightly different notation, it can be written as
-% \begin{equation}
-%   \hat{J}_{\pazocal R}^{-1}(\bm\uptheta_k)\Delta\mathbf r^k,
-% \end{equation}
-% assuming \(\mathbf r^{k+1}=\mathbf 0\) and thus \(\Delta \mathbf r^k = \mathbf r^{k+1} - \mathbf r^k = \mathbf 0 -\mathbf r^k\).
-%
-% For every pair \(\Delta \mathbf r^i\) and \(\Delta \bm \uptheta^i\), there is a corresponding estimate for the inverse of the Jacobian at \(\bm \uptheta^i\), which can be found from
-% \begin{equation}
-%   \hat{J}^{-1}_\pazocal{R}(\bm\uptheta^i) \Delta \mathbf r^i = \Delta \bm\uptheta^i.
-% \end{equation}
-%
-% Thus, the inverse of the Jacobian at \(\bm \uptheta^k\) is to be approximated by a linear combination of the available estimates for the Jacobian.
-% To avoid solving the linear system, the vector \(\hat{J}^{-1}_\pazocal{R}(\uptheta^k)\Delta \mathbf r^k\) is considered instead, yielding
-% \begin{equation}
-%   \hat{J}^{-1}_\pazocal{R}(\bm\uptheta^k) \Delta \mathbf r^k = \sum_{i=1}^k c_i \hat{J}^{-1}_\pazocal{R}(\uptheta^i) \Delta \mathbf r^i.
-% \end{equation}
-% From Equation~\eqref{} we can substitute and find
-% \begin{equation}
-%   \sum_{i=1}^k c_i \hat{J}^{-1}_\pazocal{R}(\uptheta^i)\Delta \mathbf r^i = \sum_{i=1}  c_i \Delta \bm\uptheta^i = \mathbf W_K\mathbf c,
-% \end{equation}
-% thus
-% \begin{equation}
-%   \hat{J}^{-1}_\pazocal{R}(\bm\uptheta^k) \Delta \mathbf r^k = \mathbf W_k \mathbf c.
-% \end{equation}
-%
-% An appropriate choice for \(\mathbf c\) will be one that leads to a good approximation of \(J^{-1}_\pazocal{R}(\bm \uptheta^k)\).
-% Given that each approximation to the inverse of the Jacobian is related to a \(\Delta \mathbf r\)), and assuming that it is a good aroximation whatever the \(\Delta \mathbf r\) \(\Delta \mathbf r^k\) by the available \(\Delta \mathbf r^i\), e.g., the minimization of
-
-
-A linear combination of residual deltas from \(V_{k}\) is used to approximate
+If in Equation~\eqref{eq:update_anderson_mixing}, corresponding to Anderson's mixing, one sets \(\beta=-1\), the update formula comes out to be
 \begin{equation}
-\Delta \mathbf r \approx \mathbf V_{k} \mathbf c
+  \mathbf x^{k+1} = \mathbf x^k - \pazocal R^k - (\mathscr X^k - \mathscr R^k)\left({\mathscr{R}^{k}}^{\mathrm{T}} \mathscr{R}^{k}\right)^{-1} {\mathscr{R}^{k}}^{\mathrm{T}} \pazocal R^{k}.
 \end{equation}
-which is defined to be \(\Delta \mathbf{r}=\mathbf{0}-\mathbf{r}^{k+1}\), to get a new residual \(\mathbf{r}^{k+2}\) that is zero.
-The desired linear combination is found by the least-squares solution
+Using the definition for the fixed-point function \(\pazocal S\), one finds
 \begin{equation}
-\mathbf{c}=\underset{\bar{\mathbf c}}{\arg \min }\left\|\Delta \mathbf{r}-\mathbf{V}_{k} \tilde{\mathbf{c}}\right\|
+  \mathbf x^{k+1} = \pazocal S^k - \mathscr S^k\left({\mathscr{R}^{k}}^{\mathrm{T}} \mathscr{R}^{k}\right)^{-1} {\mathscr{R}^{k}}^{\mathrm{T}} \pazocal R^{k},
 \end{equation}
-which can be computed, e.g., by an economy size \(Q R\)-decomposition.
-Here, a possible problem is that the columns of \(\mathbf{V}_{k}\) can become linearly dependent such that a column removal becomes necessary.
-Adding new columns as first columns, as in Equations~\eqref{eq:matrix_delta_res} and \eqref{eq:matrix_delta_theta}, enables to detect and remove older columns as linearly dependent during the least-squares solution.
-This is particularly important when columns are reused from old timesteps since, then, the newer columns better represent the current state of the residual operator (Equation~\eqref{eq:residual_fixed_point}).
-
-A \(\Delta \tilde{\bm{\uptheta}}\) corresponding to a \(\Delta \mathbf{r}\) is then constructed by using the coefficients \(\mathbf{c}\) in combination with the matrix \(\mathbf{W}_{k}\) as
-\begin{equation} \label{eq:linear_approx_output}
-\Delta \tilde{\bm{\uptheta}}=\mathbf{W}_{k} \mathbf{c}.
-\end{equation}
-To construct an approximation for the inverse of the interface Jacobian, the residual formulation (Equation~\eqref{eq:residual_definition}) using \(\Delta \mathbf{r}\), \(\Delta \tilde{\bm{\uptheta}}\), and \(\Delta \bm{\uptheta}\), reading
-\begin{equation} \label{eq:relation_res_out}
-  \Delta \mathbf r = \Delta \tilde{\bm\uptheta} - \Delta\bm\uptheta.
-\end{equation}
-Inserting Equation~\eqref{eq:linear_approx_output} into Equation~\eqref{eq:relation_res_out} yields the desired approximation for the inverse of the residue Jacobian \(\hat{J}^{-1}_\pazocal{R}(\bm\uptheta)\) applied to the right-hand side residual delta
+or
 \begin{equation}
-  \Delta \bm\uptheta^{k+1} = - \hat{J}^{-1}_\pazocal{R}(\bm\uptheta^k)\mathbf r^{k+1} \equiv \mathbf W_k \mathbf c + \mathbf r^{k+1}.
+  \Delta \mathbf x^{k} = - \pazocal R^k - \mathscr S^k\left({\mathscr{R}^{k}}^{\mathrm{T}} \mathscr{R}^{k}\right)^{-1} {\mathscr{R}^{k}}^{\mathrm{T}} \pazocal R^{k},
 \end{equation}
-Box~\eqref{box:quasi_newton} shows the QN-LS method for one timestep of the couple simulation.
 When no delta columns are available yet, constant relaxation is used once to ensure stability.
-
-
-
 
  Quasi-Newton methods
 
@@ -896,107 +742,66 @@ When no delta columns are available yet, constant relaxation is used once to ens
 - König et al. (2016)
 - Scheufele (2018)
 
- GMRES
-
-Applying the GMRES to the thermo-mechanical problem, the Krylov-subspace of order $m$ is written as
-
-$$
-\pazocal{K}_{m}:=\operatorname{span}\left\{\boldsymbol{s}_{i}-\boldsymbol{s}_{k}\right\}_{i=1}^{m}=\operatorname{span}\left\{\Delta \boldsymbol{s}_{i}\right\}_{i=1}^{m},
-$$
-
----
-
-1. $n = 0$
-2. Solve for
-
- Andersen Acceleration
-
-- Uekermann (2016)
-
- Generalized Broyden
-
-- Uekermann (2016)
-
- Filtering
-
- Multi-Scale
-
 
 \section{Multipoint iteration functions}
 
 \subsection{Extrapolation tecniques with cycling}
 
-There is a vast literature on sequence acceleration including \cite{}\jvc{Beef this paragraph up}
+There is a vast literature on sequence acceleration/extrapolation methods (see  \cite{brezinski_extrapolation_2013} and \cite{sidi_vector_2017} for textbook treatments of this topic).
+In numerical analysis, in applied mathematics and in engineering one has often to deal with sequences and series. 
+They are produced by iterative methods, perturbation techniques, approximation procedures depending on a parameter, and so on. 
+Very often in practice those sequences or series converge so slowly that it is a serious drawback to their effective use. 
+This is the reason why convergence acceleration methods have been studied for many years and applied to various situations. 
+They are based on the very natural idea of extrapolation and, in many cases, they lead to the solution of problems which were unsolvable otherwise.
+Sequences of vectors can also be considered, with their dimension being very large. 
+Such sequences arise, for example, in the solution by fixed-point iterative methods of systems of linear or nonlinear algebraic equations. 
 
-The formula for the one-dimensional case is
-$$
-AX_n = \frac{x_n x_{n+2} - x_{n+1}^2}{x_n-2x_{n+1}+ x_{n+2} }
-$$
-or
-$$
-AX_n = x_{n+2} - \frac{x_{n+2} - x_{n+1} }{x_n + x_{n+2} - 2 x_{n+1} }(x_{n+1}-x_{n+2})
-$$
+To fix ideas, an example of a scalar acceleration method is first presented.
+Let \((S_n)\) be a sequence of numbers which converges to \(S\).
+This sequence can be transformed into another sequence, denoted \((T_n)\).
+For example, consider
+\begin{equation}
+  T_n = \frac{S_n S_{n+2} - S^2_{n+1}}{S_{n+2}-2S_{n+1} + S_n},\quad n=0,1,\dots,
+\end{equation}
+which corresponds to the Aitken \(\Delta^2\) process.
 
-Aitken's method will accelerate the sequence $x_{n}$ if $\lim_{n \rightarrow \infty} \frac{(A x)_{n}-\ell}{x_{n}-\ell}=0$.
-$A$ is not a linear operator, but a constant term drops out, viz: $A[x-\ell]=A x-\ell$, if $\ell$ is a constant. This is clear from the expression of $A x$ in terms of the finite difference operator $\Delta$.
-Although the new process does not in general converge quadratically, it can be shown that for a fixed point process, that is, for an iterated function sequence $x_{n+1}=f\left(x_{n}\right)$ for some function $f$, converging to a fixed point, the convergence is quadratic. In this case, the technique is known as Steffensen's method.
-
-Empirically, the $A$-operation eliminates the "most important error term". One can check this by considering a sequence of the form $x_{n}=\ell+a^{n}+b^{n}$, where $0<b<a<1$: The sequence $A x$ will then go to the limit like $b^{n}$ goes to zero.
-
-Geometrically, the graph of an exponential function $f(t)$ that satisfies \(f(n)=x_{n}, f(n+1)=x_{n+1}\) and \(f(n+2)=x_{n+2}\) has an horizontal asymptote at \(\frac{x_{n} x_{n+2}-x_{n+1}^{2}}{x_{n}-2 x_{n+1}+x_{n+2}}\left(\right.\) if \(\left.x_{n}-2 x_{n+1}+x_{n+2} \neq 0\right)\).
-
-If you want to fit \(a e^{b x}+c\) to 3 points, \(\left(x_{i}, y_{i}\right)*{i=1}^{3}\), you want \(y*{i}=a e^{b x_{i}}+c .\)
-Subtracting the first two, \(y_{2}-y_{1}=a\left(e^{b x_{2}}-e^{b x_{1}}\right)=a e^{b x_{1}}\left(e^{b\left(x_{2}-x_{1}\right)}-1\right)\) and, similarly, \(y_{3}-y_{2}=a\left(e^{b x_{3}}-e^{b x_{2}}\right)=a e^{b x_{2}}\left(e^{b\left(x_{3}-x_{2}\right)}-1\right) .\)
-If \(x_{3}-x_{2}=x_{2}-x_{1}=d\), so the data are equally spaced and \(e^{b\left(x_{2}-x_{1}\right)}-1=e^{b\left(x_{3}-x_{2}\right)}-1\), we can divide these to get
-\(\frac{y_{3}-y_{2}}{y_{2}-y_{1}}=e^{b x_{2}-b x_{1}}=e^{b\left(x_{2}-x_{1}\right)}=e^{b d}\)
-Taking logs, and letting \(r=\frac{y_{3}-y_{2}}{y_{2}-y_{1}}, \ln (r)=b d\) so \(b=\frac{\ln (r)}{d} .\) From this, \(e^{b}=r^{1 / d} .\)
-Note that this requires that \(r>0\), so the points are monotonic.
-Then
-\[
-\begin{aligned}
-y_{2}-y_{1} &=a\left(e^{b x_{2}}-e^{b x_{1}}\right) \\
-&=a\left(r^{x_{2} / d}-r^{x_{1} / d}\right)
-\end{aligned}
-\]
-so that
-\[
-a=\frac{y_{2}-y_{1}}{r^{x_{2} / d}-r^{x_{1} / d}}
-\]
-We also get
-\[
-a=\frac{y_{3}-y_{2}}{r^{x_{3} / d}-r^{x_{2} / d}}=\frac{y_{3}-y_{1}}{r^{x_{3} / d}-r^{x_{1} / d}}
-\]
-Finally, \(c=y_{i}-a e^{b x_{i}}\) for any \(i\).
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/def2fba4-2bd4-4a98-8216-4d44881db9ff/Untitled.png)
-
+This expression can be obtained considering a transformation that would yield the limit of a geometric sequence from only three iterates, i.e., if one fits an exponential funtcion
+\begin{equation}
+  S + a \lambda^n,
+\end{equation}
+the sequence transformation takes the horizontal assymptote of the exponential, \(S\).
 One can also show that if \(x\) goes to its limit \(\ell\) at a rate strictly greater than \(1\)\footnote{$\left\{x_{n}\right\}{n \in \mathbb{N}}$ converges linearly to $\ell$ if there exists a number $\mu \in(0,1)$ such that \(\lim_{n \rightarrow \infty} \frac{\left|x_{n+1}-\ell\right|}{\left|x_{n}-\ell\right|}=\mu\).}, \(A x\) does not have a better rate of convergence.
-(In practice, one rarely has e.g. quadratic convergence which would mean over 30 resp. 100 correct decimal places after 5 resp. 7 iterations (starting with 1 correct digit); usually no acceleration is needed in that case.)
 
-In practice, \(A x\) converges much faster to the limit than \(x\) does, as demonstrated by the example calculations below. Usually, it is much cheaper to calculate \(A x\) (involving only calculation of differences, one multiplication and one division) than to calculate many more terms of the sequence \(x\). Care must be taken, however, to avoid introducing errors due to insufficient precision when calculating the differences in the numerator and denominator of the expression.\jvc{Explain the Aitken-\(\Delta^2\) as an example}
+In practice, the sequence produced by Aitken's \(\Delta^2\) method tends too converges faster to the limit than \(S_n\) does.
+Very often, it is much cheaper to calculate \(T_n\), which involves only calculation of differences, one multiplication and one division, than to calculate many more terms of the sequence \(S_n\). 
+Care must be taken, however, to avoid introducing errors due to insufficient precision when calculating the differences in the numerator and denominator of the expression.
 
-There is no universal accelerator \cite{brezinski}
+There is, however, no universal sequence accelerator capable of accelerating all sequences.
+It is also the case that non-linear transformations can even fail to converge or converge to a value other than the limit of the original sequence \citep{brezinski_extrapolation_2013}.
 
-According to \cite{brezinski}, there is a very strong connection between sequence transformations and fixed point methods for solving \(x=g(x)\) where \(g: R^{p} \to R^{p}\).
+According to \cite{brezinski_extrapolation_2013}, there is a very strong connection between sequence transformations and fixed point methods for solving \(x= g( x)\), \(g\colon \mathbb R\to \mathbb R\).
 The most well known example of this connection is that between Aitken's \(\Delta^{2}\) process and Steffensen's method in the case \(p=1\).
-\[T_{n}=S_{n}-\frac{\left(S_{n+1}-S_{n}\right)^{2}}{S_{n+2}-2 S_{n+1}+S_{n}}, \quad n=0,1, \ldots \quad\text{for Aitken's process}\]
+\begin{equation}
+T_{n}=S_{n}-\frac{\left(S_{n+1}-S_{n}\right)^{2}}{S_{n+2}-2 S_{n+1}+S_{n}}, \quad n=0,1, \ldots \quad\text{for Aitken's process}
+\end{equation}
 and
-\[x_{n+1}=x_{n}-\frac{\left(g\left(x_{n}\right)-x_{n}\right)^{2}}{g\left(g\left(x_{n}\right)\right)-2 g\left(x_{n}\right)+x_{n}}, n=0,1, \ldots \quad\text{for Steffensen's method.}\]
+\begin{equation}
+x_{n+1}=x_{n}-\frac{\left(g\left(x_{n}\right)-x_{n}\right)^{2}}{g\left(g\left(x_{n}\right)\right)-2 g\left(x_{n}\right)+x_{n}}, n=0,1, \ldots \quad\text{for Steffensen's method.}
+\end{equation}
 
-More generally let \(T:\left(S_{n}\right) \to\left(T_{n}\right)\) be a quasi-linear sequence transformation defined by
-\[
-T_{n}=F\left(S_{n}, \ldots, S_{n+k}\right), \quad n=0,1, \ldots
-\]
+Turning to vector sequences and systems of nonlinear equations, let \(T:\left(\mathbf 1x_{n}\right) \to\left(\mathbf y_{n}\right)\) be a sequence transformation defined by
+\begin{equation}
+=F\left(S_{n}, \ldots, S_{n+k}\right), \quad n=0,1, \ldots
+\end{equation}
 For solving the fixed point problem \(x=g(x)\) we can associate to it the iterative method
-\[
+\begin{equation}
 x_{n+1}=F\left(x_{n}, g\left(x_{n}\right), \ldots, g_{k}\left(x_{n}\right)\right), \quad n=0,1, \ldots
-\]
+\end{equation}
 where \(g_{i+1}(t)=g\left(g_{i}(t)\right)\) and \(g_{0}(t)=t\).
 Conversely to any fixed point iteration of this form, we can associate a sequence transformation of the previous form.
 See Box~\ref{} for the general algorithm excluding the extrapolation method.
 
-Variations on this approach can be found which include \cite{irons_version_1969} and \cite{king}
-
+Turning to the solution of system of non-linear equations, 
 There is a variety of vector extrapolation methods, where the major two categories are polynomial methods, see Refs. \([13,14]\), and methods based on the e-algorithm, as shown by Brezinski and Zaglia [27] and Brezinski [15].
 In this presentation only the first category is considered, since the second lead too many function evaluation per iteration \cite{sidi}.
 
