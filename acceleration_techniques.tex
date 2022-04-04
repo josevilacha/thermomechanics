@@ -13,11 +13,11 @@ The second deals with approaches based on the Newton-Raphson method, with the ma
 For the sake of clarity, the discretized equations of the thermo-mechanical problem at the next time instant, \(n+1\)e are recovered here
 \begin{gather}
     \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \label{eq:mech_problem} \\
-    \mathbf C \dot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0, \label{eq:therm_problem}
+    \mathbf C \dot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0. \label{eq:therm_problem}
 \end{gather}
-where the complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
+The complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
 
-As only partitioned approaches are being considered, the thermal and mechanical problems are solved separately, i.e., Equation~\eqref{eq:mech_problem} is solved considering a fixed temperature, and Equation~\eqref{eq:therm_problem} is solved assuming a fixed configuration.
+As only partitioned approaches are considered, the thermal and mechanical problems are solved separately, i.e., Equation~\eqref{eq:mech_problem} is solved considering a fixed temperature, and Equation~\eqref{eq:therm_problem} is solved assuming a fixed configuration.
 To ease the discussion, consider the existence of two functions \(\pazocal U_{n+1}\) and \(\pazocal T_{n+1}\) that represent these solution procedures at timestep \(n+1\).
 These so-called mechanical and thermal solvers satisfy
 \begin{highlight}[innertopmargin=-5pt]
@@ -29,10 +29,10 @@ These so-called mechanical and thermal solvers satisfy
 See Chapter~\ref{chapter:thermo_mechanical_problem} for detailed information on them.
 In the following, the subscripts on the solvers will be dropped to avoid clutter.
 
-The goal now is to consider functions, built using \(\pazocal U\) and \(\pazocal T\), whose roots are also the solutions to the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}).
+The goal now is to consider functions, built from \(\pazocal U\) and \(\pazocal T\), whose roots are also the solutions to the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}).
 Several examples can be provided.
 The most appropriate for the current use case are presented in what follows.
-They can be found in \cite{uekermann_partitioned_2016} in the context of fluid-structure interaction.
+They can be found in \cite{uekermann_partitioned_2016} in the context of fluid-structure interaction (FSI).
 
 Consider the residues defined as,
 \begin{highlight}
@@ -52,11 +52,11 @@ and
 \end{equation}
 \end{highlight}
 where the subscript "J" stands for Jacobi and the subscript "GS" for Gauss-Seidel.
-The reason for this choice of subscripts is made clear in Section~\ref{sec:fixed_point_approachd}.
+The reason for this choice of subscripts is made clear in Section~\ref{sec:fixed_point_approach}.
 
 
 Since the methods described below for the solution of nonlinear systems of equations apply to both functions \(\pazocal R_\mathrm{J}\) and \(\pazocal R_\mathrm{GS}\), a general function denoted as \(\pazocal R\), whose variable is \(\mathbf x\), is considered instead.
-As already stated, the solution for the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}) can be abstracted as the solutions of
+As already stated, the solution for the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}) can be abstracted as the solution of
 \begin{equation} \label{eq:abstract_residue_equation}
   \pazocal R(\mathbf x) = 0.
 \end{equation}
@@ -66,10 +66,7 @@ To obtain simpler expressions in what follows, consider also the function
 \end{equation}
 whose fixed point is the solution to the nonlinear system of equation in Equation~\eqref{eq:abstract_residue_equation}.
 
-\jvc{Explain a difference vector/scalar}
-
 \section{A classification scheme for iterative methods}
-\jvc{Should we include more classification schemes? Classify by order also? And so on?}
 
 Most methods available for the solution of systems of nonlinear equations, such as the one in Equation~\eqref{eq:abstract_residue_equation}, are iterative methods.
 They can be more precisely defined lettting \(\mathbf x^{k},\mathbf x^{k-1}, \ldots\), whose superscripts correspond to the loop of the iteration method, be approximants to \(\mathbf x_{n+1}\), whose subscript concerns the timestep
@@ -107,7 +104,6 @@ Thus
     \mathbf x^{k+1}=\phi\left[\mathbf x^{k}, \omega_{1}\left(\mathbf x^{k}\right), \ldots, \omega_{i}\left(\mathbf x^{k}\right)\right].
   \end{equation}
 \end{highlight}
-\jvc{Include where each will be discussed.}
 Then \(\phi\) is called a \textit{multipoint iterative function}.
 Such methods include the Aitken-Steffson method.
 
@@ -164,20 +160,20 @@ and if it is equal to zero then $\mathbf x$ is the solution to the system of non
 \end{equation}
 and hence, a reasonable convergence measure for the iteration procedure.
 
-The discrete  $L^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k}=\left(r^{k,1}, \ldots, r^{k,m}\right)^{T}\) as
+The discrete  $l^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k}=\left(r^{k,1}, \ldots, r^{k,m}\right)^{T}\) as
 \begin{equation} \label{eq:absolute_residual_criterion}
 \left\|\mathbf{r}^{k}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k, i}\right)^{2}}.
 \end{equation}
 
 Directly using \eqref{eq:absolute_residual_criterion} yields an absolute convergence criterion
 \begin{equation}
-\left\|\boldsymbol{r} ^{k}\right\|_{L^{2}}<\epsilon_\mathrm{abs}.
+\left\|\boldsymbol{r} ^{k}\right\|_{l^{2}}<\epsilon_\mathrm{abs}.
 \end{equation}
 with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid.
 However, since the absolute value of the $r^{k, i} $'s can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations.
 A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
 \begin{equation}
-\frac{\left\|\mathbf{r}^{k}\right\|_{L^{2}}}{\left\|\mathbf{x}^{k}\right\|_{L^{2}}}<\epsilon_\mathrm{rel}.
+\frac{\left\|\mathbf{r}^{k}\right\|_{l^{2}}}{\left\|\mathbf{x}^{k}\right\|_{l^{2}}}<\epsilon_\mathrm{rel}.
 \end{equation}
 
 A relative convergence measure can fail to work correctly when the coupling iterate values are close to zero, and rounding errors occur.
@@ -293,26 +289,30 @@ Written in full
 \end{gather}
 
 From this, a block Newton iteration can be written as
-\begin{equation} \label{eq:block_newton_raphson}
-\left[\begin{array}{l}
-J_{\pazocal{R}_{u}}\left(\mathbf u^k, \bm{\uptheta}^{k}\right) \\[7pt] J_{\pazocal{R}_{\theta}}\left(\mathbf{u}^{k}, \bm\uptheta^k\right)
-\end{array}\right]
-\left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
-=-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
-\end{equation}
+\begin{highlight}
+  \begin{equation} \label{eq:block_newton_raphson}
+  \left[\begin{array}{l}
+  J_{\pazocal{R}_{u}}\left(\mathbf u^k, \bm{\uptheta}^{k}\right) \\[7pt] J_{\pazocal{R}_{\theta}}\left(\mathbf{u}^{k}, \bm\uptheta^k\right)
+  \end{array}\right]
+  \left\{\begin{array}{c}\Delta \mathbf{u}^{k} \\ \Delta \bm{\uptheta}^{k}\end{array}\right\}
+  =-\left\{\begin{array}{l}\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right) \\ \pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)\end{array}\right\},
+  \end{equation}
+\end{highlight}
 and the update of the iteration variables reads
-\begin{equation}
-\left\{\begin{array}{l}
-\mathbf{u}^{k+1} \\
-\boldsymbol{\theta}^{k+1}
-\end{array}\right\}=\left\{\begin{array}{l}
-\mathbf{u}^{k} \\
-\boldsymbol{\theta}^{k}
-\end{array}\right\}+\left\{\begin{array}{c}
-\Delta \mathbf{u}^{k} \\
-\Delta \boldsymbol{\theta}^{k}
-\end{array}\right\}.
-\end{equation}
+\begin{highlight}
+  \begin{equation}
+  \left\{\begin{array}{l}
+  \mathbf{u}^{k+1} \\
+  \boldsymbol{\theta}^{k+1}
+  \end{array}\right\}=\left\{\begin{array}{l}
+  \mathbf{u}^{k} \\
+  \boldsymbol{\theta}^{k}
+  \end{array}\right\}+\left\{\begin{array}{c}
+  \Delta \mathbf{u}^{k} \\
+  \Delta \boldsymbol{\theta}^{k}
+  \end{array}\right\}.
+  \end{equation}
+\end{highlight}
 
 
 The system of equations in Equation~\eqref{eq:block_newton_raphson} can be further simplified following \cite{degroote_development_2010} considering the definitions of the mechanical and thermal residuals and taking their derivatives.
@@ -332,19 +332,20 @@ Solving for \(\Delta \mathbf u^k\) and \(\Delta \bm \uptheta^k\), one finds
   \left(\mathbf I + J_\pazocal{T}(\mathbf u^k)J_\pazocal{U}(\bm\uptheta^k)\right)\Delta \bm\uptheta^k &= - \pazocal R_\theta(\bm \uptheta^k, \mathbf u^k)+J_\pazocal{\theta}(\mathbf u^k)\pazocal R_u(\mathbf u^k, \bm\uptheta^k). \label{eq:explicit_eq_delta_theta_newton}
 \end{align}
 Thus, the Jacobians now needed are \(J_\pazocal{U}\) and \(J_\pazocal{T}\).
-See Section~\ref{} for the practical application of this.
+See Section~\ref{sec:quasi_newton} for the practical application of this.
 
 Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\pazocal{R}\left(\mathbf{u}^{k}\right)$ or both $\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
-
 The critical point for black-box equation coupling is how to obtain the derivative information in the Jacobi matrices.
 In different ways, some of the methods presented next find approximations for the required Jacobian times vector products.
 
+
+
 \subsubsection{Constant Underrelaxation}
 
-One of the most straightforward ways to stabilize an iterative method is to use constant underrelaxation. \cite{gatzhammer_efficient_2014}
+One of the most straightforward ways to stabilize an iterative method is to use constant underrelaxation \citep{gatzhammer_efficient_2014}.
 The relaxation is performed as follows
 \begin{equation} \label{eq:constant_relaxation}
-\mathbf x^{k+1}=(1-\omega) \mathbf x^{k}+\omega(\mathbf x^k - \pazocal R(\mathbf x^k))=\mathbf x^{k} -\omega \mathbf{r}^{k+1},
+\mathbf x^{k+1}=(1-\omega) \mathbf x^{k}+\omega\left(\mathbf x^k - \pazocal R(\mathbf x^k)\right)=\mathbf x^{k} -\omega \mathbf{r}^{k+1},
 \end{equation}
 where \(\omega\) is the relaxation factor chosen in the range \(0<\omega<1\), which corresponds to an underrelaxation, to achieve a stabilizing effect.
 
@@ -367,13 +368,13 @@ Applying to Equation~\eqref{eq:def_res_jacobi}
 \end{equation}
 Applying to Equation~\eqref{eq:def_res_gauss_seidel}
 \begin{equation}
-  \bm\uptheta^{k+1} = (1-\omega)\bm\uptheta^k + \omega \pazocal T\left(\pazocal U(\bm \uptheta^k)\right).
+  \bm\uptheta^{k+1} = (1-\omega)\bm\uptheta^k + \omega \pazocal T\circ\pazocal U(\bm \uptheta^k).
 \end{equation}
 
 
 Constant underrelaxation works well if \(\omega\) is close to 1 but leads to a slow convergence if \(\omega\) has to be chosen close to 0.
 Thus, the constant underrelaxation method creates unmanageable computational costs for severe instabilities.
-The optimal \(\omega\) is not necessary the largest stable one \citet{gatzhammer_efficient_2014} and has to be set empirically.
+The optimal \(\omega\) is not necessary the largest stable one \citep{gatzhammer_efficient_2014} and has to be set empirically.
 In what follows, alternative methods are discussed, which try to decrease the number of iterations necessary while maintaining stability.
 
 \begin{framedbox}[htb]
@@ -404,38 +405,39 @@ In what follows, alternative methods are discussed, which try to decrease the nu
 
 The so-called Aitken \(\Delta^2\) relaxation method was introduced by \cite{irons_version_1969} as a modified Aitken \(\Delta^2\) that does not require the computation of the function twice per iteration as in the original method.
 It has been widely used in the context of FSI \citep{irons_version_1969, kuttler_fixed-point_2008, joosten_analysis_2009, kuttler_vector_2009, erbts_partitioned_2015, wendt_partitioned_2015}.
+It has also been used in the context of thermo-mechanics by \cite{danowski_monolithic_2013}.
 
 In the one-dimensional case, this method resembles the secant method applied to the fixed point problem, which can be used to solve nonlinear equations without differentiation.
-Calling it an Aitken method is perhaps a misnomer since, in the Aitken-Steffson method, the function values are computed twice per iteration.
+Calling it an Aitken method is perhaps a misnomer since, in the Aitken-Steffensen method, the function values are computed twice per iteration.
 It is more closely related to secant methods, reusing values from previous iterations.
 This version of Aitken's \(\Delta^2\) method provides a dynamic under relaxation, which can be used to improve the convergence/stability properties of the coupling algorithm.
 
 Assume that \(f\) is the function whose fixed point is sought.
 The linear interpolation between two points already known of the function, \((a, f(a))\) and \((b, f(b)\) is
 \begin{equation}
-  y = \frac{f(b)-f(a)}{b-a}(x-a) - f(a).
+  y = \frac{f(b)-f(a)}{b-a}(x-a) + f(a).
 \end{equation}
 The fixed point of this approximation is
 \begin{equation}
-  c = \frac{f(b)-f(a)}{b-a}(x-c) - f(a).
+  c = \frac{f(b)-f(a)}{b-a}(c-a) + f(a).
 \end{equation}
 Thus, after rearranging,
-\begin{equation}
+\begin{equation}\
 c=\frac{a f(b)- b f(a)}{\left(a-f(a)\right)-\left(b-f(b)\right)}
 \end{equation}
 This can be rewritten as
 \begin{equation}
-c=\left(1-\omega_{b}\right) f(b)+\omega_{b} b \quad \text { with } \omega_{b}=\frac{f(b)-f(a)}{\left(a-f(a)\right)-\left(b-f(b)\right)}
+c=\left(1-\omega_{b}\right) b+\omega_{b} f(b) \quad \text { with } \omega_{b}=\frac{a-b}{\left(a-f(a)\right)-\left(b-f(b)\right)}
 \end{equation}
 
 The difference \(f(b)-f(a)\) is computationally inconvenient.\jvc{Why?}
 Anticipating the next iteration step,
 \begin{equation}
-d=\left(1-\omega_{c}\right) f(c)+\omega_{c} c \quad \text { with } \omega_{c}=\frac{f(c)-f(b)}{\left(b-f(b)\right)-\left(c-f(c)\right)}
+d=\left(1-\omega_{c}\right) c+\omega_{c} f(c) \quad \text { with } \omega_{c}=\frac{c-b}{\left(b-f(b)\right)-\left(c-f(c)\right)}
 \end{equation}
 a convenient expression for updating the relaxation factor may be found, i.e.
 \begin{equation}
-\omega_{c}=\omega_{c}+\left(\omega_{b}-1\right) \frac{c-f(c)}{\left(b-f(b)\right)-\left(c-f(c)\right)}.
+\omega_{c}=-\omega_{b}\frac{f(b)-b}{(c-f(c))-(f(b)-b)}.
 \end{equation}
 
 Now, for the vector case, the next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{x}^{(k)}$ plus a new increment $\Delta \mathbf{x}^{(k)}$
@@ -549,11 +551,11 @@ These are two particular members of Broyden's family.
 % \delta=\frac{\lambda\left(\lambda+\left\|\boldsymbol{s}_{k}\right\|_{L_{2}}\right)}{\left\|\boldsymbol{r}_{k+1}\right\|_{L_{2}}}
 % \]
 % and \(\lambda\) chosen small enough \({ }^{6}\). The evaluation (2.135) needs one more call of fluid and structure solvers per coupling iteration. To decrease the computational costs for the extra evaluation, it is proposed to reduce the accuracy of the field solvers.
-The second approximation uses approximated fluid derivatives and exact structure derivatives, which are not available for black-box coupling and, thus, this alternative is not considered here.
+% The second approximation uses approximated fluid derivatives and exact structure derivatives, which are not available for black-box coupling and, thus, this alternative is not considered here.
 
 \subsection{Multi-secant methods}
 
-The multi-secant methods provide an approximation to the Jacobian in Equation~\eqref{} or Equation~\eqref{} using information from previous iterations.
+The multi-secant methods provide an approximation to the Jacobian in Equation~\eqref{eq:newton_system} or Equation~\eqref{eq:block_newton_raphson} using information from previous iterations.
 The following exposition follows closely \cite{fang_two_2009}.
 
 \subsubsection{Generalized Broyden}
@@ -611,7 +613,7 @@ Expressing the equations in the form \(\bar{\mathbf x}^{k}=\sum_{j=k-m}^{k} w_{j
 In other words, \(\bar{\mathbf x}_{k}\) and \(\bar{\pazocal R}_{k}\) are weighted averages of \(\mathbf x_{k-m}, \ldots, \mathbf x_{k}\) and \(\pazocal R^{k-m}, \ldots, \pazocal R^{k}\), respectively.
 The arguments \(\gamma^{k}=\left[\gamma_{k-m}^{k} \cdots \gamma_{k-1}^{(k)}\right]^{\mathrm{T}}\) are determined by minimizing
 \begin{equation}
-E\left(\gamma^{k}\right)=\left\langle\bar{\pazocal R}^{k}, \bar{\pazocal R}^{k}\right\rangle=\left\|\pazocal R^{k}-\mathscr{R}^{k} \gamma_{k}\right\|_{2}^{2}
+E\left(\gamma^{k}\right)=\left\langle\bar{\pazocal R}^{k}, \bar{\pazocal R}^{k}\right\rangle=\left\|\pazocal R^{k}-\mathscr{R}^{k} \gamma^{k}\right\|_{2}^{2}
 \end{equation}
 whose solution can, but should not in practice, be obtained by solving the normal equations
 \begin{equation}
@@ -654,7 +656,7 @@ This last choice yields as the approximation for the Jacobian
 \begin{equation}
   J_\pazocal R^{k}=J_\pazocal R^{k-m}+\left(\mathscr{R}^{k}-J_\pazocal R^{k-m} \mathscr{X}^{k}\right)\left({\mathscr{X}^{k}}^{\mathrm{T}} \mathscr{X}^{k}\right)^{-1} {\mathscr{X}^{k}}^{\mathrm{T}},
 \end{equation}
-after applying the Woodbury formula.\jvc{See if this is really the correct name.}
+after applying the Woodbury formula.
 The first choice is said to correspond to a Type-I update and a the second to a Type-II update \citep{fang_two_2009}.
 %
 \subsubsection{Anderson's family}
@@ -673,7 +675,7 @@ This more general description is not reproduced here.
 
 \paragraph{In the context of FSI}
 
-The multi-secant quasi-Newton methods have been used in the context of FSI, although not always presented as such.
+The multi-secant quasi-Newton methods have been used in the context of FSI, although not always presented as such \citep{haelterman_quasi-newton_2009, gatzhammer_efficient_2014, uekermann_partitioned_2016, scheufele_coupling_2018}.
  \cite{vierendeels_implicit_2007} and \cite{degroote_stability_2008} consider the system of equations \eqref{eq:explicit_eq_delta_u_newton} and \eqref{eq:explicit_eq_delta_theta_newton}, where recall that an estimate for the Jacobians \(J_\pazocal{U}\) and \(J_\pazocal{T}\) are needed.
 The authors achieve this by using linear reduced-order models for the fluid solver and the structure solver.
 These are set up from solver input and output deltas or sensitivities during the coupling iterations.
@@ -716,25 +718,6 @@ or
   \Delta \mathbf x^{k} = - \pazocal R^k - \mathscr S^k\left({\mathscr{R}^{k}}^{\mathrm{T}} \mathscr{R}^{k}\right)^{-1} {\mathscr{R}^{k}}^{\mathrm{T}} \pazocal R^{k},
 \end{equation}
 When no delta columns are available yet, constant relaxation is used once to ensure stability.
-
- Quasi-Newton methods
-
-- Vierendeels et al. (2007)
-- Degroote et al. (2008)
-- Haelterman et al. (2009)
-- Erbst and Düster (2012)
-- Gatzhammer (2014)
-- Erbts et al. (2015)
-- Wendt et al. (2015)
-
- Newton-Krylov methods
-
-- Michler et al. (2005)
-- Küttler and Wall (2009)
-- Gatzhammer (2014)
-- König et al. (2016)
-- Scheufele (2018)
-
 
 \section{Multipoint iteration functions}
 
