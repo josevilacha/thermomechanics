@@ -189,6 +189,14 @@ The application of the fixed-point method to obtain the roots of \(\pazocal R\) 
 \begin{equation}
   \mathbf x^{k+1} = \pazocal S(\mathbf x^k) = \mathbf x^k - \pazocal R(\mathbf x^k).
 \end{equation}
+See Figure~\ref{fig:fixed_point_iteration} for its geometric interpretation in one dimension.
+
+\begin{figure}
+  \includegraphics{figures/fixed_point_iteration}
+  \caption{Geometric interpretation of the fixed-point iteration method in one dimension for two example functions \(f\) and \(g\).}
+  \label{fig:fixed_point_iteration}
+\end{figure}
+
 If the particular functions defined on Equations~\eqref{eq:def_res_jacobi} and \eqref{eq:def_res_gauss_seidel} are used, one finds the  two basic Schwarz procedures commonly employed in strongly coupled solution procedures.
 They are the additive or block Jacobi and the parallel Scharwz or Gauss-Seidel procedures.
 The names originate from domain decomposition, and justify the subscripts employed in Equations~\eqref{eq:def_res_jacobi} and \eqref{eq:def_res_gauss_seidel}.
@@ -279,6 +287,13 @@ It can be applied to Equation~\eqref{eq:abstract_residue_equation} yielding
     \mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k. \label{eq:newton_iter}
   \end{gather}
 \end{highlight}
+See Figure~\ref{fig:newton_method} for its geometric interpretation in one dimension.
+
+\begin{figure}[htbp]
+  \includegraphics{figures/newton_method}
+  \caption{Geometric interpretation of the Newton method in one dimension for an example function \(f\), whose derivative is denoted by \(f'\).}
+  \label{fig:newton_method}
+\end{figure}
 
 In particular, using \(\pazocal R_\mathrm{J}\), a few simplifications can be obtained.
 To ease the explanation, consider, a thermal residual operator $\pazocal{R}_{u}(\mathbf{u}, \bm{\uptheta})$ and a mechanical residual operator $\pazocal{R}_{\theta}(\mathbf{u}, \bm{\uptheta})$ defined to be the first and second components in the definition of \(\pazocal R_\mathrm{J}\) (Equation~\eqref{eq:def_res_gauss_seidel}).
@@ -402,7 +417,6 @@ In what follows, alternative methods are discussed, which try to decrease the nu
 \subsubsection{Aitken relaxation}
 
 
-
 The so-called Aitken \(\Delta^2\) relaxation method was introduced by \cite{irons_version_1969} as a modified Aitken \(\Delta^2\) that does not require the computation of the function twice per iteration as in the original method.
 It has been widely used in the context of FSI \citep{irons_version_1969, kuttler_fixed-point_2008, joosten_analysis_2009, kuttler_vector_2009, erbts_partitioned_2015, wendt_partitioned_2015}.
 It has also been used in the context of thermo-mechanics by \cite{danowski_monolithic_2013}.
@@ -439,6 +453,13 @@ a convenient expression for updating the relaxation factor may be found, i.e.
 \begin{equation}
 \omega_{c}=-\omega_{b}\frac{f(b)-b}{(c-f(c))-(f(b)-b)}.
 \end{equation}
+See Figure~\ref{fig:mod_aitken} for its geometric interpretation in one dimension.
+
+\begin{figure}[htbp]
+  \includegraphics{figures/mod_aitken}
+  \caption{Geometric interpretation of the Aitken relaxation in one dimension for an example function \(f\).}
+  \label{fig:mod_aitken}
+\end{figure}
 
 Now, for the vector case, the next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{x}^{(k)}$ plus a new increment $\Delta \mathbf{x}^{(k)}$
 \begin{equation}
@@ -454,12 +475,13 @@ This coefficient is updated in every iteration cycle as a function of two previo
   \begin{equation}
     \omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{\mathrm{T}} \mathbf{r}^{(k-1)}}{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{2}}.
   \end{equation}
-\end{highlight}
+\end{highlight}\jvc{Check signs!!!}
 Comparing with Equations~\eqref{eq:newton_system} and \eqref{eq:newton_iter}, \(\omega^{(k)}\) can be, in a sense, regarded as an approximation to the inverse of the Jacobian.
 Dynamic relaxation is also easy to implement, and the additional computational input is acceptable since only inner vector products must be performed.
 
 \subsection{Broyden's method and Broyden's family}
 
+The following exposition follows closely \cite{fang_two_2009}.
 In quasi-Newton methods the Jacobian is updated in each iteration using a rank-one update.
 Standard quasi-Newton methods require the updated \(J_{k+1}\) to satisfy the following secant condition
 \begin{equation} \label{eq:secant_condition}
@@ -556,7 +578,7 @@ These are two particular members of Broyden's family.
 \subsection{Multi-secant methods}
 
 The multi-secant methods provide an approximation to the Jacobian in Equation~\eqref{eq:newton_system} or Equation~\eqref{eq:block_newton_raphson} using information from previous iterations.
-The following exposition follows closely \cite{fang_two_2009}.
+
 
 \subsubsection{Generalized Broyden}
 
@@ -657,7 +679,7 @@ This last choice yields as the approximation for the Jacobian
   J_\pazocal R^{k}=J_\pazocal R^{k-m}+\left(\mathscr{R}^{k}-J_\pazocal R^{k-m} \mathscr{X}^{k}\right)\left({\mathscr{X}^{k}}^{\mathrm{T}} \mathscr{X}^{k}\right)^{-1} {\mathscr{X}^{k}}^{\mathrm{T}},
 \end{equation}
 after applying the Woodbury formula.
-The first choice is said to correspond to a Type-I update and a the second to a Type-II update \citep{fang_two_2009}.
+The first choice is said to correspond to a Type-II update and a the second to a Type-I update \citep{fang_two_2009}.
 %
 \subsubsection{Anderson's family}
 
@@ -694,12 +716,12 @@ If one sets \(\alpha=0\), the approximation to the Jacobian obtained is
 \end{equation}
 This corresponds to the linear reduced order models in \cite{vierendeels_implicit_2007}, where \(\pazocal R\) is replaced by the functions corresponding to the fluid and structure solvers.
 If the functions considered are instead the mechanical and thermal solvers, this method can easily be applied to the thermomechanical problem.
-The block \(({\mathscr X^k}^T\mathscr X^k)^{-1}{\mathscr X^k}^T\) can be understood as being a part of a least-squares solution, the so-called normal equations, e.g.,
+The block \(({\mathscr X^k}^T\mathscr X^k)^{-1}{\mathscr X^k}^T\) can be understood as being a part of a least-squares solution, the so-called normal equations, i.e., the equations whose solution also solve the minimization problem
 \begin{equation}
   \arg\min_{\tilde{\gamma}} \|\Delta \mathbf x - \mathscr{X}^k\tilde{\gamma}\|_2.
 \end{equation}
 As such one can avoid the use of the normal equations and employ more numerically stable and efficient methods such economy size \(QR\)-decomposition.
-In addition, \cite{vierendeels_implicit_2007} solves the system of equation \eqref{eq:explicit_eq_delta_u_newton} and \eqref{eq:explicit_eq_delta_theta_newton} in a Gauss-Seidel manner, using always the most recent values available to estimate the Jacobians.
+In addition, \cite{vierendeels_implicit_2007} solve the system of equation \eqref{eq:explicit_eq_delta_u_newton} and \eqref{eq:explicit_eq_delta_theta_newton} in a Gauss-Seidel manner, using always the most recent values available to estimate the Jacobians.
 
 An interface quasi-Newton method based on Equation~\eqref{eq:newton_system} and Equation~\eqref{eq:newton_iter} is presented in \cite{degroote_development_2010} for FSI.
 The method is called interface quasi-Newton with an approximation of the inverse of the interface Jacobian matrix by least squares (QIN-ILS).
@@ -747,6 +769,14 @@ This expression can be obtained considering a transformation that would yield th
   S + a \lambda^n,
 \end{equation}
 the sequence transformation takes the horizontal assymptote of the exponential, \(S\).
+For the geometrical interpretation of Aitken's \(\Delta^2\) method see Figure~\ref{fig:aitken}.
+
+\begin{figure}[htbp]
+  \includegraphics{figures/aitken}
+  \caption{Geometrical interpretation of Aitken's \(\Delta^2\) method.}
+  \label{fig:aitken}
+\end{figure}
+
 One can also show that if \((S_n)\) goes to its limit \(\S\) at a rate strictly greater than \(1\)\footnote{$(S_{n})$, ${n \in \mathbb{N}}$ converges linearly to $S$ if there exists a number $\mu \in(0,1)$ such that \(\lim_{n \rightarrow \infty} \frac{\left|S_{n+1}-S\right|}{\left|S_{n}-S\right|}=\mu\).}, \((T_n)\) does not have a better rate of convergence.
 
 In practice, the sequence produced by Aitken's \(\Delta^2\) method tends to converge faster to the limit than \((S_n)\) does.
@@ -768,13 +798,13 @@ x_{n+1}=x_{n}-\frac{\left(g\left(x_{n}\right)-x_{n}\right)^{2}}{g\left(g\left(x_
 
 Turning to vector sequences and systems of nonlinear equations, let \(F:(\mathbf w^{k}) \to(\mathbf y^{k})\) be a vector extrapolation method defined by
 \begin{equation}
-\mathbf y^k = F\left(\mathbf w^{k}, \ldots, \mathbf w^{k+i}\right), \quad n=0,1, \ldots
+\mathbf y^k = F\left(\mathbf w^{k}, \ldots, \mathbf w^{k+m}\right), \quad n=0,1, \ldots
 \end{equation}
 For solving the fixed point problem \(\mathbf x=\pazocal S(\mathbf x)\) one can associate to it the iterative method
 \begin{equation}
-\mathbf x^{k+1}=F\left(\mathbf x^{k}, \pazocal S(\mathbf x^{k}), \ldots, \pazocal S^{i}(\mathbf x^{k})\right), \quad n=0,1, \ldots
+\mathbf x^{k+1}=F\left(\mathbf x^{k}, \pazocal S(\mathbf x^{k}), \ldots, \pazocal S^{m}(\mathbf x^{k})\right), \quad n=0,1, \ldots
 \end{equation}
-where \(\pazocal S^{i+1}(\mathbf x)=\pazocal S \circ \pazocal S^{i}(\mathbf x)\) and \(\pazocal S^{0}(\mathbf x)=\mathbf x\).
+where \(\pazocal S^{m+1}(\mathbf x)=\pazocal S \circ \pazocal S^{m}(\mathbf x)\) and \(\pazocal S^{0}(\mathbf x)=\mathbf x\).
 This approach is called full cycling or simply cycling.
 Conversely to any fixed point iteration of this form, one can associate a sequence transformation of the previous form.
 See Box~\ref{} for the general algorithm, excluding the extrapolation method.
@@ -785,7 +815,7 @@ In this presentation, only the first category is considered since the second req
 \cite{sidi_vector_2017} presents four different polynomial extrapolation methods.
 They all attempt to exprress the limit of the vector sequence as a linear combination of the \(p\) previous iterates, as follows
 \begin{equation}
-\mathbf s \approx \mathbf{s}_{k, p}=\sum_{j=0}^{p} \gamma_{j} \mathbf w^{k+j},
+\mathbf s \approx \mathbf{s}_{k, m}=\sum_{j=0}^{m} \gamma_{j} \mathbf w^{k+j},
 \end{equation}
 where \(\mathbf s\) is the limit of the vector sequence.
 The methods to be presented next appear naturally when considering the vector sequence generated by
@@ -829,53 +859,53 @@ The approximations are corresponding to each extrapolation method are presented 
 
 \paragraph{MPE}
 
-Solve the overdetermined linear system \(\mathscr W^{p-1} \mathbf c^{\prime}=-\Delta \mathbf w_{k+p}\) in the least-squares sense for \(\mathbf c^{\prime}=\left[c_{0}, c_{1}, \ldots, c_{p-1}\right]^{T}\).
+Solve the overdetermined linear system \(\mathscr W^{m-1} \mathbf c^{\prime}=-\Delta \mathbf w_{k+m}\) in the least-squares sense for \(\mathbf c^{\prime}=\left[c_{0}, c_{1}, \ldots, c_{m-1}\right]^{T}\).
 This amounts to solving the optimization problem
 \begin{equation}
-\min _{c_{0}, c_{1}, \ldots, c_{p-1}}\left\|\sum_{j=0}^{p-1} c_{j} \Delta \mathbf w^ {k+j}+\Delta \mathbf w^{k+p}\right\|_2
+\min _{c_{0}, c_{1}, \ldots, c_{p-1}}\left\|\sum_{j=0}^{m-1} c_{j} \Delta \mathbf w^ {k+j}+\Delta \mathbf w^{k+m}\right\|_2
 \end{equation}
 which can also be expressed as
-\[
-\min _{\mathbf c^{\prime}}\left\|\mathscr W^{p-1} \mathbf c^{\prime}+\mathbf w^{k+p}\right\|_2, \quad \mathbf c^{\prime}=\left[c_{0}, c_{1}, \ldots, c_{p-1}\right]^{T} .
-\]
-With \(c_{0}, c_{1}, \ldots, c_{k-1}\) available, set \(c_{p}=1\) and compute \(\gamma_{q}=c_{q} / \sum_{j=0}^{p} c_{j}, q=0,1, \ldots, p\), provided \(\sum_{j=0}^{p} c_{j} \neq 0\).
+\begin{equation}
+  \min _{\mathbf c^{\prime}}\left\|\mathscr W^{m-1} \mathbf c^{\prime}+\mathbf w^{k+m}\right\|_2, \quad \mathbf c^{\prime}=\left[c_{0}, c_{1}, \ldots, c_{m-1}\right]^{T} .
+\end{equation}
+With \(c_{0}, c_{1}, \ldots, c_{k-1}\) available, set \(c_{m}=1\) and compute \(\gamma_{q}=c_{q} / \sum_{j=0}^{m} c_{j}, q=0,1, \ldots, m\), provided \(\sum_{j=0}^{m} c_{j} \neq 0\).
 
 \paragraph{RRE}
 
-Solve the overdetermined linear system \(\mathscr W^{p} \boldsymbol\gamma=0\) in the least-squares sense, subject to the constraint \(\sum_{j=0}^{p} \gamma_{j}=1\).
+Solve the overdetermined linear system \(\mathscr W^{m} \boldsymbol\gamma=0\) in the least-squares sense, subject to the constraint \(\sum_{j=0}^{m} \gamma_{j}=1\).
 This amounts to solving the optimization problem
 \begin{equation}
-\min _{\gamma_{0}, \gamma_{1}, \ldots, \gamma_{p}}\left\|\sum_{j=0}^{p} \gamma_{j} \Delta\mathbf w^{k+j}\right\| \text { subject to } \sum_{j=0}^{p} \gamma_{j}=1
+\min _{\gamma_{0}, \gamma_{1}, \ldots, \gamma_{m}}\left\|\sum_{j=0}^{m} \gamma_{j} \Delta\mathbf w^{k+j}\right\| \text { subject to } \sum_{j=0}^{m} \gamma_{j}=1
 \end{equation}
 which can also be expressed as
 \begin{equation}
-\min _{\boldsymbol\gamma}\left\|\mathscr W^{p} \boldsymbol\gamma\right\|_2 \quad \text { subject to } \sum_{j=0}^{p} \gamma_{j}=1 ; \quad \boldsymbol\gamma=\left[\gamma_{0}, \gamma_{1}, \ldots, \gamma_{p}\right]^{T} .
+\min _{\boldsymbol\gamma}\left\|\mathscr W^{m} \boldsymbol\gamma\right\|_2 \quad \text { subject to } \sum_{j=0}^{m} \gamma_{j}=1 ; \quad \boldsymbol\gamma=\left[\gamma_{0}, \gamma_{1}, \ldots, \gamma_{m}\right]^{T} .
 \end{equation}
 
 \paragraph{MMPE}
 
-Consider a set of \(p\) linearly independent vectors \(\mathbf q_j\), \(j=1, \dots, p\).
+Consider a set of \(m\) linearly independent vectors \(\mathbf q_j\), \(j=1, \dots, m\).
 Solve the linear system
 \begin{equation}
-  \left(\mathbf q^{j}, \mathscr W^{p-1} \mathbf c^{\prime}\right)=-\left(\mathbf q^{j}, \Delta \mathbf w^{k+p}\right), \quad j=1, \ldots, p,
+  \left(\mathbf q^{j}, \mathscr W^{m-1} \mathbf c^{\prime}\right)=-\left(\mathbf q^{j}, \Delta \mathbf w^{k+m}\right), \quad j=1, \ldots, m,
 \end{equation}
 which can also be expressed as
 \begin{equation}
-  \sum_{j=0}^{p-1}\left(\mathbf q_{j}, \Delta \mathbf w^{k+j}\right) \mathbf c_{j}=-\left(\mathbf q^{j}, \Delta \mathbf w^{k+p}\right), \quad j=1, \ldots, p.
+  \sum_{j=0}^{m-1}\left(\mathbf q_{j}, \Delta \mathbf w^{k+j}\right) \mathbf c_{j}=-\left(\mathbf q^{j}, \Delta \mathbf w^{k+p}\right), \quad j=1, \ldots, m.
 \end{equation}
-This is, in fact, a system of \(p\) linear equations for the \(p\) unknowns \(c_{0}, c_{1}, \ldots, c_{p-1}\).
-With \(c_{0}, c_{1}, \ldots, c_{p-1}\) available, set \(c_{p}=1\) and compute \(\gamma_{q}=c_{q} / \sum_{j=0}^{p} c_{j}, i=0,1, \ldots, p\), provided \(\sum_{j=0}^{p} c_{j} \neq 0\).
+This is, in fact, a system of \(m\) linear equations for the \(m\) unknowns \(c_{0}, c_{1}, \ldots, c_{m-1}\).
+With \(c_{0}, c_{1}, \ldots, c_{m-1}\) available, set \(c_{m}=1\) and compute \(\gamma_{q}=c_{q} / \sum_{j=0}^{m} c_{j}, i=0,1, \ldots, m\), provided \(\sum_{j=0}^{m} c_{j} \neq 0\).
 
 \paragraph{SVD-MPE}
 
 Solve the standard \(l_{2}\) constrained minimization problem
 \begin{equation}
-  \min_{\mathbf c}\left\|\mathscr W^{p} \mathbf c\right\|_{2} \quad \text { subject to }\|\mathbf c\|_{2}=1, \quad \mathbf c=\left[c_{0}, c_{1}, \ldots, c_{p}\right]^{T} .
+  \min_{\mathbf c}\left\|\mathscr W^{m} \mathbf c\right\|_{2} \quad \text { subject to }\|\mathbf c\|_{2}=1, \quad \mathbf c=\left[c_{0}, c_{1}, \ldots, c_{m}\right]^{T} .
 \end{equation}
-The solution \(\mathbf c\) is the right singular vector corresponding to the smallest singular value \(\sigma_{\min }\) of \(\mathscr W^{p}\), i.e., \({\mathscr W^{p}}^{*} \mathscr W^{p} \mathbf c=\sigma_{\min }^{2} \mathbf c\), \(\|\mathbf c\|_{2}=1\).
+The solution \(\mathbf c\) is the right singular vector corresponding to the smallest singular value \(\sigma_{\min }\) of \(\mathscr W^{m}\), i.e., \({\mathscr W^{m}}^{*} \mathscr W^{m} \mathbf c=\sigma_{\min }^{2} \mathbf c\), \(\|\mathbf c\|_{2}=1\).
 It is assumed that \(\sigma_{\min }\) is simple so that \(\mathbf c\) is unique up to a multiplicative constant \(\phi\), \(|\phi|=1\).
 
-With \(c_{0}, c_{1}, \ldots, c_{p}\) available, compute \(\gamma_{q}=c_{q} / \sum_{j=0}^{p} c_{j}, q=0,1, \ldots, p\), provided \(\sum_{j=0}^{p} c_{j} \neq 0\).
+With \(c_{0}, c_{1}, \ldots, c_{m}\) available, compute \(\gamma_{q}=c_{q} / \sum_{j=0}^{m} c_{j}, q=0,1, \ldots, m\), provided \(\sum_{j=0}^{m} c_{j} \neq 0\).
 The assumption that \(\sigma_{\min }\) is simple guarantees the uniqueness of the \(\gamma_{i}\).
 
 \cite{sidi_vector_2017} also suggest cycling with frozen \(\gamma_i\), where after some iterations the \(\gamma_i\) are frozen and reused henceforth.
@@ -900,74 +930,153 @@ The method proposed can be obtained by applying the RRE to the sequence of resid
 \(\Delta \mathbf r^*_i = \mathbf x^*_i - \mathbf x^k\), where the subscript \(i\) concerns the internal loop of the vector extrapolation method, and whose limit is \(\mathbf 0\).
 \cite{kuttler_vector_2009} argues that these residual differences have unfavorable numerical properties and should be avoided.
 
-
-
-
-\begin{framedbox}[htbp]
-  \caption{Arnoldi process to orthonormalize temperature deltas}
-  \label{box:arnoldi_process}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-      \item \(j=1\)
-      \item \(\Delta \bm\uptheta^*_m = \Delta \bm\uptheta^*_m - \Delta \bm\uptheta^*_j\frac{\Delta\bm\uptheta^*_m\cdot\Delta\bm\uptheta^*_j}{\Delta\bm \uptheta^*_j\cdot\Delta\bm\uptheta^*_j}\)
-      \item \(j=j+1\)
-      \item If \(j<m-1\) go to Step (ii)
-      \item \(\Delta\bm \uptheta^*_m = \Delta\bm\uptheta^*_m/\|\Delta \bm \uptheta^*_m\|\)
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
-
-\begin{framedbox}[htbp]
-  \caption{Timestep \(n\) of the GMRES-inspired approach.}
-  \label{box:gmres_inspired}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-    \item \(k=0\)
-    \item If no previous timesteps are to be reused or \(n=0\) then
-    \begin{itemize}
-      \item Clear all \(\Delta \bm \uptheta^*_i\), \(\Delta \mathbf r^*_i\)
-      \item \(m=0\)
-    \end{itemize}
-    \item \(\bm \uptheta^*_1 = \pazocal T\circ \pazocal U(\bm \uptheta^0)\)
-    \item \(\mathbf r^0 = \bm \uptheta^*_1 - \bm \uptheta^0\)
-    \item Enter the Newton loop
-    \begin{enumerate}[(1)]
-      \item If no previous iterations are to be reused
-      \begin{itemize}
-        \item Clear all \(\Delta \bm\uptheta^*_i\), \(\Delta \mathbf r^*_i\)
-        \item \(m=0\)
-        \item \(\xi = \|\mathbf r^*_k\|\)
-      \end{itemize}
-      else
-      \begin{itemize}
-        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
-        \item \(\bm \uptheta^*_{m+1} = \bm \uptheta^*_1\)
-      \end{itemize}
-      \item Enter the Krylov loop
-      \begin{enumerate}[(a)]
-        \item \(m=m+1\)
-        \item \(\Delta \bm\uptheta^*_m = \bm\uptheta^*_m - \bm\uptheta^k\)
-        \item Orthogonalize (Box~\ref{box:arnoldi_process}) and relax \(\Delta \bm\uptheta^*_m\) (Equation~\eqref{})
-        \item \(\bm\uptheta^*_m = \bm\uptheta^k + \Delta\bm\uptheta^*_m\)
-        \item \(\bm \uptheta^*_{m+1} = \pazocal T \circ \pazocal U(\bm \uptheta^*_m)\)
-        \item \(\Delta \mathbf r^*_m = (\bm\uptheta^*_{m+1} - \bm \uptheta^*_m) - \mathbf r^k\)
-        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
-        \item If convergence has not been reached, \(\xi>\epsilon_2\), go to Step (a)
-      \end{enumerate}
-    \item \(\bm\uptheta^{k+1} = \bm\uptheta^k + \sum_{i=1}^m \bar{\alpha}_i \Delta\bm\uptheta_i\)
-    \item \(k=k+1\)
-    \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
-    \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
-    \item If convergence has not been reached, \(\|\mathbf r^k\| > \epsilon_1\), go to Step (1)
-    \end{enumerate}
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
+% \begin{framedbox}[htbp]
+%   \caption{Arnoldi process to orthonormalize temperature deltas}
+%   \label{box:arnoldi_process}
+%   \begin{center}
+%     \begin{minipage}{0.9\textwidth}
+%     \begin{enumerate}[(i)]
+%       \item \(j=1\)
+%       \item \(\Delta \bm\uptheta^*_m = \Delta \bm\uptheta^*_m - \Delta \bm\uptheta^*_j\frac{\Delta\bm\uptheta^*_m\cdot\Delta\bm\uptheta^*_j}{\Delta\bm \uptheta^*_j\cdot\Delta\bm\uptheta^*_j}\)
+%       \item \(j=j+1\)
+%       \item If \(j<m-1\) go to Step (ii)
+%       \item \(\Delta\bm \uptheta^*_m = \Delta\bm\uptheta^*_m/\|\Delta \bm \uptheta^*_m\|\)
+%     \end{enumerate}
+%     \end{minipage}
+%   \end{center}
+% \end{framedbox}
+%
+% \begin{framedbox}[htbp]
+%   \caption{Timestep \(n\) of the GMRES-inspired approach.}
+%   \label{box:gmres_inspired}
+%   \begin{center}
+%     \begin{minipage}{0.9\textwidth}
+%     \begin{enumerate}[(i)]
+%     \item \(k=0\)
+%     \item If no previous timesteps are to be reused or \(n=0\) then
+%     \begin{itemize}
+%       \item Clear all \(\Delta \bm \uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+%       \item \(m=0\)
+%     \end{itemize}
+%     \item \(\bm \uptheta^*_1 = \pazocal T\circ \pazocal U(\bm \uptheta^0)\)
+%     \item \(\mathbf r^0 = \bm \uptheta^*_1 - \bm \uptheta^0\)
+%     \item Enter the Newton loop
+%     \begin{enumerate}[(1)]
+%       \item If no previous iterations are to be reused
+%       \begin{itemize}
+%         \item Clear all \(\Delta \bm\uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+%         \item \(m=0\)
+%         \item \(\xi = \|\mathbf r^*_k\|\)
+%       \end{itemize}
+%       else
+%       \begin{itemize}
+%         \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+%         \item \(\bm \uptheta^*_{m+1} = \bm \uptheta^*_1\)
+%       \end{itemize}
+%       \item Enter the Krylov loop
+%       \begin{enumerate}[(a)]
+%         \item \(m=m+1\)
+%         \item \(\Delta \bm\uptheta^*_m = \bm\uptheta^*_m - \bm\uptheta^k\)
+%         \item Orthogonalize (Box~\ref{box:arnoldi_process}) and relax \(\Delta \bm\uptheta^*_m\) (Equation~\eqref{})
+%         \item \(\bm\uptheta^*_m = \bm\uptheta^k + \Delta\bm\uptheta^*_m\)
+%         \item \(\bm \uptheta^*_{m+1} = \pazocal T \circ \pazocal U(\bm \uptheta^*_m)\)
+%         \item \(\Delta \mathbf r^*_m = (\bm\uptheta^*_{m+1} - \bm \uptheta^*_m) - \mathbf r^k\)
+%         \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+%         \item If convergence has not been reached, \(\xi>\epsilon_2\), go to Step (a)
+%       \end{enumerate}
+%     \item \(\bm\uptheta^{k+1} = \bm\uptheta^k + \sum_{i=1}^m \bar{\alpha}_i \Delta\bm\uptheta_i\)
+%     \item \(k=k+1\)
+%     \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
+%     \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
+%     \item If convergence has not been reached, \(\|\mathbf r^k\| > \epsilon_1\), go to Step (1)
+%     \end{enumerate}
+%     \end{enumerate}
+%     \end{minipage}
+%   \end{center}
+% \end{framedbox}
 
 % \Floatbarrier
 
 \section{Multipoint iteration functions with memory}
+
+\begin{table}[htbp]
+  \caption{Summary of the comparison between the FFT-Galerkin method.}
+\label{tab:comparison_fft_galerkin_fem}
+  % \setlength{\tabcolsep}{1pt}
+  \centering
+    \begin{tabular}{l cc p{3.5cm}}
+    Method & \makecell[c]{Memory\\requirements} & \makecell[c]{Nr function\\evaluations\\per iteration} & Obs.\\
+    \hline  \hline
+    \multirow{3}{*}{\vphantom{\Big|}Fixed-point iteration} & \multirow{3}{*}{2 \((n\times 1)\) vectors} & \multirow{3}{*}{1} & \textbullet \textcolor{red!70!black}{Often diverges.}\\
+    & & &\textbullet \textcolor{green!50!black}{Simplest method}.\\
+    & & &\textbullet Memory efficient.\\
+    \hline
+    \multirow{3}{*}{Underrelaxation} & \multirow{3}{*}{2 \((n\times 1)\) vectors} & \multirow{3}{*}{1} & \textbullet Simple.\\
+    & & &\textbullet Improved stability over fixed-point.\\
+    & & &\textbullet Need to manually choose a relaxation parameter.\\
+    \hline
+    \multirow{3}{*}{Aitken relaxation} & \multirow{3}{*}{3 \((n\times 1)\) vectors} & \multirow{3}{*}{1} & \textbullet Very popular in FSI.\\
+    & & & \textbullet Dynamic relaxation.\\
+    & & & \textbullet Improved stability over fixed-point.\\
+    \hline
+    \multirow{3}{*}{Broyden's family} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet \\
+    & & & \textbullet\\
+    & & & \textbullet\\
+    \hline
+    \multirow{3}{*}{Anderson's family} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet \\
+    & & & \textbullet\\
+    & & & \textbullet\\
+    \hline
+    \multirow{3}{*}{\makecell[l]{Cycling with\\vector extrapolation}} & \multirow{3}{*}{\(m+2\) \((n\times 1)\) vectors} & \multirow{3}{*}{\(m+1\)} & \textbullet\\
+    & & & \textbullet\\
+    & & & \textbullet\\
+  \hline\hline
+  \multicolumn{4}{l}{\vphantom{\Huge |}\parbox{\textwidth}{\footnotesize{${}^*$ The inner loop of the strongly coupled scheme may converge very slowly or even diverge.}}}
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \caption{Summary of the comparison between the FFT-Galerkin method.}
+\label{tab:comparison_fft_galerkin_fem}
+  % \setlength{\tabcolsep}{1pt}
+  \centering
+    \begin{tabular}{l c}
+    Method & Update formula\\
+    \hline\hline
+    \vphantom{\Huge |}Fixed-point &  \makecell[l]{\(\mathbf x^{k+1} = \mathbf x^k -  \pazocal R^k\)}\\
+    \hline
+    Underrelaxation & \makecell[l]{\vphantom{\Huge |}\(\mathbf x^{k+1} = \mathbf x^k - \omega\pazocal R^k\),\\\(0<\omega<1\).}\\
+    \hline
+    Aitken relaxation & \makecell[l]{\vphantom{\Huge |}\(\mathbf x^{k+1} = \mathbf x^k - \omega^{(k)}\pazocal R^k\),\\    \(\omega^{(k)}=-\omega^{(k-1)} \displaystyle\frac{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{\mathrm{T}} \mathbf{r}^{(k-1)}}{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{2}}.\)
+    }\\
+    \hline
+    Broyden's family & \makecell[l]{\vphantom{\Huge |} \(\mathbf x^{k+1} = \mathbf x^{k}- \left(G_\pazocal R^{k-m} +\left(\mathscr{X}^{k}-G_\pazocal R^{k-m} \mathscr{R}^{k}\right){\mathbf V^k}^T\right) \pazocal R^k,\)\\
+    \({\mathbf V^k}^T = {\mathbf M^k}^{-1}{\mathbf N^k}^T\),\\
+    Type I:  \({M^k} = {\mathscr X^k}^T G_\pazocal R^k \mathscr R^k,\quad {N^k}^T = {\mathscr X^k}^T G_\pazocal R^k,\)\\
+    Type II: \({M^k} = {\mathscr R^k}^T \mathscr R^k,\quad {N^k}^T = {\mathscr R^k}^T\)\\
+    {\small \(\mathbf V^k\) is usually computed using \(QR\)-decomposition.}
+    }\\
+    \hline
+    Anderson's family & \makecell[l]{\vphantom{\Huge |} \(\mathbf x^{k+1} = \mathbf x^{k} -\left(-\beta \mathbf I+\left(\mathscr{X}^{k}+\beta \mathscr{R}^{k}\right){\mathbf V^k}^T\right) \pazocal R^k,\)\\
+    \({\mathbf V^k}^T = {\mathbf M^k}^{-1}{\mathbf N^k}^T\),\\
+    Type I:  \({M^k} = {\mathscr X^k}^T \mathscr R^k,\quad {N^k}^T = {\mathscr X^k}^T ,\)\\
+    Type II: \({M^k} = {\mathscr R^k}^T \mathscr R^k,\quad {N^k}^T = {\mathscr R^k}^T\)\\
+    {\small \(\mathbf V^k\) is usually computed using \(QR\)-decomposition.}
+    }\\
+    \hline
+    \makecell[l]{Cycling with\\ vector extrapolation} & \makecell[l]{\vphantom{\Huge |}
+    \(\mathbf x^{k+1} = \sum_{j=0}^m \gamma_j \pazocal S^{i+j}(\mathbf x^k)\),\\
+    \(\gamma_q = c_q/\sum_j c_j,\quad q=0,1,\dots,m,\)\\
+    \textbf{MPE}: \(\mathbf c ' = [c_0,c_1,\dots,c_{m-1}]^T = \arg \min_{\bar{\mathbf c}} \left\|\mathscr S^{m-1} \bar{\mathbf c}^\prime + \pazocal S^{i+m}(\mathbf x^k)\right\|_2\),\\
+    \(c_m=1\),\\
+    \textbf{RRE}: \(\boldsymbol{\gamma} = [\gamma_0,\gamma_1,\dots,\gamma_{m}]^T = \arg \min_{\bar{\boldsymbol{ \gamma}}} \left\|\mathscr S^{m} \hat{\boldsymbol{\gamma}}\right\|_2\),\\
+    Subject to \(\sum_{j=0}^m \gamma_j =1\).\\
+    \textbf{MMPE}: \(\left(\mathbf q^{j}, \mathscr S^{m-1} \mathbf c^{\prime}\right)=-\left(\mathbf q^{j}, \Delta \mathbf S^{i+m}(\mathbf x^k)\right), \quad j=1, \ldots, m,\)\\
+    for a set of \(m\) linearly independent vectors \(\mathbf q_j\), \(j=1, \dots, m\).\\
+    \(\mathbf c ' = [c_0,c_1,\dots,c_{m-1}]^T.\)\\
+    \textbf{SVD-MPE}: \(\mathbf c = \arg\min_{\bar{\mathbf c}}\left\|\mathscr S^{m} \bar{\mathbf c}\right\|_{2} \quad \text { subject to }\|\bar{\mathbf c}\|_{2}=1,\)\\
+    \(\mathbf c=\left[c_{0}, c_{1}, \ldots, c_{m}\right]^{T}\).
+    }\\
+  \hline\hline
+  \end{tabular}
+\end{table}
