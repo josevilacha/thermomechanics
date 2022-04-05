@@ -921,8 +921,6 @@ However, Krylov subspace methods and extrapolation methods differ in their algor
 The only input of the former is a procedure that performs the matrix-vector multiplication without explicitly knowing the matrix coefficient matrix.
 The latter take as their only input a vector sequence that results from a fixed-point iterative scheme without knowing the matrix coefficient matrix to know what the scheme is.
 
-\cite{sidi_vector_2017} describes two different Newton-Krylov methods, the Newton-Arnoldi and the Newton-GMRES.
-Nevertheless, these are not pursued here as they require a large amount of function evaluation per iteration of the Newton loop. They approximate the product of the Jacobian by a vector through a finite difference approach dependent on an arbitrarily small parameter \(\epsilon\).
 
 In \cite{michler_interface_2005}, a Krylov-subspace method is proposed in the context of FSI.
 However, as pointed out by \cite{kuttler_vector_2009}, the correct term for this approach should be instead a "Krylov-based vector extrapolation" method.
@@ -997,7 +995,96 @@ The method proposed can be obtained by applying the RRE to the sequence of resid
 
 % \Floatbarrier
 
+\subsection{Newton-Krylov methods}
+
+\cite{sidi_vector_2017} describes two different Newton-Krylov methods, the Newton-Arnoldi and the Newton-GMRES.
+Nevertheless, these are not pursued here as they require a large amount of function evaluation per iteration of the Newton loop. They approximate the product of the Jacobian by a vector through a finite difference approach dependent on an arbitrarily small parameter \(\epsilon\).
+
+Approximate Jacobian vector product
+For nonlinear equations, the Jacobian-vector product is easy to approximate with a forward difference directional derivative. The forward difference directional derivative at \(x\) in the direction \(w\) is
+\[
+D_{h} F(x: w)=\left\{\begin{array}{ll}
+0, & w=0 \\
+\|w\| \frac{F(x+\sigma(x, w) h w /\|w\|)-F(x)}{\sigma(x, w) h}, & w \neq 0 .
+\end{array}\right.
+\]
+The scaling is important. We first scale \(w\) to be a unit vector and take a numerical directional derivative in the direction \(w /\|w\|\). If \(h\) is roughly the square root of the error in \(F\), we use a difference increment in the forward difference to make sure that the appropriate low-order bits of \(x\) are perturbed. So we multiply \(h\) by
+\[
+\sigma(x, w)=\max \left(\left|x^{T} w\right|,\|w\|\right) \operatorname{sgn}\left(x^{T} w\right) /\|w\| .
+\]
+
+Then use a Krylov method
+
+\paragraph{Approximate Jacobian}
+
+\[
+\left(\nabla_{h} F\right)(x)_{j}=\left\{\begin{array}{ll}
+\frac{F\left(x+h \sigma_{j} e_{j}\right)-F(x)}{\sigma_{j} h}, & x_{j} \neq 0 \\
+\frac{F\left(h e_{j}\right)-F(x)}{h}, & x_{j}=0
+\end{array}\right.
+\]
+In (2.1) \(e_{j}\) is the unit vector in the \(j\) th coordinate direction. The difference increment \(h\) should be no smaller than the square root of the inaccuracy in \(F\). Each column of \(\nabla_{h} F\) requires one new function evaluation and, therefore, a finite difference Jacobian costs \(N\) function evaluations.
+
+The difference increment in (2.1) should be scaled. Rather than simply perturb \(x\) by a difference increment \(h\), roughly the square root of the error in \(F\), in each coordinate direction, we multiply the perturbation to compute the \(j\) th column by
+\[
+\max \left(\left|(x)_{j}\right|, 1\right) \operatorname{sign}\left((x)_{j}\right)^{\prime}
+\]
+
 \section{Multipoint iteration functions with memory}
+
+\section{Global Approaches}
+
+We return now to the nonlinear equations problem:
+\[
+\begin{array}{ll}
+\text { given } & F: \mathbb{R}^{n} \longrightarrow \mathbb{R}^{n}, \\
+\text { find } \quad x_{*} \in \mathbb{R}^{n} & \text { such that } F\left(x_{*}\right)=0,
+\end{array}
+\]
+In this section we show how Newton's method for (6.5.1) can be combined with global methods for unconstrained optimization to produce global methods for (6.5.1).
+The Newton step for (6.5.1) is
+\[
+x_{+}=x_{c}-J\left(x_{c}\right)^{-1} F\left(x_{c}\right),
+\]
+where \(J\left(x_{c}\right)\) is the Jacobian matrix of \(F\) at \(x_{c}\). From Section \(5.2\) we know that (6.5.2) is locally \(q\)-quadratically convergent to \(x_{*}\), but not necessarily globally convergent. Now assume \(x_{c}\) is not close to any solution \(x_{k}\) of (6.5.1). How would one decide then whether to accept \(x_{+}\)as the next iterate? A reasonable answer is that \(\left\|F\left(x_{+}\right)\right\|\)should be less than \(\left\|F\left(x_{c}\right)\right\|\) for some norm \(\|\cdot\|\), a convenient choice being the \(l_{2}\) norm \(\|F(x)\|_{2}^{2}=F(x)^{T} F(x)\).
+
+Requiring that our step result in a decrease of \(\|F(x)\|_{2}\) is the same thing we would require if we were trying to find a minimum of the function \(\|F(x)\|_{2}\). Thus, we have in effect turned our attention to the corresponding minimization problem:
+\[
+\min _{x \in \text { M }_{n}} f(x)=\frac{1}{2} F(x)^{T} F(x) \text {, }
+\]
+\(\mathrm{~ w h e r e ~ t h e ~ "}\) tion to \((6.5 .1)\) is a solution to (6.5.3), but there may be local minimizers of (6.5.3) that are not solutions to (6.5.1) (see Figure 6.5.1). Therefore, although we could try to solve (6.5.1) simply by using a minimization routine on (6.5.3), it is better to use the structure of the orginal problem wherever possible, in particular to compute the Newton step (6.5.2). However, our global strategy for (6.5.1) will be based on a global strategy for the related minimization problem (6.5.3).
+An important question to ask is, "What is a descent direction for problem \((6.5 .3) ?^{m}\) It is any direction \(p\) for which \(\nabla f\left(x_{c}\right)^{T} p<0\), where
+\[
+\nabla f\left(x_{c}\right)=\frac{d}{d x} \sum_{i=1}^{n} \frac{1}{2}\left(f_{i}\left(x_{c}\right)\right)^{2}=\sum_{i=1}^{n} \nabla f_{i}\left(x_{c}\right) \cdot f\left(x_{c}\right)=J\left(x_{c}\right)^{T} F\left(x_{c}\right) .
+\]
+Therefore, the steepest-descent direction for \((6.5 .3)\) is along \(-J\left(x_{c}\right)^{T} F\left(x_{c}\right)\). Furthermore, the Newton direction along \(s^{N}=-J\left(x_{c}\right)^{-1} F\left(x_{c}\right)\) is a descent direction, since
+\[
+\nabla f\left(x_{c}\right)^{T} s^{N}=-F\left(x_{c}\right)^{T} J\left(x_{c}\right) J\left(x_{c}\right)^{-1} F\left(x_{c}\right)=-F\left(x_{c}\right)^{T} F\left(x_{c}\right)<0
+\]
+as long as \(F\left(x_{c}\right) \neq 0\). This may seem surprising, but it is geometrically reasonable. Since the Newton step yields a root of
+\[
+M_{c}\left(x_{c}+s\right)=F\left(x_{c}\right)+J\left(x_{c}\right) s,
+\]
+it also goes to a minimum of the quadratic function
+\[
+\begin{aligned}
+\hat{m}_{c}\left(x_{c}+s\right) & \triangleq \frac{1}{2} M_{c}\left(x_{c}+s\right)^{T} M_{c}\left(x_{c}+s\right) \\
+&=\frac{1}{2} F\left(x_{c}\right)^{T} F\left(x_{c}\right)+\left(J\left(x_{c}\right)^{T} F\left(x_{c}\right)\right)^{T} s+\frac{1}{2} s^{T}\left(J\left(x_{c}\right)^{T} J\left(x_{c}\right)\right) s
+\end{aligned}
+\]
+because \(\hat{m}_{c}\left(x_{c}+s\right) \geq 0\) for all \(s\) and \(\hat{m}_{c}\left(x_{c}+s^{N}\right)=0\). Therefore, \(s^{N}\) is a descent direction for \(\hat{m}_{c}\), and since the gradients at \(x_{c}\) of \(\hat{m}_{c}\) and \(f\) are the same, it is also a descent direction for \(f\).
+
+The above development motivates how we will create global methods for (6.5.1). They will be based on applying our algorithms of Section \(6.3\) or \(6.4\) to the quadratic model \(\hat{m}_{c}(x)\) in (6.5.4). Since \(\nabla^{2} \hat{m}\left(x_{c}\right)=J\left(x_{c}\right)^{T} J\left(x_{c}\right)\), this model is positive definite as long as \(J\left(x_{c}\right)\) is nonsingular, which is consistent with the fact that \(x_{c}+s^{N}\) is the unique root of \(M_{c}(x)\) and thus the unique minimizer of \(\hat{m}_{c}(x)\) in this case. Thus, the model \(\hat{m}_{c}(x)\) has the attractive properties that its minimizer is the Newton point for the original problem, and that all its descent directions are descent directions for \(f(x)\) because \(\nabla \hat{m}_{c}\left(x_{c}\right)=\nabla f\left(x_{c}\right)\). Therefore methods based on this model, by going downhill and trying to minimize \(\hat{m}_{c}(x)\), will combine Newton's method for nonlinear equations with global methods for an associated minimization problem. Note that \(\hat{m}_{c}(x)\) is not quite the same as the quadratic model of \(f(x)=\frac{1}{2} F(x)^{T} \mathrm{~F}(x)\) around \(x_{c}\),
+\[
+m_{c}\left(x_{c}+s\right)=f\left(x_{c}\right)+\nabla f\left(x_{c}\right)^{T} s+\frac{1}{2} s^{T} \nabla^{2} f\left(x_{c}\right) s,
+\]
+because \(\nabla^{2} f\left(x_{c}\right) \neq J\left(x_{c}\right)^{T} J\left(x_{c}\right)\) (see Exercise 18 of Chapter 5).
+The application of the global methods of Sections \(6.3\) and \(6.4\) to the nonlinear equations problem is now straightforward. As long as \(J\left(x_{\epsilon}\right)\) is sufficiently well conditioned, then \(J\left(x_{c}\right)^{T} J\left(x_{c}\right)\) is safely positive definite, and the algorithms apply without change if we define the objective function by \(\frac{1}{2}\|F(x)\|_{2}^{2}\), the Newton direction by \(-J(x)^{-1} F(x)\), and the positive definite quadratic model by (6.5.4). This means that in a line-search algorithm, we search in the Newton direction, looking for a sufficient decrease in \(\|F(x)\|_{2}\). In trust region algorithms, we approximately minimize \(\hat{m}_{c}\left(x_{c}+s\right)\) subject to \(\|s\|_{2} \leq \delta_{c}\). If \(\delta_{c} \geq\left\|J\left(x_{c}\right)^{-1} F\left(x_{c}\right)\right\|_{2}\), then the step attempted is the Newton step; otherwise, for the locally constrained optimal step, it is
+\[
+s=-\left(J\left(x_{c}\right)^{T} J\left(x_{c}\right)+\mu_{c} I\right)^{-1} J\left(x_{c}\right)^{T} F\left(x_{c}\right)
+\]
+for \(\mu_{c}\) such that \(\|s\|_{2} \cong \delta_{c}\). Using either global strategy, we expect to be taking Newton steps for \(F(x)=0\) eventually. Example 6.5.1 shows how our global strategy using a line search would work on the example of Section 5.4, started here from a different point, one at which the Newton step is unsatisfactory.
+
 
 \begin{table}[htbp]
   \caption{Summary of the comparison between the FFT-Galerkin method.}
