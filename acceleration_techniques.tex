@@ -995,42 +995,154 @@ The method proposed can be obtained by applying the RRE to the sequence of resid
 
 % \Floatbarrier
 
+\subsection{Finite-Difference Newton Method}\label{sec:finite_difference_newton_method}
+
+This approach follows exactly the one described in Section~\ref{} for the "standard" Newton method.
+The difference lies in the computation of the Jacobian.
+Here the Jacobian \(J_\pazocal R(\mathbf x)\) is approximated from a forward finite-difference, \(J^h_\pazocal R(\mathbf x)\), by columns.
+The \(j\)th column is
+\begin{equation}
+\left[J^h_\pazocal R(\mathbf x)\right]_{j}=
+\begin{cases}
+  \displaystyle\frac{\pazocal R(\mathbf x + h \sigma_{j} \mathbf e_{j})-\pazocal R(\mathbf x)}{\sigma_{j} h}, & x_{j} \neq 0 \\[10pt]
+  \displaystyle\frac{\pazocal R(h \mathbf e_{j})-\pazocal R(\mathbf x)}{h}, & x_{j}=0
+\end{cases},
+\end{equation}
+where \(\mathbf e_{j}\) is the unit vector in the \(j\) th coordinate direction. 
+The difference increment \(h\) should be no smaller than the square root of the inaccuracy in \(\pazocal R\) \citep{kelley}. 
+It should, however, be scaled. 
+Rather than simply perturbing \(\mathbf x\) by a difference increment \(h\), roughly the square root of the error in \(\pazocal R\), in each coordinate direction, the perturbation is multiplied to compute the \(j\) th column by
+\begin{equation}
+  \sigma_j = \max (|(x)_{j}|, 1) \operatorname{sign}((x)_{j}),
+\end{equation}
+with a view toward varying the correct fraction of the low-order bits in \((x)_{j}\).
+The \(\operatorname{sign}\) function is defined as
+\begin{equation}
+  \operatorname{sgn}(z)=\begin{cases}
+  z /|z| & \text { if } z \neq 0 \\
+  1 & \text { if } z=0
+  \end{cases}.
+\end{equation}
+While this scaling usually makes little difference, it can be crucial if \(|(x)_{j}|\) is very large. 
+Note that there is no adjustment if \(|(x)_{j}|\) is very small because the lower limit on the size of the difference increment is determined by the error in \(\pazocal R\). 
+For example, if evaluations of \(\pazocal R\) are accurate to 16 decimal digits, the difference increment should change roughly the last 8 digits of \(x\). \citep{kelley}
+
+Each column of \(\nabla_{h} F\) requires one new function evaluation and, therefore, a finite difference Jacobian costs \(n\) function evaluations.
+If the perturbation is appropriatly chosen the method converges quadratically when the function satisfies certain conditions and the initial try is close enough to the solution \cite{dennis}.
+
+\paragraph{The Chord and Shamanskii Methods}
+
+If the computational cost of a forward difference Jacobian is high, i.e., \(\pazocal R\) is expensive and/or \(n\) is large, and if an analytic Jacobian is not available, it is wise to amortize this cost over several nonlinear iterations. 
+The chord method does exactly that. 
+It differs from Newton's method in that the evaluation and factorization of the Jacobian are done only once for \(J_\pazocal R(\mathbf x^0)\). 
+The advantages of the chord method increase as \(n\) increases, since both the \(n\) function evaluations and the \(O(n^{3})\) work (in the dense matrix case) in the matrix factorization are done only once. 
+So, while the convergence is q-linear and more nonlinear iterations will be needed than for Newton's method, the overall cost of the solve will usually be much less. 
+A middle ground is the Shamanskii method. 
+Here the Jacobian factorization and matrix function evaluation are done after every \(m\) computations of the step \citep{kelley}.
+
+Since in the present use-case the number of unknowns \(n\) is very large and the evaluation of the function \(\pazocal R\) is also very expensive, approximating the Jacobian using a finite difference is not suitable, even using the chord or Shamanskii methods.
+
+
 \subsection{Newton-Krylov methods}
 
+In the Newton-Krylov methods, the solution of the Newton system of equations in Equation~\eqref{eq:newton_system} is a achieve using Krylov methods, such as GMRES or BiCGSTAB.
+
+The Krylov iterative methods approximate the solution of a linear system \(\mathbf A \mathbf x = \mathbf b\) using the Krylov subspace
+\begin{equation}
+  \pazocal K_m = \operatorname{span}\{\mathbf r_0, \mathbf A\mathbf r_0, \mathbf A^2 \mathbf r_0, \dots, \mathbf A^{m-1}\mathbf r_0\},
+\end{equation}
+such that the \(m\)th iterate, \(\mathbf x_m\in \pazocal K_m\), with \(\mathbf r_0 = \mathbf b - \mathbf A \mathbf x_0\).
+The precise way the \(\mathbf x_m\) is built is what distinguishes the different methods.
+
+To produce the appropriate Krylov subspace, one needs the product \(J_\pazocal R(\mathbf x^k) \mathbf y\) in Equation~\eqref{eq:newton_system}, for some vector \(\mathbf y\).
+It is assumed that the Jacobian is not available so it must approximated.
+Also it would be beneficial if the full Jacobian is neither computed in its entirety nor completely stored in memory, i.e., a matrix-free method is desirable.
+As in Section~\ref{sec:finite_difference_newton_method}, the Jacobian-vector product is easy to approximate with a forward difference directional derivative \citep{kelley}. 
+The forward difference directional derivative at \(\mathbf x^k\) in the direction \(\mathbf q\) is 
+\begin{equation}
+  J^h_\pazocal R(\mathbf x^k)\mathbf q =
+\begin{cases}
+  \mathbf 0, & \mathbf q = \mathbf 0 \\[10pt]
+  \|\mathbf q\| \displaystyle\frac{\pazocal R(\mathbf x^k+\sigma(\mathbf x^k, \mathbf q) h \mathbf q /\|\mathbf q\|)-\pazocal R(\mathbf x^k)}{\sigma(\mathbf x^k, \mathbf q) h}, & \mathbf q \neq \mathbf 0 .
+  \end{cases}
+\end{equation}
+The scaling is important. 
+\(\mathbf q\) is scaled to be a unit vector and take a numerical directional derivative in the direction \(\mathbf q /\|\mathbf q\|\). 
+If \(h\) is roughly the square root of the error in \(\pazocal R\), a difference increment in the forward difference is used to make sure that the appropriate low-order bits of \(\mathbf x^k\) are perturbed. 
+So \(h\) is multiplied by
+\begin{equation}
+  \sigma(\mathbf x^k, \mathbf q)=\max (|{\mathbf x^k}^{T} \mathbf q|,\|\mathbf q\|) \operatorname{sign}({\mathbf x^k}^{T} \mathbf q) /\|\mathbf q\| .
+\end{equation}
+
 \cite{sidi_vector_2017} describes two different Newton-Krylov methods, the Newton-Arnoldi and the Newton-GMRES.
+The goal is to solve Equation~\eqref{eq:newton_system} and find \(\Delta \mathbf x^k\).
+The Krylov iterates are denoted by \(\Delta \mathbf x^*_m\).
+
+The first phase of both algorithms is identical.
+They both use the Arnoldi-Gram-Schmidt process to produce an orthogonal basis for the Krylov subspace, \(\{\mathbf q_1, \dots, \mathbf q_m\}\) for some integer \(k\).
+The related quantities \(h_{ij}\) are also obtained from the algorithm, and their useful in the following.
+Consider the unitary matrix \(\mathbf Q_m\)
+\begin{equation}
+  \mathbf Q_m = [\mathbf q_1 \cdots \mathbf q_m],
+\end{equation}
+and the upper Hessenber matrix \(\mathbf H_m\) and related matrix \(\bar{\mathbf H}_m\)
+\begin{equation}
+ \mathbf H_{m}=\left[\begin{array}{ccccc}
+h_{11} & h_{12} & \cdots & \cdots & h_{1m} \\
+h_{21} & h_{22} & \cdots & \cdots & h_{2m} \\
+& \ddots & \ddots & & \vdots \\
+& & \ddots & \ddots & \vdots \\
+& & & h_{m,m-1} & h_{mm}
+\end{array}\right] , \quad
+  \bar{\mathbf H}_{m}=\left[\begin{array}{ccccc}
+h_{11} & h_{12} & \cdots & \cdots & h_{1 m} \\
+h_{21} & h_{22} & \cdots & \cdots & h_{2 m} \\
+& \ddots & \ddots & & \vdots \\
+& & \ddots & \ddots & \vdots \\
+& & & \ddots & h_{m m} \\
+& & & & b_{m+1, m}
+\end{array}\right].
+\end{equation}
+See Box~\ref{} for the pseudo-code of the Arnoldi-Gram-Schmidt process.
+
+After obtaining an orthogonal basis for the Krylov subspace \(\pazocal K_m\), the Newton-Arnoldi projects the \(m\)th residual onto the Krylov subspace and sets it to zero, similar to a weigthed residual method, i.e., 
+\begin{equation}
+  \mathbf Q_m \left(\pazocal R(\mathbf x^k) - J_\pazocal R(\mathbf x^k)\Delta \mathbf x^*_m\right) = \mathbf 0.
+\end{equation}
+In practice, one solves the equivalent linear system \(\mathbf H_m \boldsymbol{\eta} = \beta \mathbf e_1\) for \(\boldsymbol{\eta}\) and set \(\Delta \mathbf x^k  =\Delta \mathbf x^*_0 + \mathbf Q_m\boldsymbol \eta\).
+
+The Newton-GMRES attempts to minimize the norm of the \(m\)th residual, i.e.,
+\begin{equation}
+  \Delta \mathbf x^*_m = \arg\min_{\mathbf y\in \pazocal K_m} \left\|\pazocal R(\mathbf x^k) - J_\pazocal R(\mathbf x^k)\mathbf y\right\|_2.
+\end{equation} 
+This is exectued in practice solving the linear least-squares problem \(\|\beta\mathbf e_1 -\bar{\mathbf H}_m \boldsymbol{\eta}\|\) for \(\boldsymbol{\eta}\) and set \(\Delta \mathbf x^k  =\Delta \mathbf x^*_0 + \mathbf Q_m\boldsymbol \eta\).
+See Box~\ref{} for the pseudo-code of the Newton-Arnoldi and Newton-GMRES.
+
+Since the present use-case includes a large amount of unknows it leads to memory concerns if the Krylov subspace is allowed to grow indefinitely.
+A restarted version where the maximum size of the Krylov space is restricted to \(k\) is prefered.
+However, if \(k\) is small the convergence can be poor.
+
+In each nonlinear iteration of the Newton-Krylov, the number of iterations can be large.
+Each iteration requires an evaluation of the function.
+This problem is however mitigated by the fact the Newton system is only solved until it satisfies
+\begin{equation}
+  \left\|J_\pazocal R(\mathbf x^k\right) d+F\left(x_{n}\right)\right\| \leq \eta\left\|F\left(x_{n}\right)\right\|.
+\end{equation}
+\(\eta\) is called the forcing term and it is chosen to avoid oversolving the first iterations.
+\cite{kelley} suggest \(\eta=0.1\) or a more complex approach.
+The effect of choosing the forcing term is.
+ 
 Nevertheless, these are not pursued here as they require a large amount of function evaluation per iteration of the Newton loop. They approximate the product of the Jacobian by a vector through a finite difference approach dependent on an arbitrarily small parameter \(\epsilon\).
 
-Approximate Jacobian vector product
-For nonlinear equations, the Jacobian-vector product is easy to approximate with a forward difference directional derivative. The forward difference directional derivative at \(x\) in the direction \(w\) is
-\[
-D_{h} F(x: w)=\left\{\begin{array}{ll}
-0, & w=0 \\
-\|w\| \frac{F(x+\sigma(x, w) h w /\|w\|)-F(x)}{\sigma(x, w) h}, & w \neq 0 .
-\end{array}\right.
-\]
-The scaling is important. We first scale \(w\) to be a unit vector and take a numerical directional derivative in the direction \(w /\|w\|\). If \(h\) is roughly the square root of the error in \(F\), we use a difference increment in the forward difference to make sure that the appropriate low-order bits of \(x\) are perturbed. So we multiply \(h\) by
-\[
-\sigma(x, w)=\max \left(\left|x^{T} w\right|,\|w\|\right) \operatorname{sgn}\left(x^{T} w\right) /\|w\| .
-\]
+
 
 Then use a Krylov method
 
-\paragraph{Approximate Jacobian}
-
-\[
-\left(\nabla_{h} F\right)(x)_{j}=\left\{\begin{array}{ll}
-\frac{F\left(x+h \sigma_{j} e_{j}\right)-F(x)}{\sigma_{j} h}, & x_{j} \neq 0 \\
-\frac{F\left(h e_{j}\right)-F(x)}{h}, & x_{j}=0
-\end{array}\right.
-\]
-In (2.1) \(e_{j}\) is the unit vector in the \(j\) th coordinate direction. The difference increment \(h\) should be no smaller than the square root of the inaccuracy in \(F\). Each column of \(\nabla_{h} F\) requires one new function evaluation and, therefore, a finite difference Jacobian costs \(N\) function evaluations.
-
-The difference increment in (2.1) should be scaled. Rather than simply perturb \(x\) by a difference increment \(h\), roughly the square root of the error in \(F\), in each coordinate direction, we multiply the perturbation to compute the \(j\) th column by
-\[
-\max \left(\left|(x)_{j}\right|, 1\right) \operatorname{sign}\left((x)_{j}\right)^{\prime}
-\]
-
 \section{Multipoint iteration functions with memory}
+
+
+
+Mento Eirola and Netwon-Krylov using residues from previous iterations.
 
 \section{Global Approaches}
 
