@@ -147,6 +147,98 @@ p=2:\quad \mathbf{x}_{n+1}^{*}=3 \mathbf{x}_{n}-3 \mathbf{x}_{n-1}+\mathbf{x}_{n
 \end{gather}
 \end{highlight}
 
+\subsection{Global Approaches}
+
+Following \cite{dennis}, the terms "global," as in "global method" or "globally convergent algorithm" are here used to denote a method that is designed to converge to a local minimizer of a nonlinear functional or some solution of a system of nonlinear equations, from almost any starting point.
+The methods presented in this chapter do not qualify as global methods, since if the initial trial is not close enough to the solution they will not converge.
+There are however approaches to mitigate this problem.
+The ideas presented below apply with special relevance to the Newton method (see Section~\ref{}) and related method.
+It exposition follows \cite{dennis} where more details can be found.
+
+Consider that the iterative solution method determines \(\Delta \mathbf x^k\) in
+\begin{equation} \label{eq:general_update_equation}
+  \mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k.
+\end{equation}
+The two global approaches here considered both come into action after \(\Delta \mathbf x^k\) has been computed by some appropriate method (see from Section~\ref{} on).
+At this point, one decides whether to accept the step \(\Delta \mathbf x^k\) or to choose \(\mathbf x^{k+1}\) by a global strategy.
+
+A solution to the system of equations~\eqref{eq:abstract_residue_equation} clearly also satisfies
+\begin{equation} \label{eq:minimization_equiv}
+  r(\mathbf x) = 0,\quad\text{where }r \equiv \frac{1}{2} \|\pazocal R\|^2_2\colon \mathbb R^n\to \mathbb R,
+\end{equation}
+so the problem can be regarded as an unconstrained minimization problem, with caveat that local minimizers of \(r\) may not be the solution to the system of equations~\eqref{eq:abstract_residue_equation}.
+
+The basic idea of a global method for unconstrained minimization is geometrically obvious: take steps that lead "downhill" for the function \(r\).
+More precisely, one chooses a direction \(\mathbf p\) from the current point \(\mathbf x^{k}\) in which \(r\) decreases initially, and a new point \(\mathbf x^{k+1}\) in this direction from \(\mathbf x^k\) such that \(r(\mathbf x^{k-1})<r(\mathbf x^k)\).
+Such a direction is called a descent direction.
+
+An important question to ask is, "What is a descent direction for problem \eqref{eq:minimization_equiv}?".
+It is any direction \(\mathbf p\) for which \(\nabla r(\mathbf x^k)^{T} \mathbf p<0\), where
+\begin{equation}
+  \nabla r\left(\mathbf x^k\right)=J_\pazocal R\left(\mathbf x^k\right)^{T} \pazocal R\left(\mathbf x^k\right),
+\end{equation}
+where \(J_\pazocal R(\mathbf x^k)\) is the Jacobian matrix of \(\pazocal R\) at \(\mathbf x^k\).
+Therefore, the steepest-descent direction for \eqref{eq:minimization_equiv} is along \(-J_\pazocal R(\mathbf x^{k})^{T} \pazocal R(\mathbf x^k)\).
+
+The Newton step for the update equation \eqref{eq:general_update_equation} is (see Section~\ref{})
+\begin{equation}
+\Delta \mathbf x^k_N =  - J_ \pazocal R\left(\mathbf x^k\right)^{-1} \pazocal R\left(\mathbf x^k\right),
+\end{equation}
+and it is a descent direction, since
+\begin{equation}
+  \nabla r\left(\mathbf x^k\right)^{T} \Delta \mathbf x^k_N=-\pazocal R\left(\mathbf x^k\right)^{T} J_\pazocal R\left(\mathbf x^k\right) J_\pazocal R\left(\mathbf x^k\right)^{-1} \pazocal R\left(\mathbf x^k\right)=-\pazocal R\left(\mathbf x^k\right)^{T} \pazocal R\left(\mathbf x^k\right)<0
+\end{equation}
+as long as \(\pazocal R\left(\mathbf x^k\right) \neq \mathbf 0\).
+Hence, the appropriatness of these methods to the Newton method and related methods.
+
+Since the Newton step yields a root of
+\begin{equation}
+  M^k\left(\mathbf x^k+\Delta \mathbf x^k\right)=\pazocal R\left(\mathbf x^k\right)+J_\pazocal R\left(\mathbf x^k\right) \Delta \mathbf x^k,
+\end{equation}
+it also goes to a minimum of the quadratic function
+\begin{equation}
+  \begin{aligned}
+    \hat{m}^k\left(\mathbf x^k+\Delta \mathbf x^k\right) & \equiv \frac{1}{2} M^k\left(\mathbf x^k+ \Delta \mathbf x^k\right)^{T} M^k\left(\mathbf x^k+\Delta \mathbf x^k\right) \\
+    &= \frac{1}{2} \pazocal R\left(\mathbf x^k\right)^{T} \pazocal R\left(\mathbf x^k\right)+\left(J_\pazocal R\left(\mathbf x^k\right)^{T} \pazocal R\left(\mathbf x^k\right)\right)^{T} \Delta \mathbf x^k\\
+    & \qquad\qquad\qquad\qquad\qquad+\frac{1}{2} \Delta {\mathbf x^k}^{T}\left(J_\pazocal R\left(\mathbf x^k\right)^{T} J_\pazocal R\left(\mathbf x^k\right)\right) \Delta \mathbf x^k,
+  \end{aligned}
+\end{equation}
+because \(\hat{m}^k\left(\mathbf x^k+\Delta \mathbf x^k\right) \geq 0\) for all \(\Delta \mathbf x^k\) and \(\hat{m}^k\left(\mathbf x^k+\Delta \mathbf x^k_N\right)=0\).
+Therefore, \(\Delta \mathbf x^k_N\) is a descent direction for \(\hat{m}^k\), and since the gradients at \(\mathbf x^k\) of \(\hat{m}^k\) and \(r\) are the same, it is also a descent direction for \(r\).
+
+The above development motivates how the global methods to be described will be applied, i.e., they will be applied to the quadratic model \(\hat{m}^k(\mathbf x)\).
+Since \(\nabla^{2} \hat{m}^k(\mathbf x^k)=J_\pazocal R(\mathbf x^k)^{T} J_\pazocal R(\mathbf x^k)\), this model is positive definite as long as \(J_\pazocal R(\mathbf x^k)\) is nonsingular, which is consistent with the fact that \(\mathbf x^k + \Delta \mathbf x^k_N\) is the unique root of \(M^k(\mathbf x)\) and thus the unique minimizer of \(\hat{m}^k(\mathbf x)\) in this case.
+Thus, the model \(\hat{m}^(\mathbf x)\) has the attractive properties that its minimizer is the Newton point for the original problem, and that all its descent directions are descent directions for \(r(\mathbf x)\) because \(\nabla \hat{m}^k(\mathbf x^k)=\nabla r(\mathbf x^k)\).
+Therefore methods based on this model, by going downhill and trying to minimize \(\hat{m}^k(\mathbf x)\), will combine Newton's method for nonlinear equations with global methods for an associated minimization problem.
+
+If the Jacobian of \(\mathcal R\) is not available and its estimate is of poor quality the global procedure may be compromised \cite{kelley}.
+However, these procedures may be unecessary in the present use-case, since the initial trial is probably close enough to the solution, even without accounting the improvements coming from more carefully chosen initial shots through predictiors (see Section~\ref{}).
+
+\paragraph{Line search}
+
+The line search approach is based on the traditional idea of backtracking along the Newton direction if a full Newton step is unsatisfactory.
+More precisely given a descent direction \(\mathbf p^k\), a step in that direction is taken as
+\begin{equation}
+  \mathbf x^{k+1} = \mathbf x^k + \lambda^k\mathbf p^k,
+\end{equation}
+for some \(\lambda^k>0\) that makes \(\mathbf x^{k+1}\) an acceptable iterate.
+The common procedure is to first try \(\lambda_k=1\) and only if this fails backtrack in a systematic way along the direction defined by that step.
+See \cite{dennis} for a full discussion on the choice of \(\lambda_k\).
+
+\paragraph{Trust region algorithms}
+
+The trust region algorithm are based on estimating the region in which the local model, underlying Newton's method, can be trusted to adequately represent the function, and taking a step to approximately minimize the model in this region.
+It drops the assumption that the step must be in the Newton direction.
+\(\hat{m}^k(\mathbf x^k+\Delta \mathbf x^k)\) is approximately minimized subject to \(\|\mathbf x^k\|_{2} \leq \delta^k\).
+If \(\delta^k \geq\left\|J_\pazocal R(\mathbf x^k)^{-1} \pazocal R(\mathbf x^k)\right\|_{2}\), then the step attempted is the Newton step.
+Otherwise, for the locally constrained optimal step, it is
+\begin{equation}
+  \Delta \mathbf x^k=-\left(J_\pazocal R\left(\mathbf x^k\right)^{T} J_\pazocal R\left(\mathbf x^k\right)+\mu^k \mathbf I\right)^{-1} J_\pazocal R\left(\mathbf x^k\right)^{T} \pazocal R\left(\mathbf x^k\right),
+\end{equation}
+for \(\mu^k\) such that \(\|\Delta \mathbf x^k\|_{2} \cong \delta^k\).
+For the details on the choice of \(\delta^k\) see \cite{dennis}.
+
+
 \subsection{Convergence criteria}
 
 For an iterative method to be useful, there must be reasonable criteria to determine its convergence.
@@ -160,7 +252,7 @@ and if it is equal to zero then $\mathbf x$ is the solution to the system of non
 \end{equation}
 and hence, a reasonable convergence measure for the iteration procedure.
 
-The discrete  $l^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k}=\left(r^{k,1}, \ldots, r^{k,m}\right)^{T}\) as
+The discrete  $l^{2}$-norm can be used to obtain a scalar representative of the vectorial residual \(\mathbf r^{k}=\left(r^{k,1}, \ldots, r^{k,n_\text{unknown}}\right)^{T}\) as
 \begin{equation} \label{eq:absolute_residual_criterion}
 \left\|\mathbf{r}^{k}\right\|_{L^{2}}=\sqrt{\sum_{i}\left(r^{k, i}\right)^{2}}.
 \end{equation}
@@ -329,7 +421,6 @@ and the update of the iteration variables reads
   \end{equation}
 \end{highlight}
 
-
 The system of equations in Equation~\eqref{eq:block_newton_raphson} can be further simplified following \cite{degroote_development_2010} considering the definitions of the mechanical and thermal residuals and taking their derivatives.
 It yields
 \begin{equation}
@@ -355,7 +446,7 @@ In different ways, some of the methods presented next find approximations for th
 
 
 
-\subsubsection{Constant Underrelaxation}
+\subsection{Constant Underrelaxation}
 
 One of the most straightforward ways to stabilize an iterative method is to use constant underrelaxation \citep{gatzhammer_efficient_2014}.
 The relaxation is performed as follows
@@ -466,18 +557,46 @@ Now, for the vector case, the next step is to work out the solution to the curre
 \mathbf{x}^{(k+1)}=\mathbf{x}^{(k)}+\Delta \mathbf{x}^{(k)}.
 \end{equation}
 The increment reads
-\begin{equation}
+\begin{equation} \label{eq:aitken_update}
 \Delta \mathbf{x}^{(k)}=\omega^{(k)}\left(\pazocal S(\mathbf{x}^{(k)})-\mathbf{x}^{(k)}\right)=-\omega^{(k)} \mathbf r^{(k)}.
 \end{equation}
 with $\omega^{(k)}$ being the relaxation coefficient.
 This coefficient is updated in every iteration cycle as a function of two previous residuals
 \begin{highlight}
-  \begin{equation}
+  \begin{equation} \label{eq:aitken_relaxation_factor}
     \omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{\mathrm{T}} \mathbf{r}^{(k-1)}}{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{2}}.
   \end{equation}
 \end{highlight}\jvc{Check signs!!!}
 Comparing with Equations~\eqref{eq:newton_system} and \eqref{eq:newton_iter}, \(\omega^{(k)}\) can be, in a sense, regarded as an approximation to the inverse of the Jacobian.
 Dynamic relaxation is also easy to implement, and the additional computational input is acceptable since only inner vector products must be performed.
+See Box~\ref{box:aitken_relaxation} for the pseudocode.
+
+\begin{framedbox}[htb]
+  \caption{Aitken relaxation for one timestep.}
+  \label{box:aitken_relaxation}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item Set nonlinear counter to zero: \(k=0\)
+    \item \(\mathbf x^k = \mathbf x_{n+1}^p\)
+    \item Enter the nonlinear loop
+    \begin{enumerate}[(1)]
+      \item Compute \(\pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+      \item if \(k=0\):
+      \begin{itemize}
+        \item Compute \(\mathbf x^{k+1}\) using constant relaxation (Equation~\eqref{eq:constant_relaxation})
+      \end{itemize}
+      \item else:
+      \begin{itemize}
+        \item Compute \(\mathbf x^{k+1}\) using Aitken relaxation relaxation (Equations~\eqref{eq:aitken_update} and \eqref{eq:aitken_relaxation_factor})
+        \item Save the current residue \(\mathbf r^k = \pazocal R^k\).
+      \end{itemize}
+      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
 
 \subsection{Broyden's method and Broyden's family}
 
@@ -537,9 +656,41 @@ G_\pazocal R^{k+1}=G_\pazocal R^{k}+\left(\Delta \mathbf x^{k}-G_\pazocal R^{k} 
 \end{equation}
 where \(\mathbf v_{k}^{\mathrm{T}} \Delta \pazocal R^{k}=1\) so that the secant condition \eqref{eq:secant_condition} holds.
 Note that the secant condition \eqref{eq:inverse_secant_cond} is equivalent to condition \eqref{eq:secant_condition}.
-The pseudo-code of Broyden's two methods is given in Box~\ref{}.
+The pseudo-code of Broyden's two methods is given in Box~\ref{box:broydens_method}.
 Some authors called Broyden's first method Broyden's good update and Broyden's second method as Broyden's bad update.
 These are two particular members of Broyden's family.
+
+\begin{framedbox}[htb]
+  \caption{Broyden's method for one timestep.}
+  \label{box:broydens_method}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item Set nonlinear counter to zero: \(k=0\)
+    \item \(\mathbf x^k = \mathbf x_{n+1}^p\)
+    \item Evaluate \(\pazocal R^k = \pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+    \item Enter the nonlinear loop
+    \begin{enumerate}[(1)]
+      \item Compute the update step from \(\Delta \mathbf x^k = - G^k_\pazocal R\),
+      \item Update \(\mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k\),
+      \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+      \item Compute \(\Delta \pazocal R^k = \pazocal R^{k+1} - \pazocal R^k\).
+      \item if the first update is to be used:
+      \begin{itemize}
+        \item Set \({{\mathbf{v}}^k}^T = \Delta {\mathbf x^k}^T G^k_\pazocal R\),
+      \end{itemize}
+      \item else if the second update is to be used:
+      \begin{itemize}
+        \item Set \({{\mathbf{v}}^k}^T = \Delta {\pazocal R^k}^T\),
+      \end{itemize}
+      \item \(G_\pazocal R^{k+1} = G_\pazocal R^k + (\Delta \mathbf x^k - G_\pazocal R^k\Delta \pazocal R^k)\frac{{{\mathbf{v}}^k}^T}{{{\mathbf{v}}^k}^T\Delta \pazocal R^k}.\)
+      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
 
 % \subsubsection{Steepest Descent Relaxation}
 %
@@ -692,7 +843,8 @@ They now minimize \(\|G_\pazocal R^k+\beta\mathbf I\|\) and \(\|J_\pazocal R^k +
 
 Both the generalized Broyden's family and Anderson's family can be understood as methods in the Broyden-like class as described in \cite{fang_two_2009}.
 This more general description is not reproduced here.
-%
+
+
 % \subsubsection{The Broyden-like class}
 
 \paragraph{In the context of FSI}
@@ -742,6 +894,211 @@ or
 When no delta columns are available yet, constant relaxation is used once to ensure stability.
 
 \section{Multipoint iteration functions}
+
+\subsection{Finite-Difference Newton Method}\label{sec:finite_difference_newton_method}
+
+This approach follows exactly the one described in Section~\ref{} for the "standard" Newton method.
+The difference lies in the computation of the Jacobian.
+Here the Jacobian \(J_\pazocal R(\mathbf x)\) is approximated from a forward finite-difference, \(J^h_\pazocal R(\mathbf x)\), by columns.
+The \(j\)th column is
+\begin{equation}
+\left[J^h_\pazocal R(\mathbf x)\right]_{j}=
+\begin{cases}
+  \displaystyle\frac{\pazocal R(\mathbf x + h \sigma_{j} \mathbf e_{j})-\pazocal R(\mathbf x)}{\sigma_{j} h}, & x_{j} \neq 0 \\[10pt]
+  \displaystyle\frac{\pazocal R(h \mathbf e_{j})-\pazocal R(\mathbf x)}{h}, & x_{j}=0
+\end{cases},
+\end{equation}
+where \(\mathbf e_{j}\) is the unit vector in the \(j\) th coordinate direction.
+The difference increment \(h\) should be no smaller than the square root of the inaccuracy in \(\pazocal R\) \citep{kelley}.
+It should, however, be scaled.
+Rather than simply perturbing \(\mathbf x\) by a difference increment \(h\), roughly the square root of the error in \(\pazocal R\), in each coordinate direction, the perturbation is multiplied to compute the \(j\) th column by
+\begin{equation}
+  \sigma_j = \max (|(x)_{j}|, 1) \operatorname{sign}((x)_{j}),
+\end{equation}
+with a view toward varying the correct fraction of the low-order bits in \((x)_{j}\).
+The \(\operatorname{sign}\) function is defined as
+\begin{equation}
+  \operatorname{sgn}(z)=\begin{cases}
+  z /|z| & \text { if } z \neq 0 \\
+  1 & \text { if } z=0
+  \end{cases}.
+\end{equation}
+While this scaling usually makes little difference, it can be crucial if \(|(x)_{j}|\) is very large.
+Note that there is no adjustment if \(|(x)_{j}|\) is very small because the lower limit on the size of the difference increment is determined by the error in \(\pazocal R\).
+For example, if evaluations of \(\pazocal R\) are accurate to 16 decimal digits, the difference increment should change roughly the last 8 digits of \(x\). \citep{kelley}
+
+Each column of \(J^h_\pazocal R(\mathbf x)\) requires one new function evaluation and, therefore, a finite difference Jacobian costs \(n_\text{unknown}\) function evaluations.
+If the perturbation is appropriatly chosen the method converges quadratically when the function satisfies certain conditions and the initial try is close enough to the solution \citep{dennis}.
+
+\paragraph{The Chord and Shamanskii Methods}
+
+If the computational cost of a forward difference Jacobian is high, i.e., \(\pazocal R\) is expensive and/or \(n_\text{unknown}\) is large, and if an analytic Jacobian is not available, it is wise to amortize this cost over several nonlinear iterations.
+The chord method does exactly that.
+It differs from Newton's method in that the evaluation and factorization of the Jacobian are done only once for \(J_\pazocal R(\mathbf x^0)\).
+The advantages of the chord method increase as \(n\) increases, since both the \(n\) function evaluations and the \(O(n_\text{unknown}^{3})\) work (in the dense matrix case) in the matrix factorization are done only once.
+So, while the convergence is q-linear and more nonlinear iterations will be needed than for Newton's method, the overall cost of the solve will usually be much less.
+A middle ground is the Shamanskii method.
+Here the Jacobian factorization and matrix function evaluation are done after every \(m\) computations of the step \citep{kelley}.
+
+Since in the present use-case the number of unknowns \(n\) is very large and the evaluation of the function \(\pazocal R\) is also very expensive, approximating the Jacobian using a finite difference is not suitable, even using the chord or Shamanskii methods.
+
+
+\subsection{Newton-Krylov methods}
+
+In the Newton-Krylov methods, the solution of the Newton system of equations in Equation~\eqref{eq:newton_system} is a achieve using Krylov methods, such as GMRES or BiCGSTAB.
+
+The Krylov iterative methods approximate the solution of a linear system \(\mathbf A \mathbf x = \mathbf b\) using the Krylov subspace
+\begin{equation}
+  \pazocal K_m = \operatorname{span}\{\mathbf r_0, \mathbf A\mathbf r_0, \mathbf A^2 \mathbf r_0, \dots, \mathbf A^{m-1}\mathbf r_0\},
+\end{equation}
+such that the \(m\)th iterate, \(\mathbf x_m\in \pazocal K_m\), with \(\mathbf r_0 = \mathbf b - \mathbf A \mathbf x_0\).
+The precise way the \(\mathbf x_m\) is built is what distinguishes the different methods.
+
+To produce the appropriate Krylov subspace, one needs the product \(J_\pazocal R(\mathbf x^k) \mathbf y\) in Equation~\eqref{eq:newton_system}, for some vector \(\mathbf y\).
+It is assumed that the Jacobian is not available so it must approximated.
+Also it would be beneficial if the full Jacobian is neither computed in its entirety nor completely stored in memory, i.e., a matrix-free method is desirable.
+As in Section~\ref{sec:finite_difference_newton_method}, the Jacobian-vector product is easy to approximate with a forward difference directional derivative \citep{kelley}.
+The forward difference directional derivative at \(\mathbf x^k\) in the direction \(\mathbf q\) is
+\begin{equation}
+  J^h_\pazocal R(\mathbf x^k)\mathbf q =
+\begin{cases}
+  \mathbf 0, & \mathbf q = \mathbf 0 \\[10pt]
+  \|\mathbf q\| \displaystyle\frac{\pazocal R(\mathbf x^k+\sigma(\mathbf x^k, \mathbf q) h \mathbf q /\|\mathbf q\|)-\pazocal R(\mathbf x^k)}{\sigma(\mathbf x^k, \mathbf q) h}, & \mathbf q \neq \mathbf 0 .
+  \end{cases}
+\end{equation}
+The scaling is important.
+\(\mathbf q\) is scaled to be a unit vector and take a numerical directional derivative in the direction \(\mathbf q /\|\mathbf q\|\).
+If \(h\) is roughly the square root of the error in \(\pazocal R\), a difference increment in the forward difference is used to make sure that the appropriate low-order bits of \(\mathbf x^k\) are perturbed.
+So \(h\) is multiplied by
+\begin{equation}
+  \sigma(\mathbf x^k, \mathbf q)=\max (|{\mathbf x^k}^{T} \mathbf q|,\|\mathbf q\|) \operatorname{sign}({\mathbf x^k}^{T} \mathbf q) /\|\mathbf q\| .
+\end{equation}
+
+\cite{sidi_vector_2017} describes two different Newton-Krylov methods, the Newton-Arnoldi and the Newton-GMRES.
+The goal is to solve Equation~\eqref{eq:newton_system} and find \(\Delta \mathbf x^k\).
+The Krylov iterates are denoted by \(\Delta \mathbf x^*_m\).
+
+The first phase of both algorithms is identical.
+They both use the Arnoldi-Gram-Schmidt process to produce an orthogonal basis for the Krylov subspace, \(\{\mathbf q_1, \dots, \mathbf q_m\}\) for some integer \(k\).
+Consider the unitary matrix \(\mathbf Q_m\)
+\begin{equation}
+  \mathbf Q_m = [\mathbf q_1 \cdots \mathbf q_m],
+\end{equation}
+and the upper Hessenber matrix \(\mathbf H_m\) and related matrix \(\bar{\mathbf H}_m\)
+\begin{equation}
+ \mathbf H_{m}=\left[\begin{array}{ccccc}
+h_{11} & h_{12} & \cdots & \cdots & h_{1m} \\
+h_{21} & h_{22} & \cdots & \cdots & h_{2m} \\
+& \ddots & \ddots & & \vdots \\
+& & \ddots & \ddots & \vdots \\
+& & & h_{m,m-1} & h_{mm}
+\end{array}\right] , \quad
+  \bar{\mathbf H}_{m}=\left[\begin{array}{ccccc}
+h_{11} & h_{12} & \cdots & \cdots & h_{1 m} \\
+h_{21} & h_{22} & \cdots & \cdots & h_{2 m} \\
+& \ddots & \ddots & & \vdots \\
+& & \ddots & \ddots & \vdots \\
+& & & \ddots & h_{m m} \\
+& & & & b_{m+1, m}
+\end{array}\right],
+\end{equation}
+where the quantities \(h_{ij}\) are also obtained from the algorithm.
+\(\mathbf H_m\) can be interpreted as the projection of \(\mathbf A\) onto the Krylov subspace since \(\mathbf H_m = \mathbf Q_m^T J_\pazocal R(\mathbf x^k) \mathbf Q_m\).
+See Box~\ref{box:arnoldi_process} for the pseudo-code of the Arnoldi-Gram-Schmidt process.
+
+\begin{framedbox}[htbp]
+  \caption{Arnoldi process to orthonormalize the Krylov subspace}
+  \label{box:arnoldi_process}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+      \item \(j=1\)
+      \item \(\Delta \bm\uptheta^*_m = \Delta \bm\uptheta^*_m - \Delta \bm\uptheta^*_j\frac{\Delta\bm\uptheta^*_m\cdot\Delta\bm\uptheta^*_j}{\Delta\bm \uptheta^*_j\cdot\Delta\bm\uptheta^*_j}\)
+      \item \(j=j+1\)
+      \item If \(j<m-1\) go to Step (ii)
+      \item \(\Delta\bm \uptheta^*_m = \Delta\bm\uptheta^*_m/\|\Delta \bm \uptheta^*_m\|\)
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
+After obtaining an orthogonal basis for the Krylov subspace \(\pazocal K_m\), the Newton-Arnoldi projects the \(m\)th residual onto the Krylov subspace and sets it to zero, similar to a weigthed residual method, i.e.,
+\begin{equation}
+  \mathbf Q_m \left(\pazocal R(\mathbf x^k) - J_\pazocal R(\mathbf x^k)\Delta \mathbf x^*_m\right) = \mathbf 0.
+\end{equation}
+In practice, one solves the equivalent linear system \(\mathbf H_m \boldsymbol{\eta} = \beta \mathbf e_1\) for \(\boldsymbol{\eta}\) and set \(\Delta \mathbf x^k  =\Delta \mathbf x^*_0 + \mathbf Q_m\boldsymbol \eta\).
+
+The Newton-GMRES attempts to minimize the norm of the \(m\)th residual, i.e.,
+\begin{equation}
+  \Delta \mathbf x^*_m = \arg\min_{\mathbf y\in \pazocal K_m} \left\|\pazocal R(\mathbf x^k) - J_\pazocal R(\mathbf x^k)\mathbf y\right\|_2.
+\end{equation}
+This is exectued in practice solving the linear least-squares problem \(\|\beta\mathbf e_1 -\bar{\mathbf H}_m \boldsymbol{\eta}\|\) for \(\boldsymbol{\eta}\) and set \(\Delta \mathbf x^k  =\Delta \mathbf x^*_0 + \mathbf Q_m\boldsymbol \eta\).
+See Box~\ref{arnoldi_process} for the pseudo-code of the Newton-Arnoldi and Newton-GMRES.
+
+\begin{framedbox}[htbp]
+  \caption{Timestep \(n\) of the GMRES-inspired approach.}
+  \label{box:gmres_inspired}
+  \begin{center}
+    \begin{minipage}{0.9\textwidth}
+    \begin{enumerate}[(i)]
+    \item \(k=0\)
+    \item If no previous timesteps are to be reused or \(n=0\) then
+    \begin{itemize}
+      \item Clear all \(\Delta \bm \uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+      \item \(m=0\)
+    \end{itemize}
+    \item \(\bm \uptheta^*_1 = \pazocal T\circ \pazocal U(\bm \uptheta^0)\)
+    \item \(\mathbf r^0 = \bm \uptheta^*_1 - \bm \uptheta^0\)
+    \item Enter the Newton loop
+    \begin{enumerate}[(1)]
+      \item If no previous iterations are to be reused
+      \begin{itemize}
+        \item Clear all \(\Delta \bm\uptheta^*_i\), \(\Delta \mathbf r^*_i\)
+        \item \(m=0\)
+        \item \(\xi = \|\mathbf r^*_k\|\)
+      \end{itemize}
+      else
+      \begin{itemize}
+        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+        \item \(\bm \uptheta^*_{m+1} = \bm \uptheta^*_1\)
+      \end{itemize}
+      \item Enter the Krylov loop
+      \begin{enumerate}[(a)]
+        \item \(m=m+1\)
+        \item \(\Delta \bm\uptheta^*_m = \bm\uptheta^*_m - \bm\uptheta^k\)
+        \item Orthogonalize (Box~\ref{box:arnoldi_process}) and relax \(\Delta \bm\uptheta^*_m\) (Equation~\eqref{})
+        \item \(\bm\uptheta^*_m = \bm\uptheta^k + \Delta\bm\uptheta^*_m\)
+        \item \(\bm \uptheta^*_{m+1} = \pazocal T \circ \pazocal U(\bm \uptheta^*_m)\)
+        \item \(\Delta \mathbf r^*_m = (\bm\uptheta^*_{m+1} - \bm \uptheta^*_m) - \mathbf r^k\)
+        \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
+        \item If convergence has not been reached, \(\xi>\epsilon_2\), go to Step (a)
+      \end{enumerate}
+    \item \(\bm\uptheta^{k+1} = \bm\uptheta^k + \sum_{i=1}^m \bar{\alpha}_i \Delta\bm\uptheta_i\)
+    \item \(k=k+1\)
+    \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
+    \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
+    \item If convergence has not been reached, \(\|\mathbf r^k\| > \epsilon_1\), go to Step (1)
+    \end{enumerate}
+    \end{enumerate}
+    \end{minipage}
+  \end{center}
+\end{framedbox}
+
+Since the present use-case includes a large amount of unknows it leads to memory concerns if the Krylov subspace is allowed to grow indefinitely.
+A restarted version where the maximum size of the Krylov space is restricted to \(m\) elements is prefered.
+Once this number is reached the procedure is restarted.
+However, if \(m\) is small the convergence can be poor.
+
+In each nonlinear iteration of the Newton-Krylov, the number of iterations can be large and each iteration requires an evaluation of the function.
+This can be a major drawback when presently the intended use assumes that the evaluation of the function \(\pazocal R\) is expensive.
+This problem is however mitigated by the fact the Newton system is only solved until it satisfies
+\begin{equation}
+  \|J_\pazocal R(\mathbf x^k) \Delta x^*_m+ \pazocal R(\mathbf x^k)\| \leq \eta\|\pazocal R(\mathbf x^k)\|,
+\end{equation}
+where \(\eta\) is called the forcing term and it is chosen to avoid oversolving the Newton system (Equation~\eqref{eq:newton_system}.
+As a simple approach, \cite{kelley} suggest \(\eta=0.1\), however he describes more sophisticated ways to choose this parameter.
+The smaller the forcing term \(\eta\) the closer one gets to the "standard" Newton method.
+However, specially in the first nonlinear iterations, choosing a \(\eta\) that is too small leads to unnecessarily long computational times, as the linera system is being solved with too much precission.
 
 \subsection{Extrapolation tecniques with cycling}
 
@@ -928,278 +1285,17 @@ The method proposed can be obtained by applying the RRE to the sequence of resid
 \(\Delta \mathbf r^*_i = \mathbf x^*_i - \mathbf x^k\), where the subscript \(i\) concerns the internal loop of the vector extrapolation method, and whose limit is \(\mathbf 0\).
 \cite{kuttler_vector_2009} argues that these residual differences have unfavorable numerical properties and should be avoided.
 
-% \begin{framedbox}[htbp]
-%   \caption{Arnoldi process to orthonormalize temperature deltas}
-%   \label{box:arnoldi_process}
-%   \begin{center}
-%     \begin{minipage}{0.9\textwidth}
-%     \begin{enumerate}[(i)]
-%       \item \(j=1\)
-%       \item \(\Delta \bm\uptheta^*_m = \Delta \bm\uptheta^*_m - \Delta \bm\uptheta^*_j\frac{\Delta\bm\uptheta^*_m\cdot\Delta\bm\uptheta^*_j}{\Delta\bm \uptheta^*_j\cdot\Delta\bm\uptheta^*_j}\)
-%       \item \(j=j+1\)
-%       \item If \(j<m-1\) go to Step (ii)
-%       \item \(\Delta\bm \uptheta^*_m = \Delta\bm\uptheta^*_m/\|\Delta \bm \uptheta^*_m\|\)
-%     \end{enumerate}
-%     \end{minipage}
-%   \end{center}
-% \end{framedbox}
-%
-% \begin{framedbox}[htbp]
-%   \caption{Timestep \(n\) of the GMRES-inspired approach.}
-%   \label{box:gmres_inspired}
-%   \begin{center}
-%     \begin{minipage}{0.9\textwidth}
-%     \begin{enumerate}[(i)]
-%     \item \(k=0\)
-%     \item If no previous timesteps are to be reused or \(n=0\) then
-%     \begin{itemize}
-%       \item Clear all \(\Delta \bm \uptheta^*_i\), \(\Delta \mathbf r^*_i\)
-%       \item \(m=0\)
-%     \end{itemize}
-%     \item \(\bm \uptheta^*_1 = \pazocal T\circ \pazocal U(\bm \uptheta^0)\)
-%     \item \(\mathbf r^0 = \bm \uptheta^*_1 - \bm \uptheta^0\)
-%     \item Enter the Newton loop
-%     \begin{enumerate}[(1)]
-%       \item If no previous iterations are to be reused
-%       \begin{itemize}
-%         \item Clear all \(\Delta \bm\uptheta^*_i\), \(\Delta \mathbf r^*_i\)
-%         \item \(m=0\)
-%         \item \(\xi = \|\mathbf r^*_k\|\)
-%       \end{itemize}
-%       else
-%       \begin{itemize}
-%         \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
-%         \item \(\bm \uptheta^*_{m+1} = \bm \uptheta^*_1\)
-%       \end{itemize}
-%       \item Enter the Krylov loop
-%       \begin{enumerate}[(a)]
-%         \item \(m=m+1\)
-%         \item \(\Delta \bm\uptheta^*_m = \bm\uptheta^*_m - \bm\uptheta^k\)
-%         \item Orthogonalize (Box~\ref{box:arnoldi_process}) and relax \(\Delta \bm\uptheta^*_m\) (Equation~\eqref{})
-%         \item \(\bm\uptheta^*_m = \bm\uptheta^k + \Delta\bm\uptheta^*_m\)
-%         \item \(\bm \uptheta^*_{m+1} = \pazocal T \circ \pazocal U(\bm \uptheta^*_m)\)
-%         \item \(\Delta \mathbf r^*_m = (\bm\uptheta^*_{m+1} - \bm \uptheta^*_m) - \mathbf r^k\)
-%         \item Compute \(\bar{\mathbf\alpha}\) (Equation~\eqref{eq:gmres_ls_condition}) and \(\xi\) (Equation~\eqref{eq:gmres_residual})
-%         \item If convergence has not been reached, \(\xi>\epsilon_2\), go to Step (a)
-%       \end{enumerate}
-%     \item \(\bm\uptheta^{k+1} = \bm\uptheta^k + \sum_{i=1}^m \bar{\alpha}_i \Delta\bm\uptheta_i\)
-%     \item \(k=k+1\)
-%     \item \(\bm\uptheta^*_1 = \pazocal T\circ \pazocal U(\bm\uptheta^{k})\)
-%     \item \(\mathbf r^k = \bm\uptheta^*_1 - \bm \uptheta^k\)
-%     \item If convergence has not been reached, \(\|\mathbf r^k\| > \epsilon_1\), go to Step (1)
-%     \end{enumerate}
-%     \end{enumerate}
-%     \end{minipage}
-%   \end{center}
-% \end{framedbox}
 
 % \Floatbarrier
 
-\subsection{Finite-Difference Newton Method}\label{sec:finite_difference_newton_method}
-
-This approach follows exactly the one described in Section~\ref{} for the "standard" Newton method.
-The difference lies in the computation of the Jacobian.
-Here the Jacobian \(J_\pazocal R(\mathbf x)\) is approximated from a forward finite-difference, \(J^h_\pazocal R(\mathbf x)\), by columns.
-The \(j\)th column is
-\begin{equation}
-\left[J^h_\pazocal R(\mathbf x)\right]_{j}=
-\begin{cases}
-  \displaystyle\frac{\pazocal R(\mathbf x + h \sigma_{j} \mathbf e_{j})-\pazocal R(\mathbf x)}{\sigma_{j} h}, & x_{j} \neq 0 \\[10pt]
-  \displaystyle\frac{\pazocal R(h \mathbf e_{j})-\pazocal R(\mathbf x)}{h}, & x_{j}=0
-\end{cases},
-\end{equation}
-where \(\mathbf e_{j}\) is the unit vector in the \(j\) th coordinate direction. 
-The difference increment \(h\) should be no smaller than the square root of the inaccuracy in \(\pazocal R\) \citep{kelley}. 
-It should, however, be scaled. 
-Rather than simply perturbing \(\mathbf x\) by a difference increment \(h\), roughly the square root of the error in \(\pazocal R\), in each coordinate direction, the perturbation is multiplied to compute the \(j\) th column by
-\begin{equation}
-  \sigma_j = \max (|(x)_{j}|, 1) \operatorname{sign}((x)_{j}),
-\end{equation}
-with a view toward varying the correct fraction of the low-order bits in \((x)_{j}\).
-The \(\operatorname{sign}\) function is defined as
-\begin{equation}
-  \operatorname{sgn}(z)=\begin{cases}
-  z /|z| & \text { if } z \neq 0 \\
-  1 & \text { if } z=0
-  \end{cases}.
-\end{equation}
-While this scaling usually makes little difference, it can be crucial if \(|(x)_{j}|\) is very large. 
-Note that there is no adjustment if \(|(x)_{j}|\) is very small because the lower limit on the size of the difference increment is determined by the error in \(\pazocal R\). 
-For example, if evaluations of \(\pazocal R\) are accurate to 16 decimal digits, the difference increment should change roughly the last 8 digits of \(x\). \citep{kelley}
-
-Each column of \(\nabla_{h} F\) requires one new function evaluation and, therefore, a finite difference Jacobian costs \(n\) function evaluations.
-If the perturbation is appropriatly chosen the method converges quadratically when the function satisfies certain conditions and the initial try is close enough to the solution \cite{dennis}.
-
-\paragraph{The Chord and Shamanskii Methods}
-
-If the computational cost of a forward difference Jacobian is high, i.e., \(\pazocal R\) is expensive and/or \(n\) is large, and if an analytic Jacobian is not available, it is wise to amortize this cost over several nonlinear iterations. 
-The chord method does exactly that. 
-It differs from Newton's method in that the evaluation and factorization of the Jacobian are done only once for \(J_\pazocal R(\mathbf x^0)\). 
-The advantages of the chord method increase as \(n\) increases, since both the \(n\) function evaluations and the \(O(n^{3})\) work (in the dense matrix case) in the matrix factorization are done only once. 
-So, while the convergence is q-linear and more nonlinear iterations will be needed than for Newton's method, the overall cost of the solve will usually be much less. 
-A middle ground is the Shamanskii method. 
-Here the Jacobian factorization and matrix function evaluation are done after every \(m\) computations of the step \citep{kelley}.
-
-Since in the present use-case the number of unknowns \(n\) is very large and the evaluation of the function \(\pazocal R\) is also very expensive, approximating the Jacobian using a finite difference is not suitable, even using the chord or Shamanskii methods.
-
-
-\subsection{Newton-Krylov methods}
-
-In the Newton-Krylov methods, the solution of the Newton system of equations in Equation~\eqref{eq:newton_system} is a achieve using Krylov methods, such as GMRES or BiCGSTAB.
-
-The Krylov iterative methods approximate the solution of a linear system \(\mathbf A \mathbf x = \mathbf b\) using the Krylov subspace
-\begin{equation}
-  \pazocal K_m = \operatorname{span}\{\mathbf r_0, \mathbf A\mathbf r_0, \mathbf A^2 \mathbf r_0, \dots, \mathbf A^{m-1}\mathbf r_0\},
-\end{equation}
-such that the \(m\)th iterate, \(\mathbf x_m\in \pazocal K_m\), with \(\mathbf r_0 = \mathbf b - \mathbf A \mathbf x_0\).
-The precise way the \(\mathbf x_m\) is built is what distinguishes the different methods.
-
-To produce the appropriate Krylov subspace, one needs the product \(J_\pazocal R(\mathbf x^k) \mathbf y\) in Equation~\eqref{eq:newton_system}, for some vector \(\mathbf y\).
-It is assumed that the Jacobian is not available so it must approximated.
-Also it would be beneficial if the full Jacobian is neither computed in its entirety nor completely stored in memory, i.e., a matrix-free method is desirable.
-As in Section~\ref{sec:finite_difference_newton_method}, the Jacobian-vector product is easy to approximate with a forward difference directional derivative \citep{kelley}. 
-The forward difference directional derivative at \(\mathbf x^k\) in the direction \(\mathbf q\) is 
-\begin{equation}
-  J^h_\pazocal R(\mathbf x^k)\mathbf q =
-\begin{cases}
-  \mathbf 0, & \mathbf q = \mathbf 0 \\[10pt]
-  \|\mathbf q\| \displaystyle\frac{\pazocal R(\mathbf x^k+\sigma(\mathbf x^k, \mathbf q) h \mathbf q /\|\mathbf q\|)-\pazocal R(\mathbf x^k)}{\sigma(\mathbf x^k, \mathbf q) h}, & \mathbf q \neq \mathbf 0 .
-  \end{cases}
-\end{equation}
-The scaling is important. 
-\(\mathbf q\) is scaled to be a unit vector and take a numerical directional derivative in the direction \(\mathbf q /\|\mathbf q\|\). 
-If \(h\) is roughly the square root of the error in \(\pazocal R\), a difference increment in the forward difference is used to make sure that the appropriate low-order bits of \(\mathbf x^k\) are perturbed. 
-So \(h\) is multiplied by
-\begin{equation}
-  \sigma(\mathbf x^k, \mathbf q)=\max (|{\mathbf x^k}^{T} \mathbf q|,\|\mathbf q\|) \operatorname{sign}({\mathbf x^k}^{T} \mathbf q) /\|\mathbf q\| .
-\end{equation}
-
-\cite{sidi_vector_2017} describes two different Newton-Krylov methods, the Newton-Arnoldi and the Newton-GMRES.
-The goal is to solve Equation~\eqref{eq:newton_system} and find \(\Delta \mathbf x^k\).
-The Krylov iterates are denoted by \(\Delta \mathbf x^*_m\).
-
-The first phase of both algorithms is identical.
-They both use the Arnoldi-Gram-Schmidt process to produce an orthogonal basis for the Krylov subspace, \(\{\mathbf q_1, \dots, \mathbf q_m\}\) for some integer \(k\).
-The related quantities \(h_{ij}\) are also obtained from the algorithm, and their useful in the following.
-Consider the unitary matrix \(\mathbf Q_m\)
-\begin{equation}
-  \mathbf Q_m = [\mathbf q_1 \cdots \mathbf q_m],
-\end{equation}
-and the upper Hessenber matrix \(\mathbf H_m\) and related matrix \(\bar{\mathbf H}_m\)
-\begin{equation}
- \mathbf H_{m}=\left[\begin{array}{ccccc}
-h_{11} & h_{12} & \cdots & \cdots & h_{1m} \\
-h_{21} & h_{22} & \cdots & \cdots & h_{2m} \\
-& \ddots & \ddots & & \vdots \\
-& & \ddots & \ddots & \vdots \\
-& & & h_{m,m-1} & h_{mm}
-\end{array}\right] , \quad
-  \bar{\mathbf H}_{m}=\left[\begin{array}{ccccc}
-h_{11} & h_{12} & \cdots & \cdots & h_{1 m} \\
-h_{21} & h_{22} & \cdots & \cdots & h_{2 m} \\
-& \ddots & \ddots & & \vdots \\
-& & \ddots & \ddots & \vdots \\
-& & & \ddots & h_{m m} \\
-& & & & b_{m+1, m}
-\end{array}\right].
-\end{equation}
-See Box~\ref{} for the pseudo-code of the Arnoldi-Gram-Schmidt process.
-
-After obtaining an orthogonal basis for the Krylov subspace \(\pazocal K_m\), the Newton-Arnoldi projects the \(m\)th residual onto the Krylov subspace and sets it to zero, similar to a weigthed residual method, i.e., 
-\begin{equation}
-  \mathbf Q_m \left(\pazocal R(\mathbf x^k) - J_\pazocal R(\mathbf x^k)\Delta \mathbf x^*_m\right) = \mathbf 0.
-\end{equation}
-In practice, one solves the equivalent linear system \(\mathbf H_m \boldsymbol{\eta} = \beta \mathbf e_1\) for \(\boldsymbol{\eta}\) and set \(\Delta \mathbf x^k  =\Delta \mathbf x^*_0 + \mathbf Q_m\boldsymbol \eta\).
-
-The Newton-GMRES attempts to minimize the norm of the \(m\)th residual, i.e.,
-\begin{equation}
-  \Delta \mathbf x^*_m = \arg\min_{\mathbf y\in \pazocal K_m} \left\|\pazocal R(\mathbf x^k) - J_\pazocal R(\mathbf x^k)\mathbf y\right\|_2.
-\end{equation} 
-This is exectued in practice solving the linear least-squares problem \(\|\beta\mathbf e_1 -\bar{\mathbf H}_m \boldsymbol{\eta}\|\) for \(\boldsymbol{\eta}\) and set \(\Delta \mathbf x^k  =\Delta \mathbf x^*_0 + \mathbf Q_m\boldsymbol \eta\).
-See Box~\ref{} for the pseudo-code of the Newton-Arnoldi and Newton-GMRES.
-
-Since the present use-case includes a large amount of unknows it leads to memory concerns if the Krylov subspace is allowed to grow indefinitely.
-A restarted version where the maximum size of the Krylov space is restricted to \(k\) is prefered.
-However, if \(k\) is small the convergence can be poor.
-
-In each nonlinear iteration of the Newton-Krylov, the number of iterations can be large.
-Each iteration requires an evaluation of the function.
-This problem is however mitigated by the fact the Newton system is only solved until it satisfies
-\begin{equation}
-  \left\|J_\pazocal R(\mathbf x^k\right) d+F\left(x_{n}\right)\right\| \leq \eta\left\|F\left(x_{n}\right)\right\|.
-\end{equation}
-\(\eta\) is called the forcing term and it is chosen to avoid oversolving the first iterations.
-\cite{kelley} suggest \(\eta=0.1\) or a more complex approach.
-The effect of choosing the forcing term is.
- 
-Nevertheless, these are not pursued here as they require a large amount of function evaluation per iteration of the Newton loop. They approximate the product of the Jacobian by a vector through a finite difference approach dependent on an arbitrarily small parameter \(\epsilon\).
-
-
-
-Then use a Krylov method
-
 \section{Multipoint iteration functions with memory}
 
-
-
-Mento Eirola and Netwon-Krylov using residues from previous iterations.
-
-\section{Global Approaches}
-
-We return now to the nonlinear equations problem:
-\[
-\begin{array}{ll}
-\text { given } & F: \mathbb{R}^{n} \longrightarrow \mathbb{R}^{n}, \\
-\text { find } \quad x_{*} \in \mathbb{R}^{n} & \text { such that } F\left(x_{*}\right)=0,
-\end{array}
-\]
-In this section we show how Newton's method for (6.5.1) can be combined with global methods for unconstrained optimization to produce global methods for (6.5.1).
-The Newton step for (6.5.1) is
-\[
-x_{+}=x_{c}-J\left(x_{c}\right)^{-1} F\left(x_{c}\right),
-\]
-where \(J\left(x_{c}\right)\) is the Jacobian matrix of \(F\) at \(x_{c}\). From Section \(5.2\) we know that (6.5.2) is locally \(q\)-quadratically convergent to \(x_{*}\), but not necessarily globally convergent. Now assume \(x_{c}\) is not close to any solution \(x_{k}\) of (6.5.1). How would one decide then whether to accept \(x_{+}\)as the next iterate? A reasonable answer is that \(\left\|F\left(x_{+}\right)\right\|\)should be less than \(\left\|F\left(x_{c}\right)\right\|\) for some norm \(\|\cdot\|\), a convenient choice being the \(l_{2}\) norm \(\|F(x)\|_{2}^{2}=F(x)^{T} F(x)\).
-
-Requiring that our step result in a decrease of \(\|F(x)\|_{2}\) is the same thing we would require if we were trying to find a minimum of the function \(\|F(x)\|_{2}\). Thus, we have in effect turned our attention to the corresponding minimization problem:
-\[
-\min _{x \in \text { M }_{n}} f(x)=\frac{1}{2} F(x)^{T} F(x) \text {, }
-\]
-\(\mathrm{~ w h e r e ~ t h e ~ "}\) tion to \((6.5 .1)\) is a solution to (6.5.3), but there may be local minimizers of (6.5.3) that are not solutions to (6.5.1) (see Figure 6.5.1). Therefore, although we could try to solve (6.5.1) simply by using a minimization routine on (6.5.3), it is better to use the structure of the orginal problem wherever possible, in particular to compute the Newton step (6.5.2). However, our global strategy for (6.5.1) will be based on a global strategy for the related minimization problem (6.5.3).
-An important question to ask is, "What is a descent direction for problem \((6.5 .3) ?^{m}\) It is any direction \(p\) for which \(\nabla f\left(x_{c}\right)^{T} p<0\), where
-\[
-\nabla f\left(x_{c}\right)=\frac{d}{d x} \sum_{i=1}^{n} \frac{1}{2}\left(f_{i}\left(x_{c}\right)\right)^{2}=\sum_{i=1}^{n} \nabla f_{i}\left(x_{c}\right) \cdot f\left(x_{c}\right)=J\left(x_{c}\right)^{T} F\left(x_{c}\right) .
-\]
-Therefore, the steepest-descent direction for \((6.5 .3)\) is along \(-J\left(x_{c}\right)^{T} F\left(x_{c}\right)\). Furthermore, the Newton direction along \(s^{N}=-J\left(x_{c}\right)^{-1} F\left(x_{c}\right)\) is a descent direction, since
-\[
-\nabla f\left(x_{c}\right)^{T} s^{N}=-F\left(x_{c}\right)^{T} J\left(x_{c}\right) J\left(x_{c}\right)^{-1} F\left(x_{c}\right)=-F\left(x_{c}\right)^{T} F\left(x_{c}\right)<0
-\]
-as long as \(F\left(x_{c}\right) \neq 0\). This may seem surprising, but it is geometrically reasonable. Since the Newton step yields a root of
-\[
-M_{c}\left(x_{c}+s\right)=F\left(x_{c}\right)+J\left(x_{c}\right) s,
-\]
-it also goes to a minimum of the quadratic function
-\[
-\begin{aligned}
-\hat{m}_{c}\left(x_{c}+s\right) & \triangleq \frac{1}{2} M_{c}\left(x_{c}+s\right)^{T} M_{c}\left(x_{c}+s\right) \\
-&=\frac{1}{2} F\left(x_{c}\right)^{T} F\left(x_{c}\right)+\left(J\left(x_{c}\right)^{T} F\left(x_{c}\right)\right)^{T} s+\frac{1}{2} s^{T}\left(J\left(x_{c}\right)^{T} J\left(x_{c}\right)\right) s
-\end{aligned}
-\]
-because \(\hat{m}_{c}\left(x_{c}+s\right) \geq 0\) for all \(s\) and \(\hat{m}_{c}\left(x_{c}+s^{N}\right)=0\). Therefore, \(s^{N}\) is a descent direction for \(\hat{m}_{c}\), and since the gradients at \(x_{c}\) of \(\hat{m}_{c}\) and \(f\) are the same, it is also a descent direction for \(f\).
-
-The above development motivates how we will create global methods for (6.5.1). They will be based on applying our algorithms of Section \(6.3\) or \(6.4\) to the quadratic model \(\hat{m}_{c}(x)\) in (6.5.4). Since \(\nabla^{2} \hat{m}\left(x_{c}\right)=J\left(x_{c}\right)^{T} J\left(x_{c}\right)\), this model is positive definite as long as \(J\left(x_{c}\right)\) is nonsingular, which is consistent with the fact that \(x_{c}+s^{N}\) is the unique root of \(M_{c}(x)\) and thus the unique minimizer of \(\hat{m}_{c}(x)\) in this case. Thus, the model \(\hat{m}_{c}(x)\) has the attractive properties that its minimizer is the Newton point for the original problem, and that all its descent directions are descent directions for \(f(x)\) because \(\nabla \hat{m}_{c}\left(x_{c}\right)=\nabla f\left(x_{c}\right)\). Therefore methods based on this model, by going downhill and trying to minimize \(\hat{m}_{c}(x)\), will combine Newton's method for nonlinear equations with global methods for an associated minimization problem. Note that \(\hat{m}_{c}(x)\) is not quite the same as the quadratic model of \(f(x)=\frac{1}{2} F(x)^{T} \mathrm{~F}(x)\) around \(x_{c}\),
-\[
-m_{c}\left(x_{c}+s\right)=f\left(x_{c}\right)+\nabla f\left(x_{c}\right)^{T} s+\frac{1}{2} s^{T} \nabla^{2} f\left(x_{c}\right) s,
-\]
-because \(\nabla^{2} f\left(x_{c}\right) \neq J\left(x_{c}\right)^{T} J\left(x_{c}\right)\) (see Exercise 18 of Chapter 5).
-The application of the global methods of Sections \(6.3\) and \(6.4\) to the nonlinear equations problem is now straightforward. As long as \(J\left(x_{\epsilon}\right)\) is sufficiently well conditioned, then \(J\left(x_{c}\right)^{T} J\left(x_{c}\right)\) is safely positive definite, and the algorithms apply without change if we define the objective function by \(\frac{1}{2}\|F(x)\|_{2}^{2}\), the Newton direction by \(-J(x)^{-1} F(x)\), and the positive definite quadratic model by (6.5.4). This means that in a line-search algorithm, we search in the Newton direction, looking for a sufficient decrease in \(\|F(x)\|_{2}\). In trust region algorithms, we approximately minimize \(\hat{m}_{c}\left(x_{c}+s\right)\) subject to \(\|s\|_{2} \leq \delta_{c}\). If \(\delta_{c} \geq\left\|J\left(x_{c}\right)^{-1} F\left(x_{c}\right)\right\|_{2}\), then the step attempted is the Newton step; otherwise, for the locally constrained optimal step, it is
-\[
-s=-\left(J\left(x_{c}\right)^{T} J\left(x_{c}\right)+\mu_{c} I\right)^{-1} J\left(x_{c}\right)^{T} F\left(x_{c}\right)
-\]
-for \(\mu_{c}\) such that \(\|s\|_{2} \cong \delta_{c}\). Using either global strategy, we expect to be taking Newton steps for \(F(x)=0\) eventually. Example 6.5.1 shows how our global strategy using a line search would work on the example of Section 5.4, started here from a different point, one at which the Newton step is unsatisfactory.
+Multipoint iteration functions are rarer and are not thoroughly investigated in this exposition.
+One can mention the Eirola-Nevanlinna family of methods \citep{fang_two_2009} and Netwon-Krylov method that reuse the Krylov subspace from previous iterations \citep{sidi_vector_2017}.
 
 
 \begin{table}[htbp]
-  \caption{Summary of the comparison between the FFT-Galerkin method.}
+  \caption{Summary of the comparison between the FFT-Galerkin method. \(n\) here denotes the number of unknowns and \(m\) denotes depending on the context the number of previous iterates considered, the number of fixed point evaluations or the size of the Krylov subspace.}
 \label{tab:comparison_fft_galerkin_fem}
   % \setlength{\tabcolsep}{1pt}
   \centering
@@ -1226,11 +1322,15 @@ for \(\mu_{c}\) such that \(\|s\|_{2} \cong \delta_{c}\). Using either global st
     & & & \textbullet\\
     & & & \textbullet\\
     \hline
-    \multirow{3}{*}{\makecell[l]{Cycling with\\vector extrapolation}} & \multirow{3}{*}{\(m+2\) \((n\times 1)\) vectors} & \multirow{3}{*}{\(m+1\)} & \textbullet\\
+    \multirow{3}{*}{Newton-Krylov} & \multirow{3}{*}{\makecell[c]{Up to\\\((m+1)\) \((n\times 1)\) vectors}} & \multirow{3}{*}{\(-^*\)} & \textbullet \\
+    & & & \textbullet\\
+    & & & \textbullet\\
+    \hline
+    \multirow{3}{*}{\makecell[l]{Cycling with\\vector extrapolation}} & \multirow{3}{*}{\((m+2)\) \((n\times 1)\) vectors} & \multirow{3}{*}{\(m+1\)} & \textbullet\\
     & & & \textbullet\\
     & & & \textbullet\\
   \hline\hline
-  \multicolumn{4}{l}{\vphantom{\Huge |}\parbox{\textwidth}{\footnotesize{${}^*$ The inner loop of the strongly coupled scheme may converge very slowly or even diverge.}}}
+  \multicolumn{4}{l}{\vphantom{\Huge |}\parbox{\textwidth}{\footnotesize{  \(^*\) The number of function evaluations in the Newton-Krylov methods will depend on how many iterations it will take for the inner loop to converge. There is a function evaluation per iteration of the inner loop.}}}
   \end{tabular}
 \end{table}
 
@@ -1263,6 +1363,11 @@ for \(\mu_{c}\) such that \(\|s\|_{2} \cong \delta_{c}\). Using either global st
     {\small \(\mathbf V^k\) is usually computed using \(QR\)-decomposition.}
     }\\
     \hline
+    Newton-Krylov & \makecell[l]{\vphantom{\Huge |} \(\mathbf x^{k+1} = \mathbf x^{k} +\Delta \mathbf x^k\)\\
+    \(J_\pazocal R(\mathbf x^k)\Delta x^k = -\pazocal R^k\) solved using a Krylov method\\
+    to accuracy \(  \|J_\pazocal R(\mathbf x^k) \Delta x^*_m+ \pazocal R(\mathbf x^k)\| \leq \eta\|\pazocal R(\mathbf x^k)\|\)}
+    \\
+    \hline
     \makecell[l]{Cycling with\\ vector extrapolation} & \makecell[l]{\vphantom{\Huge |}
     \(\mathbf x^{k+1} = \sum_{j=0}^m \gamma_j \pazocal S^{i+j}(\mathbf x^k)\),\\
     \(\gamma_q = c_q/\sum_j c_j,\quad q=0,1,\dots,m,\)\\
@@ -1270,7 +1375,7 @@ for \(\mu_{c}\) such that \(\|s\|_{2} \cong \delta_{c}\). Using either global st
     \(c_m=1\),\\
     \textbf{RRE}: \(\boldsymbol{\gamma} = [\gamma_0,\gamma_1,\dots,\gamma_{m}]^T = \arg \min_{\bar{\boldsymbol{ \gamma}}} \left\|\mathscr S^{m} \hat{\boldsymbol{\gamma}}\right\|_2\),\\
     Subject to \(\sum_{j=0}^m \gamma_j =1\).\\
-    \textbf{MMPE}: \(\left(\mathbf q^{j}, \mathscr S^{m-1} \mathbf c^{\prime}\right)=-\left(\mathbf q^{j}, \Delta \mathbf S^{i+m}(\mathbf x^k)\right), \quad j=1, \ldots, m,\)\\
+    \textbf{MMPE}: \(\left(\mathbf q^{j}, \mathscr S^{m-1} \mathbf c^{\prime}\right)=-\left(\mathbf q^{j}, \pazocal S^{i+m}(\mathbf x^k)\right), \quad j=1, \ldots, m,\)\\
     for a set of \(m\) linearly independent vectors \(\mathbf q_j\), \(j=1, \dots, m\).\\
     \(\mathbf c ' = [c_0,c_1,\dots,c_{m-1}]^T.\)\\
     \textbf{SVD-MPE}: \(\mathbf c = \arg\min_{\bar{\mathbf c}}\left\|\mathscr S^{m} \bar{\mathbf c}\right\|_{2} \quad \text { subject to }\|\bar{\mathbf c}\|_{2}=1,\)\\
