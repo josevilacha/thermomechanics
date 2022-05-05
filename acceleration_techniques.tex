@@ -4,9 +4,9 @@ This chapter presents the most common strongly coupled/implicit methods employed
 This presentation seeks to provide a literature overview of the available approaches.
 
 % More thorough description of the chapter
-Two main ways of realizing a strongly coupled approach to the solution of the coupled problem are presented.
-The first focuses on fixed-point solvers and acceleration/stabilization techniques for them.
-The second deals with approaches based on the Newton-Raphson method, with the main problem tackled being an efficient and accurate approximation to the Jacobian.\jvc{In the end, rewrite the description of the chapter}
+% Two main ways of realizing a strongly coupled approach to the solution of the coupled problem are presented.
+% The first focuses on fixed-point solvers and acceleration/stabilization techniques for them.
+% The second deals with approaches based on the Newton-Raphson method, with the main problem tackled being an efficient and accurate approximation to the Jacobian.\jvc{In the end, rewrite the description of the chapter}
 
 \section{Equations to be solved}
 
@@ -51,6 +51,11 @@ and
   \bm \uptheta - \pazocal T\circ \pazocal U(\bm \uptheta),
 \end{equation}
 \end{highlight}
+or
+\begin{equation}
+  \pazocal R^*_\text{GS}\colon \mathscr K_{u,n+1} \to\mathscr K_{u,n+1},\quad \pazocal R^*_\text{GS}(\mathbf u) =
+  \mathbf u - \pazocal U\circ \pazocal T(\mathbf u),
+\end{equation}
 where the subscript "J" stands for Jacobi and the subscript "GS" for Gauss-Seidel.
 The reason for this choice of subscripts is made clear in Section~\ref{sec:fixed_point_approach}.
 
@@ -85,7 +90,7 @@ To prevent clutering \(\mathbf x^k\) will stand for its value as well as for the
 Then \(\phi\) is called a \textit{one-point iteration function}.
 Most iteration functions that have been used for root-finding are one-point iteration functions. The most commonly known examples are the fixed point schemes and Newton's iteration method.
 
-Next, let \(\mathbf x^{k+1}\) be determined by new information at \(\mathbf x^{k}\) and reused information at \(\mathbf x^{k-1}, \ldots\).
+Next, let \(\mathbf x^{k+1}\) be determined by new information at \(\mathbf x^{k}\) and reused information at \(\mathbf x^{k-1}, \ldots\)
 Thus
 \begin{highlight}
   \begin{equation}\label{eq:one_point_iteration_function_with_memory}
@@ -126,11 +131,11 @@ They are
   \item The problem is noisy. In other words, the evaluated function values of \(\pazocal R(\mathbf x)\) usually contain errors.
 \end{enumerate}
 Thus, the methods chosen must minimize the number of calls to \(\pazocal R\), as it is expensive to compute.
-The amount of information saved from previous iterations must also be judiciously chosen as the problem's dimensionality is large, which can lead to memory limitation.
+The amount of information saved from previous iterations must also be judiciously chosen as the problem's dimensionality is large, leading to memory limitations.
 Finally, the analytical form of the derivative \(\pazocal{R}\) is also not available.
 Thus methods that use it must be discarded.
 
-\subsection{Predictor}
+\subsection{Predictor} \label{sec:predictor}
 
 Iterative procedures are considered to solve the thermo-mechanical problem at a given timestep \(n+1\).
 As the first value approximating \(\mathbf x_{n+1}\), one can employ the converged value of the previous timestep, \(\mathbf x_n\).
@@ -149,17 +154,17 @@ p=2:\quad \mathbf{x}_{n+1}^{*}=3 \mathbf{x}_{n}-3 \mathbf{x}_{n-1}+\mathbf{x}_{n
 
 \subsection{Global Approaches}
 
-Following \cite{dennis_numerical_1996}, the terms "global," as in "global method" or "globally convergent algorithm" are here used to denote a method that is designed to converge to a local minimizer of a nonlinear functional or some solution of a system of nonlinear equations, from almost any starting point.
-The methods presented in this chapter do not qualify as global methods, since if the initial trial is not close enough to the solution they will not converge.
-There are however approaches to mitigate this problem.
-The ideas presented below apply with special relevance to the Newton method (see Section~\ref{}) and related method.
+Following \cite{dennis_numerical_1996}, the terms "global," as in "global method" or "globally convergent algorithm," are here used to denote a method that is designed to converge to a local minimizer of a nonlinear functional or some solution of a system of nonlinear equations, from almost any starting point.
+The methods presented in this chapter do not qualify as global methods since if the initial trial is not close enough to the solution, they will not converge.
+There are, however, approaches to mitigate this problem.
+The ideas presented below apply with particular relevance to the Newton method (see Section~\ref{sec:newtons_method}) and related procedures.
 Their exposition follows \cite{dennis_numerical_1996} where more details can be found.
 
 Consider that the iterative solution method determines \(\Delta \mathbf x^k\) in
 \begin{equation} \label{eq:general_update_equation}
   \mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k.
 \end{equation}
-The two global approaches here considered both come into action after \(\Delta \mathbf x^k\) has been computed by some appropriate method (see from Section~\ref{} on).
+The two global approaches here considered both come into action after \(\Delta \mathbf x^k\) has been computed by some appropriate method (see from Section~\ref{sec:one_point_iteration_function} on).
 At this point, one decides whether to accept the step \(\Delta \mathbf x^k\) or to choose \(\mathbf x^{k+1}\) by a global strategy.
 
 A solution to the system of equations~\eqref{eq:abstract_residue_equation} clearly also satisfies
@@ -180,7 +185,7 @@ It is any direction \(\mathbf p\) for which \(\nabla r(\mathbf x^k)^{T} \mathbf 
 where \(J_\pazocal R(\mathbf x^k)\) is the Jacobian matrix of \(\pazocal R\) at \(\mathbf x^k\).
 Therefore, the steepest-descent direction for \eqref{eq:minimization_equiv} is along \(-J_\pazocal R(\mathbf x^{k})^{T} \pazocal R(\mathbf x^k)\).
 
-The Newton step for the update equation \eqref{eq:general_update_equation} is (see Section~\ref{})
+The Newton step for the update equation \eqref{eq:general_update_equation} is (see Section~\ref{sec:newtons_method})
 \begin{equation}
 \Delta \mathbf x^k_N =  - J_ \pazocal R\left(\mathbf x^k\right)^{-1} \pazocal R\left(\mathbf x^k\right),
 \end{equation}
@@ -189,7 +194,7 @@ and it is a descent direction, since
   \nabla r\left(\mathbf x^k\right)^{T} \Delta \mathbf x^k_N=-\pazocal R\left(\mathbf x^k\right)^{T} J_\pazocal R\left(\mathbf x^k\right) J_\pazocal R\left(\mathbf x^k\right)^{-1} \pazocal R\left(\mathbf x^k\right)=-\pazocal R\left(\mathbf x^k\right)^{T} \pazocal R\left(\mathbf x^k\right)<0
 \end{equation}
 as long as \(\pazocal R\left(\mathbf x^k\right) \neq \mathbf 0\).
-Hence, the appropriatness of these methods to the Newton method and related methods.
+Hence, the appropriateness of these methods to the Newton method and related methods.
 
 Since the Newton step yields a root of
 \begin{equation}
@@ -206,17 +211,21 @@ it also goes to a minimum of the quadratic function
 because \(\hat{m}^k\left(\mathbf x^k+\Delta \mathbf x^k\right) \geq 0\) for all \(\Delta \mathbf x^k\) and \(\hat{m}^k\left(\mathbf x^k+\Delta \mathbf x^k_N\right)=0\).
 Therefore, \(\Delta \mathbf x^k_N\) is a descent direction for \(\hat{m}^k\), and since the gradients at \(\mathbf x^k\) of \(\hat{m}^k\) and \(r\) are the same, it is also a descent direction for \(r\).
 
-The above development motivates how the global methods to be described will be applied, i.e., they will be applied to the quadratic model \(\hat{m}^k(\mathbf x)\).
+The above development motivates how the global methods to be described are applied, i.e., they are applied to the quadratic model \(\hat{m}^k(\mathbf x)\).
 Since \(\nabla^{2} \hat{m}^k(\mathbf x^k)=J_\pazocal R(\mathbf x^k)^{T} J_\pazocal R(\mathbf x^k)\), this model is positive definite as long as \(J_\pazocal R(\mathbf x^k)\) is nonsingular, which is consistent with the fact that \(\mathbf x^k + \Delta \mathbf x^k_N\) is the unique root of \(M^k(\mathbf x)\) and thus the unique minimizer of \(\hat{m}^k(\mathbf x)\) in this case.
-Thus, the model \(\hat{m}^(\mathbf x)\) has the attractive properties that its minimizer is the Newton point for the original problem, and that all its descent directions are descent directions for \(r(\mathbf x)\) because \(\nabla \hat{m}^k(\mathbf x^k)=\nabla r(\mathbf x^k)\).
+Thus, the model \(\hat{m}^k(\mathbf x)\) has the attractive properties that its minimizer is the Newton point for the original problem, and that all its descent directions are descent directions for \(r(\mathbf x)\) because \(\nabla \hat{m}^k(\mathbf x^k)=\nabla r(\mathbf x^k)\).
 Therefore methods based on this model, by going downhill and trying to minimize \(\hat{m}^k(\mathbf x)\), will combine Newton's method for nonlinear equations with global methods for an associated minimization problem.
 
-If the Jacobian of \(\mathcal R\) is not available and its estimate is of poor quality the global procedure may be compromised \citep{kelley_solving_2003}.
-However, these procedures may be unecessary in the present use-case, since the initial trial is probably close enough to the solution, even without accounting the improvements coming from more carefully chosen initial shots through predictiors (see Section~\ref{}).
+If the Jacobian of \(\pazocal R\) is not available and its estimate is of poor quality, the global procedure may be compromised \citep{kelley_solving_2003}.
+However, these procedures may be unnecessary in the present use case since the initial trial is probably close enough to the solution, even without accounting for the improvements coming from more carefully chosen initial shots through predictors (see Section~\ref{sec:predictor}).
+\cite{fang_two_2009} also employ a simple restarting procedure instead of a global convergence strategy.
+If in two consecutive values of \(\pazocal R\), \(\pazocal R_\text{old}\) and \(\pazocal R_\text{new}\), \(\|\pazocal R_\text{new}\|\) is much larger than \(\|\pazocal R_\text{old}\|\), the solution procedure is restarted, with the new initial trial values corresponding to \(\pazocal R_\text{old}\).
+They suggest \(r\) between 0.1 and 0.3, with \(\|\pazocal R_\text{old}\| < r\|\pazocal R_\text{new}\|\) leading to a restart.
+In their opinion, global approaches such as those suggested below are too expensive when the evaluation of \(\pazocal R\) is also costly to compute.
 
 \paragraph{Line search}
 
-The line search approach is based on the traditional idea of backtracking along the Newton direction if a full Newton step is unsatisfactory.
+The line search approach is based on the traditional idea of backtracking along the Newton direction if a complete Newton step is unsatisfactory.
 More precisely given a descent direction \(\mathbf p^k\), a step in that direction is taken as
 \begin{equation}
   \mathbf x^{k+1} = \mathbf x^k + \lambda^k\mathbf p^k,
@@ -227,7 +236,7 @@ See \cite{dennis_numerical_1996} for a full discussion on the choice of \(\lambd
 
 \paragraph{Trust region algorithms}
 
-The trust region algorithm are based on estimating the region in which the local model, underlying Newton's method, can be trusted to adequately represent the function, and taking a step to approximately minimize the model in this region.
+The trust region algorithm is based on estimating the region in which the local model, underlying Newton's method, can be trusted to represent the function adequately and taking a step to approximately minimize the model in this region.
 It drops the assumption that the step must be in the Newton direction.
 \(\hat{m}^k(\mathbf x^k+\Delta \mathbf x^k)\) is approximately minimized subject to \(\|\mathbf x^k\|_{2} \leq \delta^k\).
 If \(\delta^k \geq\left\|J_\pazocal R(\mathbf x^k)^{-1} \pazocal R(\mathbf x^k)\right\|_{2}\), then the step attempted is the Newton step.
@@ -261,7 +270,7 @@ Directly using \eqref{eq:absolute_residual_criterion} yields an absolute converg
 \begin{equation}
 \left\|\boldsymbol{r} ^{k}\right\|_{l^{2}}<\epsilon_\mathrm{abs}.
 \end{equation}
-with $\epsilon_\mathrm{abs}>0$ as absolute convergence limit and convergence being obtained when the above condition renders valid.
+with $\epsilon_\mathrm{abs}>0$ as an absolute convergence tolerance, with convergence being achieved when the above condition is satisfied.
 However, since the absolute value of the $r^{k, i} $'s can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations.
 A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
 \begin{equation}
@@ -273,7 +282,7 @@ Thus, a combination of absolute and relative measures, where the absolute measur
 
 
 
-\section{One-point iteration function}
+\section{One-point iteration function} \label{sec:one_point_iteration_function}
 
 \subsection{Fixed-point approaches} \label{sec:fixed_point_approach}
 
@@ -285,7 +294,7 @@ See Figure~\ref{fig:fixed_point_iteration} for its geometric interpretation in o
 
 \begin{figure}
   \includegraphics{figures/fixed_point_iteration}
-  \caption{Geometric interpretation of the fixed-point iteration method in one dimension for two example functions \(f\) and \(g\).}
+  \caption{Geometric interpretation of the fixed-point iteration method in one dimension. The fixed-point of \(f\) is sought, which is equivalent to the root of \(x-f(x)\).}
   \label{fig:fixed_point_iteration}
 \end{figure}
 
@@ -342,7 +351,7 @@ This the solution procedure is said to be Scharwz multiplicative or block Gauss-
 \mathbf u^{k+1}  = \pazocal U(\bm \uptheta^k),\\
 \bm \uptheta^{k+1} = \pazocal T(\mathbf u^{k+1}).
 \end{gather}
-One of the fields must be chosen as the first, and this may be crucial \citep{joosten_analysis_2009}.
+One of the fields must be chosen as the first, and this may be crucial for the stability and convergence rate of the approach \citep{joosten_analysis_2009}.
 Here, the focus is on the sequence coinciding with the isothermic split, i.e., first, the mechanical problem is solved at a fixed temperature.
 Then the thermal problem is solved at a fixed configuration.
 
@@ -369,9 +378,9 @@ Box~\ref{box:block_gauss_seidel} shows the pseudo-code for the block Gauss-Seide
   \end{center}
 \end{framedbox}
 
-\subsection{Newton's method}
+\subsection{Newton's method} \label{sec:newtons_method}
 
-The Newton-Raphson or Newton scheme is a very popular iterative solution procedure for nonlinear systems of equations, which under appropriate conditions, converges quadratically.
+The Newton-Raphson or Newton scheme is a very popular iterative solution procedure for nonlinear systems of equations, which under appropriate conditions converges quadratically \citep{dennis_numerical_1996, kelley_solving_2003}.
 It can be applied to Equation~\eqref{eq:abstract_residue_equation} yielding
 \begin{highlight}[innertopmargin=-5pt]
   \begin{gather}
@@ -438,7 +447,7 @@ Solving for \(\Delta \mathbf u^k\) and \(\Delta \bm \uptheta^k\), one finds
   \left(\mathbf I + J_\pazocal{T}(\mathbf u^k)J_\pazocal{U}(\bm\uptheta^k)\right)\Delta \bm\uptheta^k &= - \pazocal R_\theta(\bm \uptheta^k, \mathbf u^k)+J_\pazocal{\theta}(\mathbf u^k)\pazocal R_u(\mathbf u^k, \bm\uptheta^k). \label{eq:explicit_eq_delta_theta_newton}
 \end{align}
 Thus, the Jacobians now needed are \(J_\pazocal{U}\) and \(J_\pazocal{T}\).
-See Section~\ref{sec:quasi_newton} for the practical application of this.
+See Section~\ref{sec:multisecant} for the practical application of this.
 
 Every iteration of the Newton scheme involves at least one invocation of the thermal and mechanical solvers when computing $\pazocal{R}\left(\mathbf{u}^{k}\right)$ or both $\pazocal{R}_{u}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$ and $\pazocal{R}_{\theta}\left(\mathbf{u}^{k}, \boldsymbol{\theta}^{k}\right)$.
 The critical point for black-box equation coupling is how to obtain the derivative information in the Jacobi matrices.
@@ -446,12 +455,12 @@ In different ways, some of the methods presented next find approximations for th
 
 
 
-\subsection{Constant Underrelaxation}
+\subsection{Constant Underrelaxation} \label{sec:underrelaxation}
 
 One of the most straightforward ways to stabilize an iterative method is to use constant underrelaxation \citep{gatzhammer_efficient_2014}.
 The relaxation is performed as follows
 \begin{equation} \label{eq:constant_relaxation}
-\mathbf x^{k+1}=(1-\omega) \mathbf x^{k}+\omega\left(\mathbf x^k - \pazocal R(\mathbf x^k)\right)=\mathbf x^{k} -\omega \mathbf{r}^{k+1},
+\mathbf x^{k+1}=(1-\omega) \mathbf x^{k}+\omega\left(\mathbf x^k - \pazocal R(\mathbf x^k)\right)=\mathbf x^{k} -\omega \pazocal R(\mathbf x^k),
 \end{equation}
 where \(\omega\) is the relaxation factor chosen in the range \(0<\omega<1\), which corresponds to an underrelaxation, to achieve a stabilizing effect.
 
@@ -481,7 +490,7 @@ Applying to Equation~\eqref{eq:def_res_gauss_seidel}
 Constant underrelaxation works well if \(\omega\) is close to 1 but leads to a slow convergence if \(\omega\) has to be chosen close to 0.
 Thus, the constant underrelaxation method creates unmanageable computational costs for severe instabilities.
 The optimal \(\omega\) is not necessary the largest stable one \citep{gatzhammer_efficient_2014} and has to be set empirically.
-In what follows, alternative methods are discussed, which try to decrease the number of iterations necessary while maintaining stability.
+In what follows, alternative methods are discussed to decrease the number of iterations necessary while maintaining stability.
 
 \begin{framedbox}[htb]
   \caption{Constant underrelaxation applied to the block Gauss-Seidel scheme.}
@@ -513,7 +522,7 @@ It has been widely used in the context of FSI \citep{irons_version_1969, kuttler
 It has also been used in the context of thermo-mechanics by \cite{danowski_monolithic_2013}.
 
 In the one-dimensional case, this method resembles the secant method applied to the fixed point problem, which can be used to solve nonlinear equations without differentiation.
-Calling it an Aitken method is perhaps a misnomer since, in the Aitken-Steffensen method, the function values are computed twice per iteration.
+Calling it an Aitken method is perhaps a misnomer since, in the Aitken-Steffensen method, the function values are computed twice per iteration (see Section~\ref{sec:vector_extrapolation}).
 It is more closely related to secant methods, reusing values from previous iterations.
 This version of Aitken's \(\Delta^2\) method provides a dynamic under relaxation, which can be used to improve the convergence/stability properties of the coupling algorithm.
 
@@ -535,7 +544,6 @@ This can be rewritten as
 c=\left(1-\omega_{b}\right) b+\omega_{b} f(b) \quad \text { with } \omega_{b}=\frac{a-b}{\left(a-f(a)\right)-\left(b-f(b)\right)}
 \end{equation}
 
-The difference \(f(b)-f(a)\) is computationally inconvenient.
 Anticipating the next iteration step,
 \begin{equation}
 d=\left(1-\omega_{c}\right) c+\omega_{c} f(c) \quad \text { with } \omega_{c}=\frac{c-b}{\left(b-f(b)\right)-\left(c-f(c)\right)}
@@ -548,26 +556,26 @@ See Figure~\ref{fig:mod_aitken} for its geometric interpretation in one dimensio
 
 \begin{figure}[htbp]
   \includegraphics{figures/mod_aitken}
-  \caption{Geometric interpretation of the Aitken relaxation in one dimension for an example function \(f\).}
+  \caption{Geometric interpretation of the Aitken relaxation in one dimension for an example function \(f\) and corresponding interpreation as the secant method.}
   \label{fig:mod_aitken}
 \end{figure}
 
-Now, for the vector case, the next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{x}^{(k)}$ plus a new increment $\Delta \mathbf{x}^{(k)}$
+Now, for the vector case, the next step is to work out the solution to the current iteration from the outcome of the previous iteration $\mathbf{x}^{k}$ plus a new increment $\Delta \mathbf{x}^{k}$
 \begin{equation}
-\mathbf{x}^{(k+1)}=\mathbf{x}^{(k)}+\Delta \mathbf{x}^{(k)}.
+\mathbf{x}^{k+1}=\mathbf{x}^{k}+\Delta \mathbf{x}^{k}.
 \end{equation}
 The increment reads
 \begin{equation} \label{eq:aitken_update}
-\Delta \mathbf{x}^{(k)}=\omega^{(k)}\left(\pazocal S(\mathbf{x}^{(k)})-\mathbf{x}^{(k)}\right)=-\omega^{(k)} \mathbf r^{(k)}.
+\Delta \mathbf{x}^{k}=\omega^{k}\left(\pazocal S(\mathbf{x}^{(k)})-\mathbf{x}^{(k)}\right)=-\omega^{k} \pazocal R(\mathbf x^k).
 \end{equation}
-with $\omega^{(k)}$ being the relaxation coefficient.
+with $\omega^{k}$ being the relaxation coefficient.
 This coefficient is updated in every iteration cycle as a function of two previous residuals
 \begin{highlight}
   \begin{equation} \label{eq:aitken_relaxation_factor}
-    \omega^{(k)}=-\omega^{(k-1)} \frac{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{\mathrm{T}} \mathbf{r}^{(k-1)}}{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{2}}.
+    \omega^{k}=-\omega^{k-1} \frac{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{\mathrm{T}} \mathbf{r}^{(k-1)}}{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{2}}.
   \end{equation}
-\end{highlight}
-Comparing with Equations~\eqref{eq:newton_system} and \eqref{eq:newton_iter}, \(\omega^{(k)}\) can be, in a sense, regarded as an approximation to the inverse of the Jacobian.
+\end{highlight}\jvc{Check signs!!!}
+Comparing with Equations~\eqref{eq:newton_system} and \eqref{eq:newton_iter}, \(\omega^{k}\) can be, in a sense, regarded as an approximation to the inverse of the Jacobian.
 Dynamic relaxation is also easy to implement, and the additional computational input is acceptable since only inner vector products must be performed.
 See Box~\ref{box:aitken_relaxation} for the pseudocode.
 
@@ -598,7 +606,7 @@ See Box~\ref{box:aitken_relaxation} for the pseudocode.
   \end{center}
 \end{framedbox}
 
-\subsection{Broyden's method and Broyden's family}
+\subsection{Multi-secant methods} \label{sec:multisecant}
 
 The following exposition follows closely \cite{fang_two_2009}.
 In quasi-Newton methods the Jacobian is updated in each iteration using a rank-one update.
@@ -613,7 +621,7 @@ J_\pazocal R^{k+1} \mathbf q=J_\pazocal R^{k} \mathbf q \quad \forall \mathbf q 
 \end{equation}
 which stipulates that there be no new information from \(J_\pazocal R^{k}\) to \(J_\pazocal R^{k+1}\) along any direction \(\mathbf q\) orthogonal to \(\Delta \mathbf x^{k}\).
 
-\cite{broyden} developed a method satisfying both secant condition (Equation~\eqref{eq:secant_condition}) and the no-change condition (Equation~\eqref{eq:no_change_condition}).
+\cite{broyden_class_1965} developed a method satisfying both secant condition (Equation~\eqref{eq:secant_condition}) and the no-change condition (Equation~\eqref{eq:no_change_condition}).
 By simply imposing these conditions he arrived at the update formula
 \begin{highlight}
 \begin{equation} \label{eq:good_update_broyden}
@@ -644,7 +652,7 @@ which is also the only update satisfying both the secant condition (Equation~\eq
   G_\pazocal R^{k} \mathbf q=G_\pazocal R^{k+1} \mathbf q \quad \forall \mathbf q \text { such that } \mathbf q^{\mathrm{T}} \Delta \pazocal R^{k}=0.
 \end{equation}
 The update formula in Equation~\eqref{eq:good_update_broyden} can also be obtained in terms of \(G_\pazocal R^{k} \equiv {J_\pazocal R^{k}}^{-1}\) by applying the Sherman-Morrison formula
-\begin{equation}
+\begin{equation} \label{eq:g_broyden_type_i}
 G_\pazocal R^{k+1}=G_\pazocal R^{k}+\left(\Delta \mathbf x^{k}-G_\pazocal R^{k} \Delta \pazocal R^{k}\right) \frac{\Delta {\mathbf x^{k}}^{\mathrm{T}} G_\pazocal R^{k}}{\Delta {\mathbf x^{k}}^{\mathrm{T}} G_\pazocal R^{k} \Delta \pazocal R^{k}}
 \end{equation}
 This shows, as was explained earlier, that to solve the Jacobian system associated with Broyden's first approach can be reduced to a set of update operations that are not more costly than those required by the second update.
@@ -656,83 +664,45 @@ G_\pazocal R^{k+1}=G_\pazocal R^{k}+\left(\Delta \mathbf x^{k}-G_\pazocal R^{k} 
 \end{equation}
 where \(\mathbf v_{k}^{\mathrm{T}} \Delta \pazocal R^{k}=1\) so that the secant condition \eqref{eq:secant_condition} holds.
 Note that the secant condition \eqref{eq:inverse_secant_cond} is equivalent to condition \eqref{eq:secant_condition}.
-The pseudo-code of Broyden's two methods is given in Box~\ref{box:broydens_method}.
+% The pseudocode of Broyden's two methods is given in Box~\ref{box:broydens_method}.
 Some authors called Broyden's first method Broyden's good update and Broyden's second method as Broyden's bad update.
 These are two particular members of Broyden's family.
 
-\begin{framedbox}[htb]
-  \caption{Broyden's method for one timestep.}
-  \label{box:broydens_method}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-    \item Set nonlinear counter to zero: \(k=0\)
-    \item \(\mathbf x^k = \mathbf x_{n+1}^p\)
-    \item Evaluate \(\pazocal R^k = \pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
-    \item Enter the nonlinear loop
-    \begin{enumerate}[(1)]
-      \item Compute the update step from \(\Delta \mathbf x^k = - G^k_\pazocal R\),
-      \item Update \(\mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k\),
-      \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
-      \item Compute \(\Delta \pazocal R^k = \pazocal R^{k+1} - \pazocal R^k\).
-      \item if the first update is to be used:
-      \begin{itemize}
-        \item Set \({{\mathbf{v}}^k}^T = \Delta {\mathbf x^k}^T G^k_\pazocal R\),
-      \end{itemize}
-      \item else if the second update is to be used:
-      \begin{itemize}
-        \item Set \({{\mathbf{v}}^k}^T = \Delta {\pazocal R^k}^T\),
-      \end{itemize}
-      \item \(G_\pazocal R^{k+1} = G_\pazocal R^k + (\Delta \mathbf x^k - G_\pazocal R^k\Delta \pazocal R^k)\frac{{{\mathbf{v}}^k}^T}{{{\mathbf{v}}^k}^T\Delta \pazocal R^k}.\)
-      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
-    \end{enumerate}
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
-
-
-% \subsubsection{Steepest Descent Relaxation}
-%
-% In [97], a steepest descent-based relaxation method is investigated. The goal is to find an optimal value \(\omega_{k}\) for every iteration \(k\) and to use it in the relaxation (2.112). A convex scalar merit function \(\phi(\boldsymbol{s})\) is assumed to exist, to be minimal at the solution \(\boldsymbol{s}^{n+1}\), and to be sufficiently smooth. This merit function is not defined in [97]. Only its derivative is used within the algorithm, defined as the coupling iteration residual.
-% \[
-% \phi^{\prime}\left(\boldsymbol{s}_{k}\right):=\boldsymbol{r}_{k+1},
-% \]
-%
-% such that \(\phi^{\prime}\left(s^{n+1}\right)=\mathbf{0}\). Using the merit function, an optimal relaxation factor can be found by
-% \[
-% \omega_{k}=\underset{\omega}{\arg \min } \phi\left(\boldsymbol{s}_{k}+\omega \boldsymbol{r}_{k+1}\right)
-% \]
-% and a sufficient condition for the optimal \(\omega_{k}\) is given by
-% \[
-% \frac{d \phi}{d \omega_{k}}=\left(\phi^{\prime}\left(\boldsymbol{s}_{k}+\omega_{k} \boldsymbol{r}_{k+1}\right)\right)^{T} \boldsymbol{r}_{k+1} \stackrel{!}{=} \mathbf{0} .
-% \]
-% An approximation for the optimal relaxation factor can be obtained from a truncated Taylor expansion of its first derivative
-% \[
-% \phi^{\prime}\left(\boldsymbol{s}_{k}+\omega_{k} \boldsymbol{r}_{k+1}\right) \approx \underbrace{\phi^{\prime}\left(\boldsymbol{s}_{k}\right)}_{=\boldsymbol{r}_{k+1}}+\omega_{k} \phi^{\prime \prime}\left(\boldsymbol{s}_{k}\right) \boldsymbol{r}_{k+1},
-% \]
-% where \(\phi^{\prime \prime}\left(s_{k}\right)\) is the symmetric matrix of second order partial derivatives of \(\phi\left(s_{k}\right)\) or the Jacobian of \(r_{k}\) with respect to \(s_{k}{ }^{5}\) Transposing (2.133) and multiplying it from the right with \(r_{k+1}\), the optimal relaxation factor can be obtained by
-% \[
-% \omega_{k}=-\frac{\left(\boldsymbol{r}_{k+1}\right)^{T} \boldsymbol{r}^{k+1}}{\left(\boldsymbol{r}^{k+1}\right)^{T} J_{\boldsymbol{r}_{k}}(\boldsymbol{s}) \boldsymbol{r}_{k+1}} .
-% \]
-% The remaining problem is how to determine the interface Jacobian \(J_{r_{k}}(s)\) since it is not accessible when black-box solvers are used. Two approximations for the matrix-vector product \(J_{\boldsymbol{r}_{k}}(s) \boldsymbol{r}_{k+1}\) are proposed in [97]. The first approximation is obtained by using a finite difference approach as
-% \[
-% J_{\boldsymbol{r}_{k}}(\boldsymbol{s}) \boldsymbol{y} \approx \frac{\boldsymbol{S} \circ \boldsymbol{F}\left(\boldsymbol{s}_{k}+\delta \boldsymbol{y}\right)-\boldsymbol{s}_{k}-\delta \boldsymbol{y}-\boldsymbol{r}_{k+1}}{\delta},
-% \]
-% with
-% \[
-% \delta=\frac{\lambda\left(\lambda+\left\|\boldsymbol{s}_{k}\right\|_{L_{2}}\right)}{\left\|\boldsymbol{r}_{k+1}\right\|_{L_{2}}}
-% \]
-% and \(\lambda\) chosen small enough \({ }^{6}\). The evaluation (2.135) needs one more call of fluid and structure solvers per coupling iteration. To decrease the computational costs for the extra evaluation, it is proposed to reduce the accuracy of the field solvers.
-% The second approximation uses approximated fluid derivatives and exact structure derivatives, which are not available for black-box coupling and, thus, this alternative is not considered here.
-
-\subsection{Multi-secant methods}
-
-The multi-secant methods provide an approximation to the Jacobian in Equation~\eqref{eq:newton_system} or Equation~\eqref{eq:block_newton_raphson} using information from previous iterations.
+% \begin{framedbox}[htb]
+%   \caption{Broyden's method for one timestep.}
+%   \label{box:broydens_method}
+%   \begin{center}
+%     \begin{minipage}{0.9\textwidth}
+%     \begin{enumerate}[(i)]
+%     \item Set nonlinear counter to zero: \(k=0\)
+%     \item \(\mathbf x^k = \mathbf x_{n+1}^p\)
+%     \item Evaluate \(\pazocal R^k = \pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+%     \item Enter the nonlinear loop
+%     \begin{enumerate}[(1)]
+%       \item Compute the update step from \(\Delta \mathbf x^k = - G^k_\pazocal R \pazocal R^k\),
+%       \item Update \(\mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k\),
+%       \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+%       \item Compute \(\Delta \pazocal R^k = \pazocal R^{k+1} - \pazocal R^k\).
+%       \item if the first update is to be used:
+%       \begin{itemize}
+%         \item Set \({{\mathbf{v}}^k}^T = \Delta {\mathbf x^k}^T G^k_\pazocal R\),
+%       \end{itemize}
+%       \item else if the second update is to be used:
+%       \begin{itemize}
+%         \item Set \({{\mathbf{v}}^k}^T = \Delta {\pazocal R^k}^T\),
+%       \end{itemize}
+%       \item \(G_\pazocal R^{k+1} = G_\pazocal R^k + (\Delta \mathbf x^k - G_\pazocal R^k\Delta \pazocal R^k)\frac{{{\mathbf{v}}^k}^T}{{{\mathbf{v}}^k}^T\Delta \pazocal R^k}.\)
+%       \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+%     \end{enumerate}
+%     \end{enumerate}
+%     \end{minipage}
+%   \end{center}
+% \end{framedbox}
 
 
 \subsubsection{Generalized Broyden}
 
+The multi-secant methods provide an approximation to the Jacobian in Equation~\eqref{eq:newton_system} or Equation~\eqref{eq:block_newton_raphson} using information from previous iterations.
 A generalized Broyden's method with a flexible rank update on the inverse Jacobian, satisfying a set of \(m\) secant equations
 \begin{equation} \label{eq:multi_secant_eqs}
   G_\pazocal R^{k} \Delta \pazocal R^{i}=\Delta \mathbf x^{i} \quad \text { for } i=k-m, \ldots, k-1
@@ -765,11 +735,11 @@ The update formula for \(\mathbf x^{k+1}\) is
 \end{align}
 where the column vector \(\gamma_{k}\) is obtained by solving the normal equations \(\left({\mathscr{R}^{k}}^{\mathrm{T}} \mathscr{R}^{k}\right) \gamma_{k}={\mathscr{R}^{k}}^{\mathrm{T}} \pazocal R^{k}\), which is equivalent to solving the least squares problem
 \begin{equation}
-  \min _{\gamma}\left\|\mathscr{R}^{k} \gamma-\pazocal R^{k}\right\|_{2}
+  \min _{\gamma}\left\|\mathscr{R}^{k} \gamma-\pazocal R^{k}\right\|_{2}.
 \end{equation}
 Note that in Equation~\eqref{eq:update_gen_broyden_ls}, if \(\mathscr{R}^{k}\) is square and of full rank, then for any \(G_\pazocal R^{k-m}\),
 \begin{equation}
-  \mathbf x^{k+1}=\mathbf x^{k}-\mathscr{X}^{k} {\mathscr{R}^{k}}^{-1} \pazocal R^{k}
+  \mathbf x^{k+1}=\mathbf x^{k}-\mathscr{X}^{k} {\mathscr{R}^{k}}^{-1} \pazocal R^{k},
 \end{equation}
 the same form as that in the standard secant method.
 
@@ -784,7 +754,7 @@ Consider
 where \(\Delta \mathbf x^{i}=\mathbf x^{i+1}-\mathbf x^{i}\) and \(\Delta \pazocal R^{i}=\pazocal R^{i+1}-\pazocal R^{i}\), \(\mathscr{X}^{k}=\left[\Delta \mathbf x^{k-m} \cdots \Delta \mathbf x^{k-1}\right]\), \(\mathscr{R}^{k}=\left[\Delta \pazocal R^{k-m} \cdots \Delta \pazocal R^{k-1}\right]\), and \(\gamma^{k}=\left[\gamma_{k-m}^{k} \cdots \gamma_{k-1}^{k}\right]^{\mathrm{T}}\).
 Expressing the equations in the form \(\bar{\mathbf x}^{k}=\sum_{j=k-m}^{k} w_{j} \mathbf x^{j}\) and \(\bar{\pazocal R}^{k}=\sum_{j=k-m}^{k} w_{j} \pazocal R^{j}\), it is found that \(\sum_{j=k-m}^{k} w_{j}=1\).
 In other words, \(\bar{\mathbf x}_{k}\) and \(\bar{\pazocal R}_{k}\) are weighted averages of \(\mathbf x_{k-m}, \ldots, \mathbf x_{k}\) and \(\pazocal R^{k-m}, \ldots, \pazocal R^{k}\), respectively.
-The arguments \(\gamma^{k}=\left[\gamma_{k-m}^{k} \cdots \gamma_{k-1}^{(k)}\right]^{\mathrm{T}}\) are determined by minimizing
+The arguments \(\gamma^{k}=\left[\gamma_{k-m}^{k} \cdots \gamma_{k-1}^{k}\right]^{\mathrm{T}}\) are determined by minimizing
 \begin{equation}
 E\left(\gamma^{k}\right)=\left\langle\bar{\pazocal R}^{k}, \bar{\pazocal R}^{k}\right\rangle=\left\|\pazocal R^{k}-\mathscr{R}^{k} \gamma^{k}\right\|_{2}^{2}
 \end{equation}
@@ -803,13 +773,13 @@ In particular, if no previous iterate is taken into account (i.e. \(m=0\) ), the
 \begin{equation}
   \mathbf x^{k+1}=\mathbf x^{k}+\beta \pazocal R^{k}
 \end{equation}
-This scheme is referred to as simple mixing and underrelaxation if \(0<\beta<1\) (see Section~\ref{}).
+This scheme is referred to as simple mixing and underrelaxation if \(0<\beta<1\) (see Section~\ref{sec:underrelaxation}).
 The update formula \eqref{eq:update_anderson_mixing} is the same as \eqref{eq:update_gen_broyden_ls} by setting \(G_\pazocal R^{k-m}=-\beta \mathbf I\).
 In this respect Anderson mixing implicitly forms an approximate inverse Jacobian \(G_\pazocal R^{k}\) that minimizes \(\left\|G_\pazocal R^{k}+\beta \mathbf I\right\|_{F}\) subject to \eqref{eq:multi_secant_eqs_mat}.
-In the context of mixing, generalized Broyden's second method is equivalent to Anderson mixing. This equivalence relation was shown by Eyert [9].
+In the context of mixing, generalized Broyden's second method is equivalent to Anderson mixing.
 Note that if \(\mathscr{R}^{k}\) is square and nonsingular, then Equation~\eqref{eq:update_anderson_mixing} matches the formula of the standard secant method.
 
-\subsubsection{Generalized Broyden's family}
+\subsubsection{Generalized Broyden's family} \label{sec:gen_broyden_fam}
 
 Now we can write down the generalized Broyden family, in which an update algorithm is in the form
 \begin{equation} \label{eq:inv_jacob_gen_broyden}
@@ -830,31 +800,31 @@ This last choice yields as the approximation for the Jacobian
   J_\pazocal R^{k}=J_\pazocal R^{k-m}+\left(\mathscr{R}^{k}-J_\pazocal R^{k-m} \mathscr{X}^{k}\right)\left({\mathscr{X}^{k}}^{\mathrm{T}} \mathscr{X}^{k}\right)^{-1} {\mathscr{X}^{k}}^{\mathrm{T}},
 \end{equation}
 after applying the Woodbury formula.
-The first choice is said to correspond to a Type-II update and a the second to a Type-I update \citep{fang_two_2009}.
+The first choice is said to correspond to a Type-II update and the second to a Type-I update \citep{fang_two_2009}.
 
-\begin{framedbox}[htb]
-  \caption{Generalized Broyden's family method for one timestep.}
-  \label{box:broydens_method}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-    \item Set nonlinear counter to zero: \(k=0\)
-    \item Set \(\mathbf x^k = \mathbf x_{n+ 1}^p\) and choose an initial estimate for \(\mathbf G_1 = J^{-1}_\pazocal R(\mathbf x^k)\).
-    \item Evaluate \(\pazocal R^k = \pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
-    \item Enter the nonlinear loop
-    \begin{enumerate}[(1)]
-      \item Compute the update step from \(\Delta \mathbf x^k = - G^k_\pazocal R \pazocal R^k\) and add it to \(\mathscr X^k\). If the maximum number of previous iteration \(m\) replace the oldest column.
-      \item Update \(\mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k\),
-      \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
-      \item Compute \(\Delta \pazocal R^k = \pazocal R^{k+1} - \pazocal R^k\) and add it to \(\mathscr R^k\). If the maximum number of previous iteration has been reach replace the oldest column.
-      \item Compute \({\mathbf V^k}^T\) according to the type of update chosen (Equation~\eqref{eq:broyden_type_i} and \eqref{eq:broyden_type_ii}).
-      \item \(G_\pazocal R^{k+1} = G_\pazocal R^k + (\mathscr X^k - G_\pazocal R^k\mathscr R^k){{\mathbf{V}}^k}^T.\)
-      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
-    \end{enumerate}
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
+% \begin{framedbox}[htb]
+%   \caption{Generalized Broyden's family method for one timestep.}
+%   \label{box:broydens_method}
+%   \begin{center}
+%     \begin{minipage}{0.9\textwidth}
+%     \begin{enumerate}[(i)]
+%     \item Set nonlinear counter to zero: \(k=0\)
+%     \item Set \(\mathbf x^k = \mathbf x_{n+ 1}^p\) and choose an initial estimate for \(\mathbf G_1 = J^{-1}_\pazocal R(\mathbf x^k)\).
+%     \item Evaluate \(\pazocal R^k = \pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+%     \item Enter the nonlinear loop
+%     \begin{enumerate}[(1)]
+%       \item Compute the update step from \(\Delta \mathbf x^k = - G^k_\pazocal R \pazocal R^k\) and add it to \(\mathscr X^k\). If the maximum number of previous iteration \(m\) replace the oldest column.
+%       \item Update \(\mathbf x^{k+1} = \mathbf x^k + \Delta \mathbf x^k\),
+%       \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+%       \item Compute \(\Delta \pazocal R^k = \pazocal R^{k+1} - \pazocal R^k\) and add it to \(\mathscr R^k\). If the maximum number of previous iteration has been reach replace the oldest column.
+%       \item Compute \({\mathbf V^k}^T\) according to the type of update chosen (Equation~\eqref{eq:broyden_type_i} and \eqref{eq:broyden_type_ii}).
+%       \item \(G_\pazocal R^{k+1} = G_\pazocal R^k + (\mathscr X^k - G_\pazocal R^k\mathscr R^k){{\mathbf{V}}^k}^T.\)
+%       \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+%     \end{enumerate}
+%     \end{enumerate}
+%     \end{minipage}
+%   \end{center}
+% \end{framedbox}
 
 \subsubsection{Anderson's family}
 
@@ -865,37 +835,208 @@ The udpate formula for Anderson's family can be found from Equation~\eqref{eq:in
 The two choices for \(\mathbf V^k\) remain the same, replacing \(G_\pazocal R^{k-m}\) by \(-\beta\mathbf I\).
 They now minimize \(\|G_\pazocal R^k+\beta\mathbf I\|\) and \(\|J_\pazocal R^k + (1/\beta)\mathbf I\|\).
 
-\begin{framedbox}[htb]
-  \caption{Anderson's family method for one timestep.}
-  \label{box:broydens_method}
-  \begin{center}
-    \begin{minipage}{0.9\textwidth}
-    \begin{enumerate}[(i)]
-    \item Set \(\mathbf x^0 = \mathbf x_{n+ 1}^p\).
-    \item Evaluate \(\pazocal R^0 = \pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
-    \item Compute \(\mathbf x^1 = \mathbf x^0 + \beta R^0\).
-    \item Evaluate \(\pazocal R^{1} = \pazocal R(\mathbf x^{1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
-    \item Set nonlinear counter to zero: \(k=1\)
-    \item Enter the nonlinear loop
-    \begin{enumerate}[(1)]
-      \item Compute \(\Delta \pazocal R^{k-1} = \pazocal R^{k} - \pazocal R^{k-1}\) and add it to \(\mathscr R^k\). If the maximum number of previous iteration has been reached replace the oldest column.
-      \item Compute \(\Delta \mathbf x^{k-1} = \mathbf x^{k} -\mathbf x^{k-1} \) and add it to \(\mathscr X^k\). If the maximum number of previous iterations \(m\) has been reached replace the oldest column.
-      \item Compute \({\mathbf V^k}^T\) according to the type of update chosen (Equation~\eqref{eq:broyden_type_i} and \eqref{eq:broyden_type_ii}).
-      \item Update according to \(\mathbf x^{k+1} = \mathbf x^k + \beta \pazocal R^k + \left(\mathscr X^k + \beta\mathscr R^k\right){\mathbf V^k}^T\pazocal R^k \).
-      \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
-      \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
-    \end{enumerate}
-    \end{enumerate}
-    \end{minipage}
-  \end{center}
-\end{framedbox}
+% \begin{framedbox}[htb]
+%   \caption{Anderson's family method for one timestep.}
+%   \label{box:broydens_method}
+%   \begin{center}
+%     \begin{minipage}{0.9\textwidth}
+%     \begin{enumerate}[(i)]
+%     \item Set \(\mathbf x^0 = \mathbf x_{n+ 1}^p\).
+%     \item Evaluate \(\pazocal R^0 = \pazocal R(\mathbf x^k)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+%     \item Compute \(\mathbf x^1 = \mathbf x^0 + \beta R^0\).
+%     \item Evaluate \(\pazocal R^{1} = \pazocal R(\mathbf x^{1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+%     \item Set nonlinear counter to zero: \(k=1\)
+%     \item Enter the nonlinear loop
+%     \begin{enumerate}[(1)]
+%       \item Compute \(\Delta \pazocal R^{k-1} = \pazocal R^{k} - \pazocal R^{k-1}\) and add it to \(\mathscr R^k\).
+%       If the maximum number of previous iteration has been reached either replace the oldest column or restart \(\mathscr R^k\).
+%       \item Compute \(\Delta \mathbf x^{k-1} = \mathbf x^{k} -\mathbf x^{k-1} \) and add it to \(\mathscr X^k\).
+%         If the maximum number of previous iteration has been reached either replace the oldest column or restart \(\mathscr X^k\).
+%       \item Compute \({\mathbf V^k}^T\) according to the type of update chosen (Equation~\eqref{eq:broyden_type_i} and \eqref{eq:broyden_type_ii}).
+%       \item Update according to \(\mathbf x^{k+1} = \mathbf x^k + \beta \pazocal R^k + \left(\mathscr X^k + \beta\mathscr R^k\right){\mathbf V^k}^T\pazocal R^k \).
+%       \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+%       \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+%     \end{enumerate}
+%     \end{enumerate}
+%     \end{minipage}
+%   \end{center}
+% \end{framedbox}
+
+\subsubsection{The Broyden-like class}
 
 Both the generalized Broyden's family and Anderson's family can be understood as methods in the Broyden-like class as described in \cite{fang_two_2009}.
-This more general description is not reproduced here.
+Ssuppose the latest \(m\) iterates are available, which are denoted by \(\mathbf x^{1}, \ldots, \mathbf x^{m}\).
+Let \(\Delta \mathbf x^{i}=\mathbf x^{i+1}- \mathbf x^{i}\) for \(i=1, \ldots, m-1\).
+Partition \(\Delta \mathbf x^{1}, \ldots, \Delta \mathbf x^{m-1}\) into \(p\) groups,
+\begin{align}
+\mathscr{X}^{1} & =\left[\Delta \mathbf x^{1}, \ldots, \Delta \mathbf x^{z_{1}}\right], \\
+\mathscr{X}^{2} & =\left[\Delta \mathbf x^{z_{1}+1}, \ldots, \Delta \mathbf x^{z_{2}}\right],\\
+& \vdots \\
+\mathscr{X}^{p} & =\left[\Delta \mathbf x^{z_{k-1}+1}, \ldots, \Delta \mathbf x^{z_{k}}\right],
+\end{align}
+where \(z_{i}\) is the index of the last entry in the \(i\) th group for \(i=1, \ldots, p\); \(z_{0}=0\) and \(z_{p}=m-1\).
+Also partition \(\Delta \pazocal R^{1}, \ldots, \Delta \pazocal R^{m-1}\) into \(\mathscr R^{1}, \ldots, \mathscr R^p\) accordingly, where \(\Delta \pazocal R^{i}=\pazocal R^{i+1}- \pazocal R^{i}\) with \(\pazocal R^{i}=\pazocal R(\mathbf x^{i})\).  The sizes of the groups for \(i=1, \ldots, k\) are denote by \(s_{i}:=z_{i}-z_{i-1}\).
+Note that the indexing here is different from the previous sections.
+The inverse of the Jacobian is iteratively approximated at the \(\left(z_{i}+1\right)\)st iterate for \(i=1, \ldots, p\) as
+\begin{equation} \label{sec:broyden_like_class_g_update}
+  G_\pazocal R^{i+1} = G_\pazocal R^{i}+\left(\mathscr{X}^{i}-G_\pazocal R^{i} \mathscr R^{i}\right) {\mathbf V^{i}}^T,
+\end{equation}
+where \({\mathbf V^{i}}^T \mathscr{R}^{i}=\mathbf I\) for the secant condition.
+The update follows the formula of the generalized Broyden family.
+In the context of mixing, the base case is
+\begin{equation}
+  G_\pazocal R^{1}=-\beta \mathbf I,
+\end{equation}
+where \(\beta\) is the mixing parameter.
+The next iterate is set as
+\begin{equation} \label{eq:update_broyden_family}
+  \mathbf x^{m+1}=\mathbf x^{m}-G_\pazocal R^{k+1} \pazocal R^m.
+\end{equation}
+The choice of \(V_{i}\) satisfying \(V_{i}^{\mathrm{T}} \mathscr{F}_{i}=I\) is performed as described in Section~\ref{sec:gen_broyden_fam}.
 
+\subsection{Practical considerations}
 
+The application of Broyden's method as described so far is unfeasible for the problems considered in this document, i.e., thermo-mechanical coupled problems with many unknowns.
+So far, the descriptions considered of the Broyden-like class methods require one to keep the large \(G_\pazocal R^i\) matrices of size \(n_\text{unknowns}\times n_\text{unknowns}\) in memory, in addition to the previous iterates.
+This is a significant drawback.
+However, \cite{fang_two_2009} present a more memory efficient way of implementing these methods.
+Let
+\begin{equation} \label{eq:def_e_broyden}
+E^{i}=\mathscr{X}^{i}-G_\pazocal R^{i} \mathscr R^{i}.
+\end{equation}
+Substituting Equation~\eqref{eq:def_e_broyden} into Equation~\eqref{sec:broyden_like_class_g_update} one obtains
+\begin{align}
+  G_\pazocal R^{i}=& G_\pazocal R^{i-1}+E^{i-1} {V^{i-1}}^T, \\
+  =& G_\pazocal R^{i-2} + E^{i-2} {V^{i-2}}^T + E^{i-1} {V^{i-1}}^T, \\
+  & \vdots \\
+  =& G_\pazocal R^{1}+\sum_{j=1}^{i-1} E^{j} {V^{j}}^{\mathrm{T}}, \label{eq:update_broyden_family_g_mem}
+\end{align}
+for \(i=2, \ldots, p+1\).
+Matrices \(G_\pazocal R^{i}\) need not be explicitly stored.
+\(G_\pazocal R^{i}\) is needed  only to compute \(G_\pazocal R^{i} \mathscr R^{i}\) in Equation~\eqref{eq:def_e_broyden} and \(G_\pazocal R^{p+1} \pazocal R^{m}\) in Equation~\eqref{eq:update_broyden_family}, and also for \(V^{i}\) if it depends on \(G_\pazocal R^{i}\).
+Substituting Equation~\eqref{eq:update_broyden_family_g_mem} into Equation~\eqref{eq:def_e_broyden} obtains
+\begin{equation} \label{eq:update_eq_for_e}
+E^{i}=\mathscr{X}^{i}-G_\pazocal R^1 \mathscr{R}^{i}-\sum_{j=1}^{i-1} E^{j}\left({V^{j}}^T \mathscr{R}^{i}\right),
+\end{equation}
+for \(i=1, \ldots, p\).
+The computation is economic for large-scale problems with \(n \gg m\).
+The next iterate \(\mathbf x^{m+1}\) in (32) can also be computed in a similar manner
+\begin{equation} \label{eq:mem_eff_update_broyden}
+  \mathbf x^{m+1}=\mathbf x^{m} - G_\pazocal R^{p+1} \pazocal R^{m}= \mathbf x^{m} - G_\pazocal R^1 \pazocal R^{m}-\sum_{j=1}^{k} E^{j}\left({V^{j}}^T \pazocal R^m\right).
+\end{equation}
 
-% \subsubsection{The Broyden-like class}
+Using Type-II update, the computation of \(V^{i}\) is straightforward from \(\mathscr{R}^{i}\).
+On the other hand, Type-I update involves \(G_\pazocal R^{i}\) to compute \(V^{i}\).
+Thus
+\begin{equation} \label{eq:compute_n_broyden}
+  {N^{i}}^T={\mathscr{X}^{i}}^T G_\pazocal R^{i}=G_\pazocal R^1 {\mathscr{X}^{i}}^T+\sum_{j=1}^{i-1}\left({\mathscr{X}^{i}}^{\mathrm{T}} E^{j}\right) {V^{j}}^T.
+\end{equation}
+After obtaining \(N^{i}\), we compute \(M^{i}={N^{i}}^T \mathscr{R}^{i}\) and then \({V^{i}}^T={M^{i}}^{-1} {N^{i}}^T\) for \(i=1, \ldots, p\).
+
+Looking at Equations~\eqref{eq:update_eq_for_e}, \eqref{eq:mem_eff_update_broyden} and \eqref{eq:compute_n_broyden}, one still needs the initial approximation to the inverse of the Jacobian, \(G_\pazocal R^1\), whose size is \(n_\text{unknown}\times n_\text{unknown}\).
+In \cite{fang_two_2009} the approach adopted was to follow the idea of Anderson's mixing and set
+\begin{equation}
+  G_\pazocal R^1 = - \beta \mathbf I,
+\end{equation}
+drastically improving the memory requirements, as only one scalar parameter, \(\beta\), needs to be saved.
+Also, \cite{kelley_solving_2003}, assumes in his implementation of Broyden's method, an initial approximation to \(G_\pazocal R^1\) equal to the identity matrix.
+Information about \(G_\pazocal R^1\) is applied in the preconditioning of the system instead.
+
+To compute \(V^i\), \cite{fang_two_2009} suggest a \(QR\) decomposition with pivoting.
+Be it for a Type-II update, where one needs to solve a least-squares problem, or for a Type-I update, one needs to invert a generally non-symmetric matrix.
+This approach leads to better numerical stability when the matrices to be inverted are singular or ill-conditioned, compared with solving the normal equations.
+The \(QR\) decomposition has a computational cost of \(\pazocal O(n_\text{unknown}^3)\) algebraic operations \citep{dennis_numerical_1996}.
+
+If the size of the groups \(s_1, s_2,\dots\) are fixed from one Newton iteration to the next, so the \(E^i\) and \(V^i\) matrices remain the same from one iteration to the next, the computation effort to compute them is saved from one iteration to the next.
+Here only constant \(s=s_1=s_2 =\cdots\) is considered, where \(s=\infty\) corresponds to Anderson's mixing, where all previous iterates available are considered.
+
+One question remains. How to proceed when the available memory runs out?.
+According to \cite{kelley_solving_2003}, as is often the case with GMRES, the iteration can be restarted if there is no more room to store the vectors.
+A different approach, called limited memory in the optimization literature, is to replace the oldest of the stored steps with the most recent one.
+
+Thus, appplying the method as suggest by \cite{fang_two_2009}, leads to a storage need of
+\begin{enumerate}
+  \item  Two column vectors of size \(n_\text{unknown}\) for \(\mathbf x^{m}\) and \(\pazocal R^{m}\).
+  \item An \(n_\text{unknown} \times(m-1)\) matrix for \(\mathscr{X}^{1}, \ldots, \mathscr{X}^{k}\) (shared with \(E^{1}, \ldots, E^{k}\)).
+  \item An \(n_\text{unknown} \times(m-1)\) matrix for \(\mathscr{R}^{1}, \ldots, \mathscr{R}^{k}\) (shared with \(V^{1}, \ldots, V^{k}\) ).
+  \item For Type-I update we also store the last group \(N^{k}\), since its computation involves \(G_\pazocal R^{k}\).
+\end{enumerate}
+and for each nonlinear iteration the computational cost is \(\pazocal O(n_\text{unknown}^3)\).
+For \(m=1\), \(V^i\) can be directly computed without needing to invert matrices, and the cost comes down to \(\pazocal O(n_\text{unknown})\) per nonlinear iteration.
+Also, when \(k\) is different from any \(z_i\) a group is being complete, one can either use a shortened group or reuse the approximation to the Jacobian without using the new information.
+This save computational effort and those iteration cost only \(\pazocal O(n_\text{unknown})\).
+See in Box~\ref{box:broydens_family} the pseudocode for the Broyden-like family with restart.
+
+\begin{framedbox}[htb]
+  \caption{Broyden-like class methods for one timestep with restart.}
+  \label{box:broydens_family}
+  \begin{center}
+     \begin{minipage}{0.9\textwidth}
+     \begin{enumerate}[(i)]
+     \item Set \(\mathbf x^1 = \mathbf x_{n+ 1}^p\).
+     \item Evaluate \(\pazocal R^1 = \pazocal R(\mathbf x^1)\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+     \item Compute \(\mathbf x^2 = \mathbf x^1 + \beta R^1\).
+     \item Evaluate \(\pazocal R^{2} = \pazocal R(\mathbf x^{2})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+     \item Intialize counters: \(k=2\) and \(i=1\)
+     \item Enter the nonlinear loop
+     \begin{enumerate}[(1)]
+       \item If the maximum number of previous iteration \(m\) has been reached restart all \(\mathscr X^i\) and \(\mathscr R^i\) and set \(i=1\).
+       \item Compute \(\Delta \pazocal R^{k-1} = \pazocal R^{k} - \pazocal R^{k-1}\) and add it to \(\mathscr R^i\).
+       \item Compute \(\Delta \mathbf x^{k-1} = \mathbf x^{k} -\mathbf x^{k-1} \) and add it to \(\mathscr X^i\).
+      \item If \(s=\infty\) (Anderson mixng):
+      \begin{itemize}
+        \item Compute \({V^i}^T\) according to the type of update chosen (Equation~\eqref{eq:broyden_type_i} and \eqref{eq:broyden_type_ii}).
+        \item Update according to \(\mathbf x^{k+1} = \mathbf x^k + \beta \pazocal R^k - (\mathscr X^i + \beta\mathscr R^i){V^i}^T\pazocal R^k\).
+      \end{itemize}
+      \item else:
+      \begin{itemize}
+        \item If \(k= z_j + 1\) for any \(j\geq 1\), compute \(E^i\) (Equation~\eqref{eq:update_eq_for_e}) and \({ V^i}^T\) according to the type of update chosen (Equation~\eqref{eq:broyden_type_i} and \eqref{eq:broyden_type_ii}). Save them on \(\mathscr X^i\) and \(\mathscr R^i\), respectively. Update \(i=i+1\).
+        \item Update according to \(\mathbf x^{k+1} = \mathbf x^k + \beta \pazocal R^k - \sum_{j=1}^{i-1} E^j ({V^j}^T\pazocal R^k)\).
+      \end{itemize}
+       \item Evaluate \(\pazocal R^{k+1} = \pazocal R(\mathbf x^{k+1})\), which implies the solution of the mechanical and the thermal problems, \(\pazocal U\) and \(\pazocal T\), respectively.
+       \item If the desired accuracy has not been reached, update \(k=k+1\) and go to step (1).
+     \end{enumerate}
+     \end{enumerate}
+     \end{minipage}
+   \end{center}
+\end{framedbox}
+
+\cite{kelley_solving_2003} presents for the Broyden method an implementation that halves the memory requirement relative to the one present in \cite{fang_two_2009}.
+It is based on the Type-I update and to deduce it consider Equation~\eqref{eq:good_update_broyden} and Sherman-Morrison formula
+\begin{equation}
+  \left(J_\pazocal R+ \mathbf u \mathbf v^{T}\right)^{-1}=\left(\mathbf I- \frac{\left(G_\pazocal R \mathbf u\right) \mathbf v^{T}}{1+\mathbf v^{T} G_\pazocal R \mathbf u}\right) G_\pazocal R,
+\end{equation}
+where as before \(G_\pazocal R\equiv J_\pazocal R^{-1}\).
+One can rewrite Equation~\eqref{eq:good_update_broyden} as
+\begin{equation}
+  J_\pazocal R^{k+1}=J_\pazocal R^k+ \mathbf u^k {\mathbf v^k}^{T},
+\end{equation}
+where
+\begin{equation}
+  \mathbf u^k=\left(\Delta \pazocal R^k - J_\pazocal R^k \Delta \mathbf x^{k}\right) /\left\|\Delta \mathbf x^{k}\right\| \text { and } \mathbf v^{k}=\Delta \mathbf x^{k} /\left\|\Delta \mathbf x^{k}\right\|.
+\end{equation}
+Then, keeping in mind that \(J_\pazocal R^{1}=\mathbf I\),
+\begin{align}
+G_\pazocal R^{k+1} &=\left(\mathbf I - \mathbf w^{k} {\mathbf v^{k}}^{T}\right)\left(\mathbf I - \mathbf w_{k-1} {\mathbf v^{k-1}}^{T}\right) \cdots\left(\mathbf I-\mathbf w^{1} {\mathbf v^{1}}^{T}\right) G_\pazocal R^1, \\
+&=\prod_{j=0}^{k}\left(\mathbf I-\mathbf w^{j} {\mathbf v^{j}}^{T}\right),
+\end{align}
+where, for \(k \geq 0\),
+\begin{equation}
+  \mathbf w^{k}=\displaystyle\frac{G_\pazocal R^k \mathbf u^{k}}{1 + {\mathbf v^{k}}^{T} G_\pazocal R^k \mathbf u^{k}}.
+\end{equation}
+So, to apply \(G_\pazocal R^{k+1}\) to a vector \(\mathbf p\), the is cost of \(O(n_\text{unknown} k)\) floating point operations and storage of the \(2 k\) vectors \(\left\{\mathbf w^{j}\right\}_{j=1}^{k}\) and \(\left\{\Delta \mathbf x^{j}\right\}_{j=1}^{k}\).
+The storage can be halved with a trick (see \cite{kelley_solving_2003} for details)
+\begin{align}
+\Delta \mathbf x^{k} &= - G_\pazocal R^{k+1}  \pazocal R^k,\\
+&=-\left(\mathbf I-\frac{\mathbf w^{k} {\Delta \mathbf x^{k}}^{T}}{\left\|\Delta \mathbf x^{k}\right\|}\right) G_\pazocal R^k \pazocal R^k, \\
+&= - \frac{G_\pazocal R^k R^k}{1 + {\Delta \mathbf x^k}^T G_\pazocal R^k \pazocal R^k /\|\Delta \mathbf x^k\|^2}.
+\end{align}
+
+According to \cite{kelley_solving_2003}, the Sherman-Morrison approach is more efficient, in terms of both time and storage, than dense matrix approaches proposed elsewhere.
+For example, the approach presented in \cite{dennis_numerical_1996} has a \(\pazocal O(n_\text{unknown})\) cost per nonlinear iteration and requires one to keep in memory the \(QR\) decomposition of the previous approximation to the Jacobian.
+However, the dense matrix approach can detect ill-conditioning in the approximate Jacobians.
+Bounded deterioration implies that the Broyden matrices will be well-conditioned if the data is sufficiently good, and superlinear convergence suggests that only a few iterates will be needed.
+
 
 \paragraph{In the context of FSI}
 
@@ -947,10 +1088,10 @@ When no delta columns are available yet, constant relaxation is used once to ens
 
 \subsection{Finite-Difference Newton Method}\label{sec:finite_difference_newton_method}
 
-This approach follows exactly the one described in Section~\ref{} for the "standard" Newton method.
+This approach follows precisely the one described in Section~\ref{sec:newtons_method} for the "standard" Newton method.
 The difference lies in the computation of the Jacobian.
 Here the Jacobian \(J_\pazocal R(\mathbf x)\) is approximated from a forward finite-difference, \(J^h_\pazocal R(\mathbf x)\), by columns.
-The \(j\)th column is
+Following \cite{kelley_solving_2003}. the \(j\)th column is
 \begin{equation}
 \left[J^h_\pazocal R(\mathbf x)\right]_{j}=
 \begin{cases}
@@ -974,29 +1115,28 @@ The \(\operatorname{sign}\) function is defined as
   \end{cases}.
 \end{equation}
 While this scaling usually makes little difference, it can be crucial if \(|(x)_{j}|\) is very large.
-Note that there is no adjustment if \(|(x)_{j}|\) is very small because the lower limit on the size of the difference increment is determined by the error in \(\pazocal R\).
-For example, if evaluations of \(\pazocal R\) are accurate to 16 decimal digits, the difference increment should change roughly the last 8 digits of \(x\). \citep{kelley_solving_2003}
+Note that there is no adjustment if \(|(x)_{j}|\) is very small because the error determines the lower limit on the size of the difference increment in \(\pazocal R\).
+For example, if evaluations of \(\pazocal R\) are accurate to 16 decimal digits, the difference increment should change roughly the last eight digits of \(x\). \citep{kelley_solving_2003}
 
 Each column of \(J^h_\pazocal R(\mathbf x)\) requires one new function evaluation and, therefore, a finite difference Jacobian costs \(n_\text{unknown}\) function evaluations.
-If the perturbation is appropriatly chosen the method converges quadratically when the function satisfies certain conditions and the initial try is close enough to the solution \citep{dennis}.
+If the perturbation is appropriately chosen, the method converges quadratically when the function satisfies certain conditions, and the initial attempt is close enough to the solution \citep{dennis_numerical_1996}.
 
 \paragraph{The Chord and Shamanskii Methods}
 
-If the computational cost of a forward difference Jacobian is high, i.e., \(\pazocal R\) is expensive and/or \(n_\text{unknown}\) is large, and if an analytic Jacobian is not available, it is wise to amortize this cost over several nonlinear iterations.
-The chord method does exactly that.
+If the computational cost of a forward difference Jacobian is high, i.e., \(\pazocal R\) is expensive and/, or \(n_\text{unknown}\) is significant. If an analytic Jacobian is not available, it is wise to amortize this cost over several nonlinear iterations.
+The chord method does precisely that.
 It differs from Newton's method in that the evaluation and factorization of the Jacobian are done only once for \(J_\pazocal R(\mathbf x^0)\).
 The advantages of the chord method increase as \(n\) increases, since both the \(n\) function evaluations and the \(O(n_\text{unknown}^{3})\) work (in the dense matrix case) in the matrix factorization are done only once.
-So, while the convergence is q-linear and more nonlinear iterations will be needed than for Newton's method, the overall cost of the solve will usually be much less.
+So, while the convergence is q-linear and more nonlinear iterations will be needed than for Newton's method, the overall cost of the solution will usually be much less.
 A middle ground is the Shamanskii method.
-Here the Jacobian factorization and matrix function evaluation are done after every \(m\) computations of the step \citep{kelley_solving_2003}.
+Here the Jacobian factorization and matrix function evaluation is done after every \(m\) computations of the step \citep{kelley_solving_2003}.
 
-Since in the present use-case the number of unknowns \(n\) is very large and the evaluation of the function \(\pazocal R\) is also very expensive, approximating the Jacobian using a finite difference is not suitable, even using the chord or Shamanskii methods.
+Since the present use-case, the number of unknowns \(n\) is very large, and the evaluation of the function \(\pazocal R\) is also costly, approximating the Jacobian using a finite difference is not suitable, even utilizing the chord or Shamanskii methods.
 
 
 \subsection{Newton-Krylov methods}
 
-In the Newton-Krylov methods, the solution of the Newton system of equations in Equation~\eqref{eq:newton_system} is a achieve using Krylov methods, such as GMRES or BiCGSTAB.
-
+In the Newton-Krylov methods, the solution of the Newton system of equations in Equation~\eqref{eq:newton_system} is achieved using Krylov methods, such as GMRES or BiCGSTAB.
 The Krylov iterative methods approximate the solution of a linear system \(\mathbf A \mathbf x = \mathbf b\) using the Krylov subspace
 \begin{equation}
   \pazocal K_m = \operatorname{span}\{\mathbf r_0, \mathbf A\mathbf r_0, \mathbf A^2 \mathbf r_0, \dots, \mathbf A^{m-1}\mathbf r_0\},
@@ -1005,8 +1145,8 @@ such that the \(m\)th iterate, \(\mathbf x_m\in \pazocal K_m\), with \(\mathbf r
 The precise way the \(\mathbf x_m\) is built is what distinguishes the different methods.
 
 To produce the appropriate Krylov subspace, one needs the product \(J_\pazocal R(\mathbf x^k) \mathbf y\) in Equation~\eqref{eq:newton_system}, for some vector \(\mathbf y\).
-It is assumed that the Jacobian is not available so it must approximated.
-Also it would be beneficial if the full Jacobian is neither computed in its entirety nor completely stored in memory, i.e., a matrix-free method is desirable.
+It is assumed that the Jacobian is not available, so it must be approximated.
+Also, it would be beneficial if the full Jacobian is neither computed in its entirety nor wholly stored in memory, i.e., a matrix-free method is desirable.
 As in Section~\ref{sec:finite_difference_newton_method}, the Jacobian-vector product is easy to approximate with a forward difference directional derivative \citep{kelley_solving_2003}.
 The forward difference directional derivative at \(\mathbf x^k\) in the direction \(\mathbf q\) is
 \begin{equation}
@@ -1018,7 +1158,7 @@ The forward difference directional derivative at \(\mathbf x^k\) in the directio
 \end{equation}
 The scaling is important.
 \(\mathbf q\) is scaled to be a unit vector and take a numerical directional derivative in the direction \(\mathbf q /\|\mathbf q\|\).
-If \(h\) is roughly the square root of the error in \(\pazocal R\), a difference increment in the forward difference is used to make sure that the appropriate low-order bits of \(\mathbf x^k\) are perturbed.
+If \(h\) is roughly the square root of the error in \(\pazocal R\), a difference increment in the forward difference is used to make sure that the appropriate low-order bits of \(\mathbf x^k\) is perturbed.
 So \(h\) is multiplied by
 \begin{equation}
   \sigma(\mathbf x^k, \mathbf q)=\max (|{\mathbf x^k}^{T} \mathbf q|,\|\mathbf q\|) \operatorname{sign}({\mathbf x^k}^{T} \mathbf q) /\|\mathbf q\| .
@@ -1066,7 +1206,7 @@ See Box~\ref{box:arnoldi_process} for the pseudo-code of the Arnoldi-Gram-Schmid
       \item \(j=1\)
       \item \(\mathbf a^{(1)}_{j+1} = J_\pazocal R(\mathbf x^k) \mathbf q_j\).
       \item Compute \(h_{ij}=(\mathbf q_i, \mathbf a^{(i)}_{j+1})\) and compute \(\mathbf a^{(i+1)}_{j+1} = \mathbf a^{(i)}_{j+1} - h_{ij} \mathbf q_i\) for \(i=1,\dots,j\).
-      \item Compute \(h_{j+1,j}=\|\mathbf a^{(j+1})_{j+1}\|\) and set \(\mathbf q_{j+1} = \mathbf a^{(j+1)}_{j+1}/h_{j+1,j}\).  
+      \item Compute \(h_{j+1,j}=\|\mathbf a^{(j+1})_{j+1}\|\) and set \(\mathbf q_{j+1} = \mathbf a^{(j+1)}_{j+1}/h_{j+1,j}\).
       \item \(j=j+1\)
       \item If \(j<m-1\) go to Step (iii)
     \end{enumerate}
@@ -1086,25 +1226,25 @@ The Newton-GMRES attempts to minimize the norm of the \(m\)th residual, i.e.,
 \end{equation}
 This is exectued in practice solving the linear least-squares problem \(\|\beta\mathbf e_1 -\bar{\mathbf H}_m \boldsymbol{\eta}\|\) for \(\boldsymbol{\eta}\) and set \(\Delta \mathbf x^k  =\Delta \mathbf x^*_0 + \mathbf Q_m\boldsymbol \eta\).
 
-Since the present use-case includes a large amount of unknows it leads to memory concerns if the Krylov subspace is allowed to grow indefinitely.
-A restarted version where the maximum size of the Krylov space is restricted to \(m\) elements is prefered.
-Once this number is reached the procedure is restarted.
-However, if \(m\) is small the convergence can be poor.
+Since the present use case includes many unknowns, it leads to memory concerns if the Krylov subspace is allowed to grow indefinitely.
+A restarted version where the maximum size of the Krylov space is restricted to \(m\) elements is preferred.
+Once this number is reached, the procedure is restarted.
+However, if \(m\) is small, the convergence can be poor.
 
-In each nonlinear iteration of the Newton-Krylov, the number of iterations can be large and each iteration requires an evaluation of the function.
-This can be a major drawback when presently the intended use assumes that the evaluation of the function \(\pazocal R\) is expensive.
+In each nonlinear iteration of the Newton-Krylov, the number of iterations can be large, and each iteration requires an evaluation of the function.
+This can be a significant drawback when the intended use assumes that evaluating the function \(\pazocal R\) is expensive.
 This problem is however mitigated by the fact the Newton system is only solved until it satisfies
 \begin{equation}
   \|J_\pazocal R(\mathbf x^k) \Delta x^*_m+ \pazocal R(\mathbf x^k)\| \leq \eta\|\pazocal R(\mathbf x^k)\|,
 \end{equation}
 where \(\eta\) is called the forcing term and it is chosen to avoid oversolving the Newton system (Equation~\eqref{eq:newton_system}.
-As a simple approach, \cite{kelley_solving_2003} suggest \(\eta=0.1\), however he describes more sophisticated ways to choose this parameter.
-The smaller the forcing term \(\eta\) the closer one gets to the "standard" Newton method.
-However, specially in the first nonlinear iterations, choosing a \(\eta\) that is too small leads to unnecessarily long computational times, as the linera system is being solved with too much precission.
-See Box~\ref{box:newton_krylov} for the pseudo-code of the Newton-Arnoldi and Newton-GMRES.
+As a simple approach, \cite{kelley_solving_2003} suggests \(\eta=0.1\). However, he describes more sophisticated ways to choose this parameter.
+The smaller the forcing term \(\eta\), the closer one gets to the "standard" Newton method.
+However, especially in the first nonlinear iterations, choosing a \(\eta\) that is too small leads to unnecessarily long computational times. The linear system is being solved with too much precision.
+See Box~\ref{box:newton_krylov} for the pseudocode of the Newton-Arnoldi and Newton-GMRES.
 
 \begin{framedbox}[htbp]
-  \caption{Timestep \(n\) of the Newton-Krylov methods.}
+  \caption{Timestep \(n\) of the Newton-Krylov methods with restart, Newton-Arnoldi and Newton-GMRES.}
   \label{box:newton_krylov}
   \begin{center}
     \begin{minipage}{0.9\textwidth}
@@ -1119,18 +1259,19 @@ See Box~\ref{box:newton_krylov} for the pseudo-code of the Newton-Arnoldi and Ne
         \item \(j=1\)
         \item \(\mathbf a^{(1)}_{j+1} = J_\pazocal R(\mathbf x^k) \mathbf q_j\).
         \item Compute \(h_{ij}=(\mathbf q_i, \mathbf a^{(i)}_{j+1})\) and compute \(\mathbf a^{(i+1)}_{j+1} = \mathbf a^{(i)}_{j+1} - h_{ij} \mathbf q_i\) for \(i=1,\dots,j\).
-        \item Compute \(h_{j+1,j}=\|\mathbf a^{(j+1})_{j+1}\|\) and set \(\mathbf q_{j+1} = \mathbf a^{(j+1)}_{j+1}/h_{j+1,j}\).  
+        \item Compute \(h_{j+1,j}=\|\mathbf a^{(j+1})_{j+1}\|\) and set \(\mathbf q_{j+1} = \mathbf a^{(j+1)}_{j+1}/h_{j+1,j}\).
         \item If using the Arnoldi method:
-        \begin{itemize}   
+        \begin{itemize}
           \item Solve the linear system \(\mathbf H_j \boldsymbol{\eta} = \beta \mathbf e_1\) for \(\boldsymbol{\eta}\)
           \item set \(\Delta \mathbf x^*_j  =\Delta \mathbf x^*_0 + \mathbf Q_j\boldsymbol \eta\).
-        \end{itemize}   
+        \end{itemize}
         \item Else if using the GMRES method:
-        \begin{itemize}   
+        \begin{itemize}
           \item Solve the linear least-squares problem \(\|\beta\mathbf e_1 -\bar{\mathbf H}_j \boldsymbol{\eta}\|\) for \(\boldsymbol{\eta}\).
           \item Set \(\Delta \mathbf x^*_j  =\Delta \mathbf x^*_0 + \mathbf Q_j\boldsymbol \eta\).
-        \end{itemize}   
+        \end{itemize}
         \item If \(\|J_\pazocal R(\mathbf x^k) \Delta x^*_j+ \pazocal R(\mathbf x^k)\| \leq \eta\|\pazocal R(\mathbf x^k)\|\) is not satisfied set \(j=j+1\).
+        \item if \(j>m\), restart the method going to Step (a). Else, go to Step (c).
       \end{enumerate}
     \item \(\mathbf x^{k+1} = \mathbf x^k + \Delta x^k\).
     \item \(k=k+1\)
@@ -1142,16 +1283,16 @@ See Box~\ref{box:newton_krylov} for the pseudo-code of the Newton-Arnoldi and Ne
   \end{center}
 \end{framedbox}
 
-\subsection{Extrapolation tecniques with cycling}
+\subsection{Extrapolation tecniques with cycling} \label{sec:vector_extrapolation}
 
 There is a vast literature on sequence acceleration/extrapolation methods (see  \cite{brezinski_extrapolation_2013} and \cite{sidi_vector_2017} for textbook treatments of this topic).
-In numerical analysis, applied mathematics, and engineering, one often deals with sequences and series.
+One often deals with sequences and series in numerical analysis, applied mathematics, and engineering.
 They are produced by iterative methods, perturbation techniques, and approximation procedures depending on a parameter.
 Those sequences or series often converge so slowly that it is a severe drawback to their practical use.
 Convergence acceleration methods present a solution and have been studied for many years and applied to various situations.
 They are based on the very natural idea of extrapolation.
 In many cases, they lead to the solution of unsolvable problems otherwise.
-Sequences of vectors can also be considered, with their dimension being very large.
+Sequences of vectors can also be considered, with their dimension being substantial.
 Such sequences arise, for example, in the solution by fixed-point iterative methods of systems of linear or nonlinear algebraic equations.
 
 An example of a scalar acceleration method is first presented to fix ideas.
@@ -1163,12 +1304,12 @@ For example, consider
 \end{equation}
 which corresponds to the Aitken \(\Delta^2\) process.
 
-This expression can be obtained considering a transformation that would yield the limit of a geometric sequence from only three iterates, i.e., if one fits an exponential funtcion
+This expression can be obtained considering a transformation that would yield the limit of a geometric sequence from only three iterates, i.e., if one fits an exponential function
 \begin{equation}
   S + a \lambda^n,
 \end{equation}
-the sequence transformation takes the horizontal assymptote of the exponential, \(S\).
-For the geometrical interpretation of Aitken's \(\Delta^2\) method see Figure~\ref{fig:aitken}.
+the sequence transformation takes the horizontal asymptote of the exponential, \(S\).
+For the geometrical interpretation of Aitken's \(\Delta^2\) method, see Figure~\ref{fig:aitken}.
 
 \begin{figure}[htbp]
   \includegraphics{figures/aitken}
@@ -1270,7 +1411,7 @@ where \(\mathscr W^i = [\Delta \mathbf w^k, \dots, \Delta \mathbf w^{k+i}]\), si
 
 The degree of \(P(\lambda)\) can be as large as the dimension of \(\mathbf w\).
 Hence, to be practical, the minimal polynomial extrapolation (MPE), the reduced rank extrapolation (RRE), the modified minimal extrapolation (MMPE), and the single-value decomposition, minimal polynomial extrapolation (SVD-MPE) all choose a polynomial of a lesser degree.
-The approximations are corresponding to each extrapolation method are presented in what follows.
+The approximations corresponding to each extrapolation method are presented in what follows.
 
 \paragraph{MPE}
 
@@ -1323,7 +1464,7 @@ It is assumed that \(\sigma_{\min }\) is simple so that \(\mathbf c\) is unique 
 With \(c_{0}, c_{1}, \ldots, c_{m}\) available, compute \(\gamma_{q}=c_{q} / \sum_{j=0}^{m} c_{j}, q=0,1, \ldots, m\), provided \(\sum_{j=0}^{m} c_{j} \neq 0\).
 The assumption that \(\sigma_{\min }\) is simple guarantees the uniqueness of the \(\gamma_{i}\).
 
-When \(m=1\), MPE, RRE, MMPE and SVD-MPE can be regarded as generalizations of the Aitken \(\Delta^2\)-process to the vector case.
+When \(m=1\), MPE, RRE, MMPE, and SVD-MPE can be regarded as generalizations of the Aitken \(\Delta^2\)-process to the vector case.
 Thus, when applied to the solution of a system of nonlinear equations using cycling
 \begin{equation}
 \mathbf{s}_{k, 1}=\begin{cases}
@@ -1340,12 +1481,12 @@ A parallel version of the full cycling procedure is also described.
 \paragraph{Connection to Krylov subspace methods}
 
 According to \cite{sidi_vector_2017}, the so-called Krylov subspace methods are closely related to the vector extrapolation methods presented above.
-When the latter are applied to vector sequences obtained by applying fixed-point iterative methods to nonsingular linear systems of equations, they are mathematically equivalent.
+When the latter is applied to vector sequences obtained using fixed-point iterative methods to nonsingular linear systems of equations, they are mathematically equivalent.
 More precisely, the MPE and the RRE methods are mathematically equivalent to the methods of Arnoldi and generalized minimal residual (GMR).
 
 However, Krylov subspace methods and extrapolation methods differ in their algorithmic aspects entirely:
 The only input of the former is a procedure that performs the matrix-vector multiplication without explicitly knowing the matrix coefficient matrix.
-The latter take as their only input a vector sequence that results from a fixed-point iterative scheme without knowing the matrix coefficient matrix to know what the scheme is.
+The latter takes as their only input a vector sequence that results from a fixed-point iterative scheme without knowing the matrix coefficient matrix to know what the scheme is.
 
 
 In \cite{michler_interface_2005}, a Krylov-subspace method is proposed in the context of FSI.
@@ -1360,19 +1501,21 @@ The method proposed can be obtained by applying the RRE to the sequence of resid
 \section{Multipoint iteration functions with memory}
 
 Multipoint iteration functions are rarer and are not thoroughly investigated in this exposition.
-One can mention the Eirola-Nevanlinna family of methods \citep{fang_two_2009} and Netwon-Krylov method that reuse the Krylov subspace from previous iterations \citep{sidi_vector_2017}.
+One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} and Netwon-Krylov method that reuses the Krylov subspace from previous iterations \citep{sidi_vector_2017}.
 
+\section{Conclusions}
 
+\begin{landscape}
 \begin{table}[htbp]
   \caption{Summary of the comparison between method for the solution methods of non-linear systems of equations. \(n\) here denotes the number of unknowns and \(m\) denotes depending on the context the number of previous iterates considered, the number of fixed point evaluations or the size of the Krylov subspace.}
 \label{tab:comparison_fft_galerkin_fem}
   % \setlength{\tabcolsep}{1pt}
   \centering
-    \begin{tabular}{l cc p{3.5cm}}
-    Method & \makecell[c]{Memory\\requirements} & \makecell[c]{Nr function\\evaluations\\per iteration} & Obs.\\
+    \begin{tabular}{l cc p{10.5cm}}
+    Method & \makecell[c]{Memory\\requirements} & \makecell[c]{Nr function\\evaluations\\per iteration} & Observations\\
     \hline  \hline
-    \multirow{3}{*}{\vphantom{\Big|}Fixed-point iteration} & \multirow{3}{*}{2 \((n\times 1)\) vectors} & \multirow{3}{*}{1} & \textbullet \textcolor{red!70!black}{Often diverges.}\\
-    & & &\textbullet \textcolor{green!50!black}{Simplest method}.\\
+    \multirow{3}{*}{\vphantom{\Big|}Fixed-point iteration} & \multirow{3}{*}{2 \((n\times 1)\) vectors} & \multirow{3}{*}{1} & \textbullet Often diverges.\\
+    & & &\textbullet Simplest method.\\
     & & &\textbullet Memory efficient.\\
     \hline
     \multirow{3}{*}{Underrelaxation} & \multirow{3}{*}{2 \((n\times 1)\) vectors} & \multirow{3}{*}{1} & \textbullet Simple.\\
@@ -1383,25 +1526,27 @@ One can mention the Eirola-Nevanlinna family of methods \citep{fang_two_2009} an
     & & & \textbullet Dynamic relaxation.\\
     & & & \textbullet Improved stability over fixed-point.\\
     \hline
-    \multirow{3}{*}{Broyden's family} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet Needs a first estimate for the invesre of the Jacobian \\
+    \multirow{3}{*}{\makecell[l]{Broyden-like family\\\citep{fang_two_2009}}} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet \(\pazocal O(n^3)\) computation complexity for \(m>1\) (\(QR\) decomposition). \\
     & & & \textbullet Low number of function evauations\\
     & & & \textbullet Superlinear convergence when \(m=1\).\\
     \hline
-    \multirow{3}{*}{Anderson's family} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet Need to choose the mixing parameter\\
-    & & & \textbullet Simpler than Broyden's family\\
-    & & & \textbullet Good results in FSI with \(\beta=-1\)\\
+    \multirow{3}{*}{\makecell[l]{Broyden's method\\\citep{kelley_solving_2003}}} & \multirow{3}{*}{\makecell[c]{Up to\\ \((m+2) (n\times 1)\) matrices}} & \multirow{3}{*}{1} & \textbullet \(\pazocal O(n)\) computation complexity.\\
+    & & & \textbullet Low storage.\\
+    & & & \textbullet Superlinear convergence.\\
     \hline
-    \multirow{3}{*}{Newton-Krylov} & \multirow{3}{*}{\makecell[c]{Up to\\\((m+1)\) \((n\times 1)\) vectors}} & \multirow{3}{*}{\(-^*\)} & \textbullet \\
-    & & & \textbullet\\
-    & & & \textbullet\\
+    \multirow{3}{*}{Newton-Krylov} & \multirow{3}{*}{\makecell[c]{Up to\\\((m+1)\) \((n\times 1)\) vectors}} & \multirow{3}{*}{\(m+1^*\)} & \textbullet Large number of iterations possible.\\
+    & & & \textbullet Popular for the solution of systems of nonlinear equations.\\
+    & & & \textbullet Quadratic convergence under appropriate conditions.\\
     \hline
-    \multirow{3}{*}{\makecell[l]{Cycling with\\vector extrapolation}} & \multirow{3}{*}{\((m+2)\) \((n\times 1)\) vectors} & \multirow{3}{*}{\(m+1\)} & \textbullet\\
-    & & & \textbullet\\
-    & & & \textbullet\\
+    \multirow{2}{*}{\makecell[l]{Cycling with\\vector extrapolation}} & \multirow{2}{*}{\((m+2)\) \((n\times 1)\) vectors} & \multirow{2}{*}{\(m+1\)} & \textbullet Large number of function evaluations.\\
+    & & & \textbullet \(\pazocal O(n^3)\) computational complexity (\(QR\) decomposition).\\
   \hline\hline
   \multicolumn{4}{l}{\vphantom{\Huge |}\parbox{\textwidth}{\footnotesize{  \(^*\) The number of function evaluations in the Newton-Krylov methods will depend on how many iterations it will take for the inner loop to converge. There is a function evaluation per iteration of the inner loop.}}}
   \end{tabular}
 \end{table}
+\end{landscape}
+
+
 
 \begin{table}[htbp]
   \caption{Summary of the update formulas for the solution methods of non-linear systems of equations.}
