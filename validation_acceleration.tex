@@ -74,7 +74,7 @@ Linear quadratic elements (QUAD4) are used in the FEM discretization employed.
 Thanks to the axial symmetric of the problem, only one-fourth of the cylinder is considered with an inner radius of \(r_{0}=5 \mathrm{~mm}\) and an outer radius of \(r_{1}=15 \mathrm{~mm}\), as depicted in Figure~\ref{fig:fem_discretization}.
 All material properties and model properties can be found in Table~\ref{tab:expansion_thick_walled_cylinder}.
 
-\begin{figure}
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=0.5\textwidth]{fem_discretization}
   \caption{Infinitely long thick-walled cylinder whose quasi-static finite strain thermo-elastic expansion, including the FEM discretization employed.}
@@ -119,7 +119,7 @@ A displacement driven problem is produced enforcing an increasing radial displac
 The complete setup for the quasi-static expansion of the thick-walled cylinder is depicted in Figure~\ref{fig:problem_description}.
 Following \cite{ibrahimbegovic_thermodynamics_2009}, the maximum displacement is set to \SI{10}{\milli\meter}, which clearly involves large deformations.
 
-\begin{figure}
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=0.5\textwidth]{problem_description}
   \caption{Boundary conditions considered in the quasi-static finite strain thermo-elastic expansion of an infinitely long thick-walled cylinder.}
@@ -165,13 +165,13 @@ The use of the latter value for the thermal expansion coefficient leads to insta
 The results for \(\alpha_T = \SI{1.65e-5}{\kelvin^{-1}}\) and \(\alpha_T =\SI{1.65e-4}{\kelvin^{-1}}\) are presented in Figures~\ref{fig:thick_cylinder_validation_inner_radius_temperature_weak_coupled_quad4fbar} and \ref{fig:thick_cylinder_validation_inner_radius_temperature_strong_coupled_quad4fbar}.
 A good agreement between the numerical results produced in the present work an the ones found in \cite{ibrahimbegovic_thermodynamics_2009} can be observed for all displacement rates considered.
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_validation_inner_radius_temperature_weak_coupled_quad4fbar}
   \caption{Difference between the temperature at the inner radius and the reference temperature for the expansion of the thick-walled cylinder with \(\alpha_T=\SI{1.65e-5}{\kelvin^{-1}}\) and at different displacement rates for the inner radius (\(\dot u_0 = \SIlist{0.1; 0.25; 0.5}{\milli\meter\second^{-1}}\)}
 \label{fig:thick_cylinder_validation_inner_radius_temperature_weak_coupled_quad4fbar}
 
 \end{figure}
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_validation_inner_radius_temperature_strong_coupled_quad4fbar}
   \caption{Difference between the temperature at the inner radius and the reference temperature for the expansion of the thick-walled cylinder with \(\alpha_T=\SI{1.65e-4}{\kelvin^{-1}}\) and at different displacement rates for the inner radius (\(\dot u_0 = \SIlist{0.1; 0.25; 0.5}{\milli\meter\second^{-1}}\)}
 \label{fig:thick_cylinder_validation_inner_radius_temperature_strong_coupled_quad4fbar}
@@ -205,9 +205,9 @@ The other methods all converge approximately linearly, with the Broyden methods 
 Furthermore, the two Broyden methods are visually undistinguishable.
 The underrelaxation methods takes more iterations to converge, however this could possibly be improved by further tuning of the relaxation coefficient, set in this case to 0.5.
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_single_iter_residual_1st_time_step_quad4fbar_pred}
-  \caption{Residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+  \caption{Residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
 \label{fig:thick_cylinder_single_iter_residual_1st_time_step_quad4fbar_pred}
 \end{figure}
 
@@ -217,9 +217,9 @@ The Broyden methods show a very similar behavior that best the Aitken relaxation
 This leads however to a sizable difference in the total number of function evaluations needed to solve the problem from start to finish.
 The underrelaxation under performs again, showing even more difficulty in solving the problem as the displacement increases.
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_single_iter_n_iter_time_quad4fbar_pred}
-  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
 \label{fig:thick_cylinder_single_iter_n_iter_time_quad4fbar_pred}
 \end{figure}
 
@@ -228,15 +228,15 @@ It can be clearly understood that the number of residual evaluations coorelates 
 The most efficient methods are the two Broyden methods, followed by the Aitken relaxation.
 The underrelaxation method performes poorly through out the range of values considered for the thermal expansion coefficient and the fixed-point becomes incresingly slow as the coupling gets stronger eventually failing to converge for \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\).
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_single_iter_n_iter_coupl_strength_quad4fbar_pred}
-  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
 \label{fig:thick_cylinder_single_iter_n_iter_coupl_strength_quad4fbar_pred}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_single_iter_cpu_time_coupl_strength_quad4fbar_pred}
-  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
 \label{fig:thick_cylinder_single_iter_cpu_time_coupl_strength_quad4fbar_pred}
 \end{figure}
 
@@ -258,13 +258,13 @@ The cases with \(\beta=\num{2e-3}\) and \num{2e-2} exihibt a similar trend, with
 Despite this weird behavior they converge all the same.
 The choice of \(\beta=\num{2e-2}\) seems to lead to slightly fewer iterations before the desired accuracy is reached.
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=.9\textwidth]{thick_cylinder_broyden_like_type_i_residual_1st_time_step_quad4fbar_pred}
   \caption{Residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for Broyden-like methods with Type I update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{fig:thick_cylinder_broyden_like_type_i_residual_1st_time_step_quad4fbar_pred}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=.9\textwidth]{thick_cylinder_broyden_like_type_ii_residual_1st_time_step_quad4fbar_pred}
   \caption{Residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for Broyden-like methods with Type II update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{fig:thick_cylinder_broyden_like_type_ii_residual_1st_time_step_quad4fbar_pred}
@@ -276,15 +276,15 @@ Perhaps the most apparent difference is verified for the \(\beta\) values \num{2
 For \(\beta=-1\), the methods using group sizes of 1, 2 and 3 display a higher efficiency, which disappears as the displacement increases.
 For \(\beta=\num{2e-2}\) and \num{2e-3}, the results seem to indicate the need for fewer iterations when using group sizes of 2 and 3.
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_broyden_like_type_i_n_iter_time_quad4fbar_pred}
-  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for Broyden-like methods with Type I update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
+  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for Broyden-like methods with Type I update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{thick_cylinder_broyden_like_type_i_n_iter_time_quad4fbar_pred}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=\textwidth]{thick_cylinder_broyden_like_type_ii_n_iter_time_quad4fbar_pred}
-  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for Broyden-like methods with Type II update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
+  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for Broyden-like methods with Type II update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{fig:thick_cylinder_broyden_like_type_ii_n_iter_time_quad4fbar_pred}
 \end{figure}
 
@@ -294,34 +294,128 @@ Again, it can be clearly understood that the number of residual evaluations coor
 The most efficient methods are the methods using a mixing parameter equal to \(\beta=-1\) and group sizes equal to 1, 2 and 3.
 The choices of \num{2e-3} and \num{2e-2} for the mixing parameter lead to less efficient methods, which need a larger amount of residual evaluations and thus require more CPU time to solve the coupled thermomechanical problem completly.
 
-\begin{figure}
+
+\begin{figure}[htbp]
   \includegraphics[width=.9\textwidth]{thick_cylinder_broyden_like_type_i_n_iter_coupl_strength_quad4fbar_pred}
-  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for the implicit methods for Broyden-like methods with Type I update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
+  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for Broyden-like methods with Type I update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{fig:thick_cylinder_broyden_like_type_i_n_iter_coupl_strength_quad4fbar_pred}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=.9\textwidth]{thick_cylinder_broyden_like_type_i_cpu_time_coupl_strength_quad4fbar_pred}
-  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for Broyden-like methods with Type I update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
+  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for Broyden-like methods with Type I update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{fig:thick_cylinder_broyden_like_type_i_cpu_time_coupl_strength_quad4fbar_pred}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=.9\textwidth]{thick_cylinder_broyden_like_type_ii_n_iter_coupl_strength_quad4fbar_pred}
-  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for Broyden-like methods with Type II update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
+  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for Broyden-like methods with Type II update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{fig:thick_cylinder_broyden_like_type_ii_n_iter_coupl_strength_quad4fbar_pred}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htbp]
   \includegraphics[width=.9\textwidth]{thick_cylinder_broyden_like_type_ii_cpu_time_coupl_strength_quad4fbar_pred}
-  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second~{-1}}\) for Broyden-like methods with Type II update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
+  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for Broyden-like methods with Type II update and group sizes \(s=1\), 2, 4 and 6: (a) \(\beta=-1\), (b) \(\beta=\num{2e-3}\), and (c) \(\beta=\num{2e-2}\).}
 \label{fig:thick_cylinder_broyden_like_type_ii_cpu_time_coupl_strength_quad4fbar_pred}
 \end{figure}
 
+\jvc{write a small conclusion!!!}
+
+\FloatBarrier
 
 \subsection{Newton-GMRES method}
 
-\subsection{Polynomial vector extrapolation with cycling}\jvc{Check if the name is not the other way around}
+The Newton-Krylov methods considered used as Krylov solver the GMRES method.
+Different forcing terms are employed, and take values \(\eta=\num{e-1}\), \num{e-3} and \num{e-5}.
+The Eisenstat-Walker scheme for the adpative choice of the forcing term is also utilized.
+
+Figure~\ref{fig:thick_cylinder_newton_krylov_residual_1st_time_step_quad4fbar_pred} presents the residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.5}{\milli\meter\second^{-1}}\).
+For \(\eta=\num{e-5}\), the Newton-GMRES method converges quadractly since the Newton scheme is solved to a finer accuracy and closely approximates the Newton-Raphson scheme.
+As \(\eta\) increases the convergence rate as a function of the number of nonlinear iterations slows down.
+The method employing the Eisenstat-Walker scheme performs similar to the method using a constant forcing term equal to \num{e-1}.
+Keep in mind, that within each nononlinear iteration the Newton-Krylov methods may evaluate the function several times, such that converging in a fewer number of nonlinear iterations does not necesseraly imply a more efficient method regarding computational time spent solving the coupled thermomechanical problem.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_newton_krylov_residual_1st_time_step_quad4fbar_pred}
+  \caption{Residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the Newton-GMRES method with a constant forcing term (\(\eta=\num{1e-5},\ \num{1e-3},\ \num{1e-1}\)) and the Eisenstat-Walker scheme. }
+\label{fig:thick_cylinder_newton_krylov_residual_1st_time_step_quad4fbar_pred}
+\end{figure}
+
+Figure~\ref{fig:thick_cylinder_newton_krylov_n_iter_time_quad4fbar_pred} presents the number of nonlinear iterations/numer of function evaluations needed to solve the coupled problem at each time step and the total (cumulative) number of iterations needed.
+The strength of the coupling seems to be approximately uniform across the displacement range considered, as the number of iteratins taken by each method as the displacement increases remains approximately constant.
+As hinted by the results already discussed regarding the residual as a function of the nonlinear iterations in the first time step, the smaller the forcing the fewer the number of nonlinear iterations needed to solve the coupled problem at each time step.
+The method that uses the Eisenstat-Walker scheme performs in a similar way to the method using a constant forcing term equal to \num{1e-1}.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_newton_krylov_n_iter_time_quad4fbar_pred}
+  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for tthe Newton-GMRES method with a constant forcing term (\(\eta=\num{1e-5},\ \num{1e-3},\ \num{1e-1}\)) and the Eisenstat-Walker scheme.}
+\label{fig:thick_cylinder_newton_krylov_n_iter_time_quad4fbar_pred}
+\end{figure}
+
+Figures~\ref{fig:thick_cylinder_newton_krylov_n_iter_time_quad4fbar_pred} and \ref{fig:thick_cylinder_newton_krylov_n_iter_coupl_strength_quad4fbar_pred} present the total number of residual evaluations, in this case corresponding also to the total number of nonlinear iterations, and the total CPU time in seconds as a function of the thermal expansion coefficient, respectively.
+The most efficient Newton-GMRES methods analysed are the ones using a constant forcing term equal to \num{1e-5} and \num{1e-3}, followed by the method employing a constant forcing term equal to \num{1e-1} and then by the method utilizing the Eisenstat-Walker scheme.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_newton_krylov_n_iter_coupl_strength_quad4fbar_pred}
+  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the Newton-GMRES method with a constant forcing term (\(\eta=\num{1e-5},\ \num{1e-3},\ \num{1e-1}\)) and the Eisenstat-Walker scheme.}
+\label{fig:thick_cylinder_newton_krylov_n_iter_coupl_strength_quad4fbar_pred}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_newton_krylov_cpu_time_coupl_strength_quad4fbar_pred}
+  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the Newton-GMRES method with a constant forcing term (\(\eta=\num{1e-5},\ \num{1e-3},\ \num{1e-1}\)) and the Eisenstat-Walker scheme.}
+\label{fig:thick_cylinder_newton_krylov_cpu_time_coupl_strength_quad4fbar_pred}
+\end{figure}
+
+\jvc{write a small conclusion!!!}
+
+\FloatBarrier
+
+\subsection{Polynomial vector extrapolation in cycling mode}
+
+The polynomial vector extrapolation methods in cycling mode considered are the MPE and RRE, restriced to 4 evaluations of the residual function per nonlinear iteration.
+Thus, the combinations analyzed are characterized by the ordered pairs \((n,k)=(0,1)\), \((0,2)\), \((0,3)\), \((1,1)\), \((1,2)\) and \((2,1)\).
+
+Figure~\ref{fig:thick_cylinder_extrap_pol_residual_1st_time_step_quad4fbar_pred} presents the residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.5}{\milli\meter\second^{-1}}\).
+In general, the larger the number of residual evaluation per nonlinear iterations the faster rate of convergence.
+Also, it seems that for the same number of residual evaluations per nonlinear iterations, e.g., \((n,k)=(0,3)\), \((1,2)\) and \((2,1)\) or \((n,k)=(0,2)\), \((1,1)\), it is more profitable to increase \(k\) than \(n\).
+The results for the MPE and the RRE are very similar.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_extrap_pol_residual_1st_time_step_quad4fbar_pred}
+  \caption{Residual in percentage as a function of the number of nonlinear iterations in the first time step with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+\label{fig:thick_cylinder_extrap_pol_residual_1st_time_step_quad4fbar_pred}
+\end{figure}
+
+Figure~\ref{fig:thick_cylinder_extrap_pol_n_iter_time_quad4fbar_pred} presents the number of nonlinear iterations/numer of function evaluations needed to solve the coupled problem at each time step and the total (cumulative) number of iterations needed.
+The number of nonlinear iterations needed to solve the coupled problem to the desired accuracy at each time step remains approximately constant with a slight decrease as the displacement increases.
+As before, the MPE and RRE methods display very similar performances.
+As hinted by the previous results regarding the residual, the methods with more residual evaluation per nonlinear iteration take in general less iterations to converge.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_extrap_pol_n_iter_time_quad4fbar_pred}
+  \caption{Number of nonlinear iterations needed to solve the coupled problem at each time step and the total number of iterations needed to solve the coupled problem ith \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+\label{fig:thick_cylinder_extrap_pol_n_iter_time_quad4fbar_pred}
+\end{figure}
+
+Figures~\ref{fig:thick_cylinder_extrap_pol_n_iter_time_quad4fbar_pred} and \ref{fig:thick_cylinder_extrap_pol_n_iter_coupl_strength_quad4fbar_pred} present the total number of residual evaluations, in this case corresponding also to the total number of nonlinear iterations, and the total CPU time in seconds as a function of the thermal expansion coefficient, repsectively.
+There is not a clear winner regarding the total number of residual evaluation and the CPU time taken to complelty solve the coupled thermomechanical problem, but the methods with \((n,k)=(0,3)\), \((0,2)\) and \((1,2)\) seem to always be in the top spots regarding efficiency.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_extrap_pol_n_iter_coupl_strength_quad4fbar_pred}
+  \caption{Total number of residual evaluations as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+\label{fig:thick_cylinder_extrap_pol_n_iter_coupl_strength_quad4fbar_pred}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{thick_cylinder_extrap_pol_cpu_time_coupl_strength_quad4fbar_pred}
+  \caption{Total CPU time in seconds as a function of the thermal expansion coefficient with \(\alpha_T=\SI{1.5e-4}{\kelvin^{-1}}\) and \(\dot u_0 =\SI{0.1}{\milli\meter\second^{-1}}\) for the implicit methods for the solution of coupled problems that perform only one evaluation per nonlinear iteration.}
+\label{fig:thick_cylinder_extrap_pol_cpu_time_coupl_strength_quad4fbar_pred}
+\end{figure}
+
+\jvc{write a small conclusion!!!}
+
+\FloatBarrier
 
 \subsection{Comparison for the best methods}
 
