@@ -357,12 +357,12 @@ The application in view is thermomechanics.
 \paragraph{Stability}
 
 Regarding stability, the loosely coupled using an isothermal split is conditionally stable \citep{armero_new_1992}.
-Despite this, the limitation is not significant for metals plasticity, according to \cite{simo_associative_1992}.
+Despite this, the limitation is not significant for metal plasticity, according to \cite{simo_associative_1992}.
 However, examples where the scheme diverges, can be found in \cite{armero_new_1992}.
 In this last contribution, the adiabatic split is introduced and shown to be unconditionally stable in the context of thermo-elasticity.
 \cite{armero_priori_1993} show that these properties extend to thermo-plasticity.
 The strongly coupled schemes are unconditionally stable because no critical time step leads to numerical instabilities in the results.
-Despite this, the inner loop of the scheme may converge slowly or not at all \cite{matthies_strong_2003}.
+Despite this, the inner loop of the scheme may converge slowly or not at all \citep{matthies_strong_2003}.
 It depends on the spectral radius of the matrices involved \citep{cervera_computational_1996}.
 There are, however, acceleration techniques that can mitigate this problem, including predictors and Aitken \(\Delta^2\) methods (see Section~\ref{}).
 \cite{danowski_computational_2014} presents a numerical example concerning an internal pressurized thick-walled cylinder, whose material is viscoplastic, for which the strongly coupled scheme employed diverged, despite the use of an Aitken method.
@@ -430,3 +430,5 @@ The only drawback seems to be the possibility of divergence in the inner loop, s
   \multicolumn{4}{l}{\vphantom{\Huge |}\parbox{\textwidth}{\footnotesize{${}^*$ The inner loop of the strongly coupled scheme may converge very slowly or even diverge.}}}
   \end{tabular}
 \end{table}
+
+\newpage\null\thispagestyle{blank}\newpage

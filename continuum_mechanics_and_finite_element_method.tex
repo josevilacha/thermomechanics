@@ -2,7 +2,7 @@
 
 This chapter deals with the concepts needed to described the behavior of a solid undergoing large deformation, as well as, the conservation principles that ensure its mechanical equilibrium.
 It also presents a succint overview of the Finite Element Method as a tool to solve mechanical initial value equilibrium problem.
-These topics are broadly covered in the literature and here the approach used follows \cite{de2011computational},
+These topics are broadly covered in the literature and here the approach used follows \cite{de_souza_neto_computational_2008},
 
 \section{Kinematics of Deformation}
 
@@ -31,6 +31,13 @@ and, since the function that defines the motion is one-to-one, the reference con
 \end{equation}
 where $\vect \varphi^{-1}$ is the reference mapping function.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=.9\textwidth]{motion}
+  \caption{Motion}
+\label{fig:motion}
+\end{figure}
+
 \subsection{Material and spatial descriptions}
 
 Dealing with finite deformations, the behavior of the body under analysis can be described with respect to the reference configuration, using the so-called material or Lagrangian description, or to the deformed configuration, using the so-called spatial or Eulerian description.
@@ -44,7 +51,7 @@ Their material $\alpha_m$ and spatial $\beta_s$ desctiptions are given by
     \alpha_m(\vect X, t) &=\alpha(\vect \varphi(\vect X, t),t),\\
     \beta_s(\vect x, t) &= \beta(\vect \varphi^{-1}(\vect x, t),t),
 \end{align}
-noting that any field associated with a motion of $\mathscr{B}$ can be expressed as a function of time and material or spatial position.
+noting that any field associated with a motion of $\mathscr{B}$ can be expressed as a function of time and the point's position in the reference or deformed configuration.
 
 The same distinction between material and spatial descriptions applies to operators such as the divergence and the gradient.
 The spatial and material gradients, $\nabla$ and $\nabla_0$, respectively, are defined as
@@ -93,7 +100,7 @@ it can be expressed as
 \end{equation}
 
 The deformation gradient relates the relative position between two neighboring material particles before and after deformation.
-To see this let $\vect X$ be the coordinates of some material prickle in the reference configuration and $\vect X + d\vect X$ the coordinates of some material particle in its neighborhood, their corresponding coordinates in the deformed configuration are given by
+To see this let $\vect X$ be the coordinates of some material particle in the reference configuration and $\vect X + d\vect X$ the coordinates of some material particle in its neighborhood, their corresponding coordinates in the deformed configuration are given by
 \begin{gather}
     \vect X = \vect x - \vect u(\vect X, t), \label{eq:mat_pos}\\
     \vect X + d\vect X = \vect x + d\vect x -\vect u(\vect X +d\vect X, t). \label{eq:mat_pos_delta}
@@ -287,8 +294,8 @@ and $\mat \sigma_d$ is the deviatoric stress defined as
 
 \section{Heat}
 
-Changes in temperature of a body are very often related to heat flowing inside, entering or leaving it.
-In continuum mechanics, heat is measured in power per unit surface.
+Heat flowing inside a body, entering or leaving it, often leads to temperature changes.
+In Continuum Mechanics, heat is measured in power per unit surface.
 
 \subsubsection{Heat flux vector}
 
@@ -423,7 +430,7 @@ where the identity
 is used.
 
 From a physical point of view, the Clausius-Duhem inequality states that the energy dissipation per unit deformed volume is always non-negative.
-Moreover the terms in the inequalitiy can be splited between the mechanical internal dissipation \(\pazocal D_\text{mech}\) and the dissipation due to heat conduction \(\pazocal D_\text{cond}\).
+Moreover the terms in the inequalitiy can be splited into the mechanical internal dissipation \(\pazocal D_\text{mech}\) and the dissipation due to heat conduction \(\pazocal D_\text{cond}\).
 From
 \begin{equation}
 \hat s = \bm \sigma :\bm D - \rho \left(\dot \psi  +s \dot \theta\right) -\frac{1}{\theta}\bm q\cdot\bm g,
@@ -433,7 +440,7 @@ assuming that the process leads to an uniform temperature distribution, yields f
 \pazocal D_\text{mech} = \hat{s}|_{\text{$\theta$ uniform} }= \bm \sigma:\bm D - \rho \left(\dot \psi + s \dot \theta\right),
 \end{equation}
 since conduction is excluded and only mechanical and temperature transient effects remain.
-If on the other hand, only conduction effects are retained, i.e., assuming the process to be isothermic, isochoric and isovolumetric, the dissipation due to conduction, \(\pazocal D_\text{cond}\), is obtained as
+If on the other hand, only conduction effects are retained, i.e., assuming the process to be isothermic, isochoric and isovolumetric, the dissipation due to conduction, \(\pazocal D_\text{cond}\), is obtained as \jvc{Not 100\% on this}
 \begin{equation}
 \pazocal D_\text{cond} = - \frac{1}{\theta} \bm q\cdot \bm g.
 \end{equation}
@@ -458,7 +465,7 @@ Before going further, it is important to define a thermokinetic process of a bod
         \text{thermokinetic process:}\quad\{\vect \varphi(\vect X, t), \theta(\vect X, t)\},
     \end{equation}
 \end{highlight}
-ans a calordynamic process of $\mathscr{B}$ as
+and a calordynamic process of $\mathscr{B}$ as
 \begin{highlight}
     \begin{equation}
         \text{calorodynamic process:}\quad \{\mat \sigma(\vect X, t), e(\vect X, t), s(\vect X, t), r(\vect X, t), \vect b(\vect X,t), \vect q(\vect X, t)\},
@@ -466,7 +473,7 @@ ans a calordynamic process of $\mathscr{B}$ as
 \end{highlight}
 which satisfies the fundamental conservation principles previously introduced.
 
-It is also important to note that any constitutive model must satisfy a set of constitutive axioms, explained  in detail by \cite{de2011computational}.
+It is also important to note that any constitutive model must satisfy a set of constitutive axioms, explained  in detail in \cite{de_souza_neto_computational_2008}.
 As these are too general to be used directly in practice, a particular case of the general history functional-based constitutive theory based on the thermodynamics with internal variables approach is used.
 
 \subsection{Thermodynamics with internal variables}
@@ -493,7 +500,7 @@ To find the constitutive equations for the stress tensor and the entropy, one ca
 \begin{equation}
     \dot \psi = \frac{\partial \psi}{\partial \mat F}:\dot{\mat F} + \frac{\partial \psi}{\partial \theta}\dot \theta + \frac{\partial \psi}{\partial \alpha_k}\dot \alpha_k,
 \end{equation}
-found from the chain rule, on the Clausius-Duhem equation, Equation \eqref{eq:clasius_duhem_eq}, obtaining
+found from the chain rule, into the Clausius-Duhem equation, Equation \eqref{eq:clasius_duhem_eq}, obtaining
 \begin{equation}
     \left(\mat \sigma \mat F^{-T} -\rho\frac{\partial \psi}{\partial \mat F}\right):\dot{\mat F} -\rho \left(s+\frac{\partial \psi}{\partial \theta}\right)\dot \theta - \rho \frac{\partial \psi}{\partial \alpha_k}\dot\alpha_k - \frac{1}{\theta}\vect q \cdot \vect g\geq 0,\label{eq:clausius_duhem_energy}
 \end{equation}
@@ -551,3 +558,5 @@ where the dissipation potential is
 \end{equation}
 a convex function with respect to each $A_k$ and $\vect g$, and zero valued at the origin, $\{\vect A,\vect g\}=\{\vect 0,\vect 0\}$.
 Note that in the previous definition the state variables appear only as parameters.
+
+\newpage\null\thispagestyle{blank}\newpage

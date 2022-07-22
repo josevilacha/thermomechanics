@@ -1,0 +1,67 @@
+%% Creator: Inkscape 1.2 (1:1.2+202206011327+fc4e4096c5), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'thick_cylinder_temp_dist.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{361.74985419bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.46584223)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{figures/thick_cylinder_temp_dist.pdf}}%
+    \put(0.0246804,0.46036258){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.32584041\unitlength}\raggedright $u_0=\SI{0}{\milli\meter}$\end{minipage}}}%
+    \put(0.22243881,0.46036258){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.32584041\unitlength}\raggedright $u_0=\SI{2.5}{\milli\meter}$\end{minipage}}}%
+    \put(0.42019732,0.46036258){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.32584041\unitlength}\raggedright $u_0=\SI{5}{\milli\meter}$\end{minipage}}}%
+    \put(0.61795576,0.46036258){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.32584041\unitlength}\raggedright $u_0=\SI{7.5}{\milli\meter}$\end{minipage}}}%
+    \put(0.8157142,0.46036258){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.32584041\unitlength}\raggedright $u_0=\SI{10}{\milli\meter}$\end{minipage}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{thick_cylinder_temp_dist.pdf}}%
+    \put(0.41493949,0.05333624){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.51517626\unitlength}\raggedright Temperature, $T$ $(\si{\kelvin})$\end{minipage}}}%
+    \put(0.02348421,0.05029872){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.11394531\unitlength}\raggedright 175.28\end{minipage}}}%
+    \put(0.90184154,0.04846619){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.11394531\unitlength}\raggedright 293.15\end{minipage}}}%
+  \end{picture}%
+\endgroup%

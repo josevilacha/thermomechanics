@@ -1,4 +1,4 @@
-\chapter {Strongly coupled methods for coupled fields}
+\chapter {Implicit solution methods for coupled fields} \label{chapter:implicit_meth}
 
 This chapter presents the most common strongly coupled/implicit methods employed to solve coupled field problems.
 This presentation seeks to provide a literature overview of the available approaches.
@@ -514,7 +514,7 @@ In what follows, alternative methods are discussed to decrease the number of ite
 
 \section{One-point iteration function with memory}
 
-\subsubsection{Aitken relaxation}
+\subsection{Aitken relaxation} \label{sec:aitken_relaxation}
 
 
 The so-called Aitken \(\Delta^2\) relaxation method was introduced by \cite{irons_version_1969} as a modified Aitken \(\Delta^2\) that does not require the computation of the function twice per iteration as in the original method.
@@ -1041,7 +1041,7 @@ Bounded deterioration implies that the Broyden matrices will be well-conditioned
 \paragraph{In the context of FSI}
 
 The multi-secant quasi-Newton methods have been used in the context of FSI, although not always presented as such \citep{haelterman_quasi-newton_2009, gatzhammer_efficient_2014, uekermann_partitioned_2016, scheufele_coupling_2018}.
- \cite{vierendeels_implicit_2007} and \cite{degroote_stability_2008} consider the system of equations \eqref{eq:explicit_eq_delta_u_newton} and \eqref{eq:explicit_eq_delta_theta_newton}, where recall that an estimate for the Jacobians \(J_\pazocal{U}\) and \(J_\pazocal{T}\) are needed.
+ \cite{vierendeels_implicit_2007} and \cite{degroote_stability_2008} consider the system of equations \eqref{eq:explicit_eq_delta_u_newton} and \eqref{eq:explicit_eq_delta_theta_newton}, where recall that an estimate for the Jacobians \(J_\pazocal{U}\) and \(J_\pazocal{T}\) is needed.
 The authors achieve this by using linear reduced-order models for the fluid solver and the structure solver.
 These are set up from solver input and output deltas or sensitivities during the coupling iterations.
 The resulting method for two black-box solvers is called interface block quasi-Newton method with least-squares approximation (IBQN-LS) in \cite{degroote_development_2010}.
@@ -1134,7 +1134,7 @@ Here the Jacobian factorization and matrix function evaluation is done after eve
 Since the present use-case, the number of unknowns \(n\) is very large, and the evaluation of the function \(\pazocal R\) is also costly, approximating the Jacobian using a finite difference is not suitable, even utilizing the chord or Shamanskii methods.
 
 
-\subsection{Newton-Krylov methods}
+\subsection{Newton-Krylov methods} \label{sec:newton_krylov}
 
 In the Newton-Krylov methods, the solution of the Newton system of equations in Equation~\eqref{eq:newton_system} is achieved using Krylov methods, such as GMRES or BiCGSTAB.
 The Krylov iterative methods approximate the solution of a linear system \(\mathbf A \mathbf x = \mathbf b\) using the Krylov subspace
@@ -1526,7 +1526,7 @@ One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} an
     & & & \textbullet Dynamic relaxation.\\
     & & & \textbullet Improved stability over fixed-point.\\
     \hline
-    \multirow{3}{*}{\makecell[l]{Broyden-like family\\\citep{fang_two_2009}}} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet \(\pazocal O(n^3)\) computation complexity for \(m>1\) (\(QR\) decomposition). \\
+    \multirow{3}{*}{\makecell[l]{Broyden-like family\\\citep{fang_two_2009}}} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet \(\pazocal O(nm^2)\) computation complexity (\(QR\) decomposition). \\
     & & & \textbullet Low number of function evauations\\
     & & & \textbullet Superlinear convergence when \(m=1\).\\
     \hline
@@ -1538,8 +1538,8 @@ One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} an
     & & & \textbullet Popular for the solution of systems of nonlinear equations.\\
     & & & \textbullet Quadratic convergence under appropriate conditions.\\
     \hline
-    \multirow{2}{*}{\makecell[l]{Cycling with\\vector extrapolation}} & \multirow{2}{*}{\((m+2)\) \((n\times 1)\) vectors} & \multirow{2}{*}{\(m+1\)} & \textbullet Large number of function evaluations.\\
-    & & & \textbullet \(\pazocal O(n^3)\) computational complexity (\(QR\) decomposition).\\
+    \multirow{2}{*}{\makecell[l]{Vector extrapolation\\ in cycling mode}} & \multirow{2}{*}{\((m+2)\) \((n\times 1)\) vectors} & \multirow{2}{*}{\(m+1\)} & \textbullet Large number of function evaluations.\\
+    & & & \textbullet \(\pazocal O(nm^2)\) computational complexity (\(QR\) decomposition).\\
   \hline\hline
   \multicolumn{4}{l}{\vphantom{\Huge |}\parbox{\textwidth}{\footnotesize{  \(^*\) The number of function evaluations in the Newton-Krylov methods will depend on how many iterations it will take for the inner loop to converge. There is a function evaluation per iteration of the inner loop.}}}
   \end{tabular}
@@ -1582,7 +1582,7 @@ One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} an
     to accuracy \(  \|J_\pazocal R(\mathbf x^k) \Delta x^*_m+ \pazocal R(\mathbf x^k)\| \leq \eta\|\pazocal R(\mathbf x^k)\|\)}
     \\
     \hline
-    \makecell[l]{Cycling with\\ vector extrapolation} & \makecell[l]{\vphantom{\Huge |}
+    \makecell[l]{Vector extrapolation\\ in cycling mode} & \makecell[l]{\vphantom{\Huge |}
     \(\mathbf x^{k+1} = \sum_{j=0}^m \gamma_j \pazocal S^{i+j}(\mathbf x^k)\),\\
     \(\gamma_q = c_q/\sum_j c_j,\quad q=0,1,\dots,m,\)\\
     \textbf{MPE}: \(\mathbf c ' = [c_0,c_1,\dots,c_{m-1}]^T = \arg \min_{\bar{\mathbf c}} \left\|\mathscr S^{m-1} \bar{\mathbf c}^\prime + \pazocal S^{i+m}(\mathbf x^k)\right\|_2\),\\

@@ -1,0 +1,73 @@
+%% Creator: Inkscape 1.2 (1:1.2+202206011327+fc4e4096c5), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'necking2.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{1571.08609898bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,1.25255502)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{figures/necking2.pdf}}%
+    \put(0.89272684,1.04695397){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.05400901\unitlength}\raggedright $x$\end{minipage}}}%
+    \put(0.94419506,1.07257821){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.05400901\unitlength}\raggedright $y$\end{minipage}}}%
+    \put(0.48678784,1.0387458){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.05400901\unitlength}\raggedright $h$\end{minipage}}}%
+    \put(0.30756278,1.1716789){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.05400901\unitlength}\raggedright $2r$\end{minipage}}}%
+    \put(0.89581416,1.14763369){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.14502292\unitlength}\raggedright $\bar{u}_y$\end{minipage}}}%
+    \put(0.08864048,1.14763369){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.14502292\unitlength}\raggedright $\bar{u}_y$\end{minipage}}}%
+    \put(0.43540959,0.99860451){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.49456728\unitlength}\raggedright \textbf{b)} $\bar{u}_y=\SI{2}{\milli\meter}$\end{minipage}}}%
+    \put(0.43540959,0.75221675){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.44219872\unitlength}\raggedright \textbf{c)} $\bar{u}_y=\SI{4}{\milli\meter}$\end{minipage}}}%
+    \put(0.43540959,0.51371897){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.45734145\unitlength}\raggedright \textbf{d)} $\bar{u}_y=\SI{6}{\milli\meter}$\end{minipage}}}%
+    \put(0.43540959,0.28405443){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.48951974\unitlength}\raggedright \textbf{e)} $\bar{u}_y=\SI{8}{\milli\meter}$\end{minipage}}}%
+    \put(0.42618673,0.04681854){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.4731151\unitlength}\raggedright Temperature, $T$ / $\si{\kelvin}$\end{minipage}}}%
+    \put(0.06669148,0.04402902){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.10464233\unitlength}\raggedright 293.00\end{minipage}}}%
+    \put(0.87333609,0.04234609){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.10464233\unitlength}\raggedright 378.31\end{minipage}}}%
+    \put(0.48155351,1.08229311){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.05400901\unitlength}\raggedright A\end{minipage}}}%
+    \put(0.43561937,1.24160744){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.49456728\unitlength}\raggedright \textbf{a)} $\bar{u}_y=\SI{0}{\milli\meter}$\end{minipage}}}%
+  \end{picture}%
+\endgroup%

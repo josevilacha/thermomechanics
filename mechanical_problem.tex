@@ -84,7 +84,7 @@ TThe Virtual Work Principle states, in a material description, that the body is 
 \subsection{Mechanical constitutive initial boundary value problem}
 
 It is now possible to pose the mechanical constitutive initial value problem in its weak form.
-Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time, as presented in Figure \ref{}.
+Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time, as presented in Figure \ref{fig:quasi_static_prob }.
 In addition, it is assumed that the interior of the body was subjected to a prescribed history of body forces, $\vect b(\bm X, t)$, $t\in[t_0, t_\text{end}]$, and to the following boundary conditions:
 \begin{itemize}
     \item \textbf{Natural (or Neumann) boundary condition:}
@@ -93,7 +93,13 @@ In addition, it is assumed that the interior of the body was subjected to a pres
     The boundary portion $\Omega_\text{motion, 0}$ of $\mathscr{B}$ is subjected to a prescribed displacement field history, $\vect u_\text{presc}(\vect X, t)$, such that $$\vect \varphi(\vect X, t) = \vect X + \vect u_\text{presc}(\vect X, t),\quad \vect X\in \partial\Omega_\text{motion, 0},\quad t\in[t_0, t_\text{end}].$$
 \end{itemize}
 
-It is also convenient to define the set of kinematically admissible displacements of $\mathscr{B}$ as the set of all sufficiently regular displacement functions tha satisfy the essential boundary condition \citep{de2011computational},
+\begin{figure}
+  \includegraphics[width=.9\textwidth]{quasi_static_prob}
+  \caption{Quasi-static mechanical constitutive initial boundary value problem.}
+\label{fig:quasi_static_prob}
+\end{figure}
+
+It is also convenient to define the set of kinematically admissible displacements of $\mathscr{B}$ as the set of all sufficiently regular displacement functions tha satisfy the essential boundary condition \citep{de_souza_neto_computational_2008},
 \begin{highlight}[innertopmargin=-5pt]
     \begin{multline}
         \mathscr{K}_u\equiv \{\vect u:\Omega_0\times \mathscr{R}\to \mathscr{U}\;|\;\vect u(\vect X,t) = \vect u_\text{presc} (\vect X,t),\\ \vect X\in\partial \Omega_\text{motion,0},\quad t\in [t_0,t_\text{end}]\}.\quad
