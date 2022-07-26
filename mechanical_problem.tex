@@ -1,4 +1,4 @@
-\chapter{Mechanical problem}
+\chapter{Mechanical problem} \label{ch:mechanical_problem}
 
 In the following chapter, the general framework presented in the previous chapter is applied to a purely mechanical analysis, neglecting the thermal terms.
 
@@ -81,7 +81,7 @@ TThe Virtual Work Principle states, in a material description, that the body is 
  \end{equation}
 \end{problem}
 
-\subsection{Mechanical constitutive initial boundary value problem}
+\subsection{Mechanical constitutive initial boundary value problem} \label{sec:mechanical_constitutive_problem}
 
 It is now possible to pose the mechanical constitutive initial value problem in its weak form.
 Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time, as presented in Figure \ref{fig:quasi_static_prob }.
@@ -188,7 +188,7 @@ and in the material description as
     \end{equation}
 \end{problem}
 
-\section{Finite Element Method} \label{sec:fem}
+\section{Finite Element Method} \label{sec:fem_mech}
 
 With the incremental weak form of the mechanical constitutive initial boundary value problem now established, an approximated solution can be found using the Finite Element Method.
 
@@ -256,7 +256,7 @@ the displacement field $\bm u(\vect x)$ defined over the global domain $\Omega$,
     \end{equation}
 \end{highlight}
 
-\subsection{Spatial discretization} \label{sec:spatial_discretization}
+\subsection{Spatial discretization} \label{sec:spatial_discretization_mech}
 
 Applying the aforementioned finite element discretization to the incremental mechanical constitutive initial boundary value problem, we can then write in the spatial description
 \begin{highlight}
@@ -380,38 +380,40 @@ where $\vect \zeta_i$ and $w_i$, $i=1,\dots,n_\text{GP}$ are the positions and w
     j(\vect \zeta) = \text{det}\,\left(\frac{\partial \vect x}{\partial \vect \zeta}\right).
 \end{equation}
 
-
-\section{Linearisation}
-
-The equilibrium equation, Equation \eqref{eq:equilibrium_spatial} in a spatial description and Equation \eqref{eq:equilibrium_material} in a material description, is generally nonlinear due to geometrical and/or material nonlinearities.
-The Newton-Raphson Method is an efficient and robust iterative scheme with a quadratic convergence rate often used to solve the equilibrium equation at each time increment, $t_n$.
-The residual of the fully discretized balance of linear momentum is defined for an iteration step \(i\) of the Newton-Raphson method as
-\begin{equation}
-\mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{M} \ddot{\mathbf u}_{n+1}^{i}+\mathbf f^\text{\;int} (\mathbf{u}_{n+1}^{i})-\mathbf{f}_{n+1}^\text{\;ext}.
-\end{equation}
-A Taylor expansion about the current solution \(\mathbf{u}_{n+1}^{i}\) is performed, discarding all terms of  higher order than one, yielding the linearised form
-\begin{equation}
-\operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{r}(\mathbf{u}_{n+1}^{i})+\underbrace{\left.\frac{\partial \mathbf{r}(\mathbf{u}_{n+1})}{\partial \mathbf{u}_{n+1} }\right|^{i} }_{\mathbf{K}(\mathbf{u}_{n+1}^{i})} \delta \mathbf{u}.
-\end{equation}
-with the dynamic effective tangential stiffness matrix \(\mathbf{K}(\mathbf{u}_{n+1}^{i})\).
-The linearisation of the internal forces included in \(\mathbf{K}\) is known as the tangential stiffness matrix \(\mathbf{K}_T\), which is defined as
-\begin{equation}
-\mathbf{K}_{T}^{i}=\left.\frac{\partial \mathbf{f}^{\text{\;int}} }{\partial \mathbf{u}_{n+1}}\right|^{i}.
-\end{equation}
-Equilibrium is achieved if
-\begin{equation}
-\operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i}) = \mathbf{0},
-\end{equation}
-so that a linear system of equation is given by
-\begin{equation}
-\mathbf{K}(\mathbf{u}_{n+1}^{i}) \delta \mathbf{u}=-\mathbf{r}\left(\mathbf{u}_{n+1}^{i}\right).
-\end{equation}
-Thus, a new solution of the displacement increment \(\delta \mathbf{u}\) for current iteration step \(i+1\) is determined, and the final displacement solution of time step \(n+1\) is obtained via updating
-\begin{equation}
-\mathbf{u}_{n+1}^{i+1}=\mathbf{u}_{n+1}^{i}+\delta \mathbf{u}.
-\end{equation}
-A solution of \(t_{n+1}\) is found, i.e. an equilibrium state is reached and \(\mathbf{u}_{n+1}=\mathbf{u}_{n+1}^{i+1}\), if prescribed, user-defined convergence criteria are fulfilled.
+\jvc{Note on time integration.}
 
 
-
-\section{Constitutive laws}
+% \section{Linearisation}
+%
+% The equilibrium equation, Equation \eqref{eq:equilibrium_spatial} in a spatial description and Equation \eqref{eq:equilibrium_material} in a material description, is generally nonlinear due to geometrical and/or material nonlinearities.
+% The Newton-Raphson Method is an efficient and robust iterative scheme with a quadratic convergence rate often used to solve the equilibrium equation at each time increment, $t_n$.
+% The residual of the fully discretized balance of linear momentum is defined for an iteration step \(i\) of the Newton-Raphson method as
+% \begin{equation}
+% \mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{M} \ddot{\mathbf u}_{n+1}^{i}+\mathbf f^\text{\;int} (\mathbf{u}_{n+1}^{i})-\mathbf{f}_{n+1}^\text{\;ext}.
+% \end{equation}
+% A Taylor expansion about the current solution \(\mathbf{u}_{n+1}^{i}\) is performed, discarding all terms of  higher order than one, yielding the linearised form
+% \begin{equation}
+% \operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{r}(\mathbf{u}_{n+1}^{i})+\underbrace{\left.\frac{\partial \mathbf{r}(\mathbf{u}_{n+1})}{\partial \mathbf{u}_{n+1} }\right|^{i} }_{\mathbf{K}(\mathbf{u}_{n+1}^{i})} \delta \mathbf{u}.
+% \end{equation}
+% with the dynamic effective tangential stiffness matrix \(\mathbf{K}(\mathbf{u}_{n+1}^{i})\).
+% The linearisation of the internal forces included in \(\mathbf{K}\) is known as the tangential stiffness matrix \(\mathbf{K}_T\), which is defined as
+% \begin{equation}
+% \mathbf{K}_{T}^{i}=\left.\frac{\partial \mathbf{f}^{\text{\;int}} }{\partial \mathbf{u}_{n+1}}\right|^{i}.
+% \end{equation}
+% Equilibrium is achieved if
+% \begin{equation}
+% \operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i}) = \mathbf{0},
+% \end{equation}
+% so that a linear system of equation is given by
+% \begin{equation}
+% \mathbf{K}(\mathbf{u}_{n+1}^{i}) \delta \mathbf{u}=-\mathbf{r}\left(\mathbf{u}_{n+1}^{i}\right).
+% \end{equation}
+% Thus, a new solution of the displacement increment \(\delta \mathbf{u}\) for current iteration step \(i+1\) is determined, and the final displacement solution of time step \(n+1\) is obtained via updating
+% \begin{equation}
+% \mathbf{u}_{n+1}^{i+1}=\mathbf{u}_{n+1}^{i}+\delta \mathbf{u}.
+% \end{equation}
+% A solution of \(t_{n+1}\) is found, i.e. an equilibrium state is reached and \(\mathbf{u}_{n+1}=\mathbf{u}_{n+1}^{i+1}\), if prescribed, user-defined convergence criteria are fulfilled.
+%
+%
+%
+% \section{Constitutive laws}

@@ -13,7 +13,7 @@ This presentation seeks to provide a literature overview of the available approa
 For the sake of clarity, the discretized equations of the thermo-mechanical problem at the next time instant, \(n+1\)e are recovered here
 \begin{gather}
     \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \label{eq:mech_problem} \\
-    \mathbf C \dot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0. \label{eq:therm_problem}
+    \mathbf C \dot{\bm \uptheta}_{n+1} + \mathbf K \bm \uptheta_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0. \label{eq:therm_problem}
 \end{gather}
 The complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
 
@@ -58,7 +58,6 @@ or
 \end{equation}
 where the subscript "J" stands for Jacobi and the subscript "GS" for Gauss-Seidel.
 The reason for this choice of subscripts is made clear in Section~\ref{sec:fixed_point_approach}.
-
 
 Since the methods described below for the solution of nonlinear systems of equations apply to both functions \(\pazocal R_\mathrm{J}\) and \(\pazocal R_\mathrm{GS}\), a general function denoted as \(\pazocal R\), whose variable is \(\mathbf x\), is considered instead.
 As already stated, the solution for the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}) can be abstracted as the solution of
@@ -489,6 +488,7 @@ Applying to Equation~\eqref{eq:def_res_gauss_seidel}
 
 Constant underrelaxation works well if \(\omega\) is close to 1 but leads to a slow convergence if \(\omega\) has to be chosen close to 0.
 Thus, the constant underrelaxation method creates unmanageable computational costs for severe instabilities.
+Overrelaxation can also be considered, keeping in mind that for \(\omega > 2\) convergence is lost.
 The optimal \(\omega\) is not necessary the largest stable one \citep{gatzhammer_efficient_2014} and has to be set empirically.
 In what follows, alternative methods are discussed to decrease the number of iterations necessary while maintaining stability.
 
@@ -574,9 +574,10 @@ This coefficient is updated in every iteration cycle as a function of two previo
   \begin{equation} \label{eq:aitken_relaxation_factor}
     \omega^{k}=-\omega^{k-1} \frac{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{\mathrm{T}} \mathbf{r}^{(k-1)}}{\left(\mathbf{r}^{(k)}-\mathbf{r}^{(k-1)}\right)^{2}}.
   \end{equation}
-\end{highlight}\jvc{Check signs!!!}
+\end{highlight}
 Comparing with Equations~\eqref{eq:newton_system} and \eqref{eq:newton_iter}, \(\omega^{k}\) can be, in a sense, regarded as an approximation to the inverse of the Jacobian.
 Dynamic relaxation is also easy to implement, and the additional computational input is acceptable since only inner vector products must be performed.
+The dynamical relaxation coefficient is restricted to the range \((0,2)\) because employing relaxation with a relaxation coefficient outside this range leads to loss of convergence \citep{erbts_accelerated_2012}.
 See Box~\ref{box:aitken_relaxation} for the pseudocode.
 
 \begin{framedbox}[htb]
@@ -621,8 +622,7 @@ J_\pazocal R^{k+1} \mathbf q=J_\pazocal R^{k} \mathbf q \quad \forall \mathbf q 
 \end{equation}
 which stipulates that there be no new information from \(J_\pazocal R^{k}\) to \(J_\pazocal R^{k+1}\) along any direction \(\mathbf q\) orthogonal to \(\Delta \mathbf x^{k}\).
 
-\cite{broyden_class_1965} developed a method satisfying both secant condition (Equation~\eqref{eq:secant_condition}) and the no-change condition (Equation~\eqref{eq:no_change_condition}).
-By simply imposing these conditions he arrived at the update formula
+\cite{broyden_class_1965} developed a method satisfying both secant condition (Equation~\eqref{eq:secant_condition}) and the no-change condition (Equation~\eqref{eq:no_change_condition}), arriving at the update formula
 \begin{highlight}
 \begin{equation} \label{eq:good_update_broyden}
 J_{\pazocal R}^{k+1}=J_{\pazocal R}^{k}+\left(\Delta \pazocal R^{k}-J_{\pazocal R}^{k} \Delta \mathbf x^{k}\right) \frac{\Delta {\mathbf x^{k}}^{\mathrm{T}}}{\Delta {\mathbf x^{k}}^{\mathrm{T}} \Delta \mathbf x^{k}}.
@@ -945,7 +945,7 @@ Information about \(G_\pazocal R^1\) is applied in the preconditioning of the sy
 To compute \(V^i\), \cite{fang_two_2009} suggest a \(QR\) decomposition with pivoting.
 Be it for a Type-II update, where one needs to solve a least-squares problem, or for a Type-I update, one needs to invert a generally non-symmetric matrix.
 This approach leads to better numerical stability when the matrices to be inverted are singular or ill-conditioned, compared with solving the normal equations.
-The \(QR\) decomposition has a computational cost of \(\pazocal O(n_\text{unknown}^3)\) algebraic operations \citep{dennis_numerical_1996}.
+The \(QR\) decomposition has a computational cost of \(\pazocal O(n_\text{unknown}m^2)\) algebraic operations \citep{dennis_numerical_1996}.
 
 If the size of the groups \(s_1, s_2,\dots\) are fixed from one Newton iteration to the next, so the \(E^i\) and \(V^i\) matrices remain the same from one iteration to the next, the computation effort to compute them is saved from one iteration to the next.
 Here only constant \(s=s_1=s_2 =\cdots\) is considered, where \(s=\infty\) corresponds to Anderson's mixing, where all previous iterates available are considered.
@@ -961,7 +961,7 @@ Thus, appplying the method as suggest by \cite{fang_two_2009}, leads to a storag
   \item An \(n_\text{unknown} \times(m-1)\) matrix for \(\mathscr{R}^{1}, \ldots, \mathscr{R}^{k}\) (shared with \(V^{1}, \ldots, V^{k}\) ).
   \item For Type-I update we also store the last group \(N^{k}\), since its computation involves \(G_\pazocal R^{k}\).
 \end{enumerate}
-and for each nonlinear iteration the computational cost is \(\pazocal O(n_\text{unknown}^3)\).
+and for each nonlinear iteration the computational cost is \(\pazocal O(n_\text{unknown}m^2)\).
 For \(m=1\), \(V^i\) can be directly computed without needing to invert matrices, and the cost comes down to \(\pazocal O(n_\text{unknown})\) per nonlinear iteration.
 Also, when \(k\) is different from any \(z_i\) a group is being complete, one can either use a shortened group or reuse the approximation to the Jacobian without using the new information.
 This save computational effort and those iteration cost only \(\pazocal O(n_\text{unknown})\).
@@ -1214,7 +1214,7 @@ See Box~\ref{box:arnoldi_process} for the pseudo-code of the Arnoldi-Gram-Schmid
   \end{center}
 \end{framedbox}
 
-After obtaining an orthogonal basis for the Krylov subspace \(\pazocal K_m\), the Newton-Arnoldi projects the \(m\)th residual onto the Krylov subspace and sets it to zero, similar to a weigthed residual method, i.e.,
+After obtaining an orthogonal basis for the Krylov subspace \(\pazocal K_m\), the Newton-Arnoldi method projects the \(m\)th residual onto the Krylov subspace and sets it to zero, similar to a weigthed residual method, i.e.,
 \begin{equation}
   \mathbf Q_m \left(\pazocal R(\mathbf x^k) - J_\pazocal R(\mathbf x^k)\Delta \mathbf x^*_m\right) = \mathbf 0.
 \end{equation}
@@ -1238,7 +1238,7 @@ This problem is however mitigated by the fact the Newton system is only solved u
   \|J_\pazocal R(\mathbf x^k) \Delta x^*_m+ \pazocal R(\mathbf x^k)\| \leq \eta\|\pazocal R(\mathbf x^k)\|,
 \end{equation}
 where \(\eta\) is called the forcing term and it is chosen to avoid oversolving the Newton system (Equation~\eqref{eq:newton_system}.
-As a simple approach, \cite{kelley_solving_2003} suggests \(\eta=0.1\). However, he describes more sophisticated ways to choose this parameter.
+As a simple approach, \cite{kelley_solving_2003} suggests \(\eta=0.1\). However, he describes more sophisticated ways to choose this parameter, such as the Eisenstat-Walker method.
 The smaller the forcing term \(\eta\), the closer one gets to the "standard" Newton method.
 However, especially in the first nonlinear iterations, choosing a \(\eta\) that is too small leads to unnecessarily long computational times. The linear system is being solved with too much precision.
 See Box~\ref{box:newton_krylov} for the pseudocode of the Newton-Arnoldi and Newton-GMRES.
@@ -1283,7 +1283,7 @@ See Box~\ref{box:newton_krylov} for the pseudocode of the Newton-Arnoldi and New
   \end{center}
 \end{framedbox}
 
-\subsection{Extrapolation tecniques with cycling} \label{sec:vector_extrapolation}
+\subsection{Extrapolation tecniques in cycling mode} \label{sec:vector_extrapolation}
 
 There is a vast literature on sequence acceleration/extrapolation methods (see  \cite{brezinski_extrapolation_2013} and \cite{sidi_vector_2017} for textbook treatments of this topic).
 One often deals with sequences and series in numerical analysis, applied mathematics, and engineering.
@@ -1317,7 +1317,7 @@ For the geometrical interpretation of Aitken's \(\Delta^2\) method, see Figure~\
   \label{fig:aitken}
 \end{figure}
 
-One can also show that if \((S_n)\) goes to its limit \(\S\) at a rate strictly greater than \(1\)\footnote{$(S_{n})$, ${n \in \mathbb{N}}$ converges linearly to $S$ if there exists a number $\mu \in(0,1)$ such that \(\lim_{n \rightarrow \infty} \frac{\left|S_{n+1}-S\right|}{\left|S_{n}-S\right|}=\mu\).}, \((T_n)\) does not have a better rate of convergence.
+One can also show that if \((S_n)\) goes to its limit \(S\) at a rate strictly greater than \(1\)\footnote{$(S_{n})$, ${n \in \mathbb{N}}$ converges linearly to $S$ if there exists a number $\mu \in(0,1)$ such that \(\lim_{n \rightarrow \infty} \frac{\left|S_{n+1}-S\right|}{\left|S_{n}-S\right|}=\mu\).}, \((T_n)\) does not have a better rate of convergence.
 
 In practice, the sequence produced by Aitken's \(\Delta^2\) method tends to converge faster to the limit than \((S_n)\) does.
 Very often, it is much cheaper to calculate \((T_n)\), which involves only the calculation of differences, one multiplication, and one division, than to calculate many more terms of the sequence \((S_n)\).
@@ -1486,8 +1486,7 @@ More precisely, the MPE and the RRE methods are mathematically equivalent to the
 
 However, Krylov subspace methods and extrapolation methods differ in their algorithmic aspects entirely:
 The only input of the former is a procedure that performs the matrix-vector multiplication without explicitly knowing the matrix coefficient matrix.
-The latter takes as their only input a vector sequence that results from a fixed-point iterative scheme without knowing the matrix coefficient matrix to know what the scheme is.
-
+The latter takes as their only input a vector sequence that results from a fixed-point iterative scheme without knowing the matrix coefficient.
 
 In \cite{michler_interface_2005}, a Krylov-subspace method is proposed in the context of FSI.
 However, as pointed out by \cite{kuttler_vector_2009}, the correct term for this approach should be instead a "Krylov-based vector extrapolation" method.
@@ -1501,14 +1500,23 @@ The method proposed can be obtained by applying the RRE to the sequence of resid
 \section{Multipoint iteration functions with memory}
 
 Multipoint iteration functions are rarer and are not thoroughly investigated in this exposition.
-One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} and Netwon-Krylov method that reuses the Krylov subspace from previous iterations \citep{sidi_vector_2017}.
+One can mention the Eirola-Nevanlinna family of methods \citep{fang_two_2009} and Netwon-Krylov method that reuses the Krylov subspace from previous iterations \citep{sidi_vector_2017}.
 
-\section{Conclusions}
+\section{Summary}
+
+The overview provided in this chapter centered on implicit techniques for partitioned multi-physics coupled applications.
+The problem can be slightly reformulated as a system of nonlinear equations, where the residual represents the difference between the input and output after the fixed-point procedure has been applied. This allows the problem to be solved using a variety of methods that have been described in the literature.
+The key issues in the current application are the memory requirements of the numerical technique due to a potential high number of unknowns and the number of residual evaluations, as each assessment necessitates a significant computational effort.
+Table~\ref{tab:mem_nr_func_eval_obs} provides information on the memory requirements, the number of function evaluations per nonlinear iteration, and some pertinent observations for each technique under consideration.
+
+Except for the MMPE and SVD-MPE approaches, all the methods discussed in the present chapter are analyzed in the next chapter (Chapter~\ref{ch:}).
+As seen in Table~\ref{tab:form_nonlin_methods}, where the update formulae for the methods are compiled, their implementation is made simpler by the similarities in the update formula for the value of the unknown variable at each nonlinear iteration.
+
 
 \begin{landscape}
 \begin{table}[htbp]
   \caption{Summary of the comparison between method for the solution methods of non-linear systems of equations. \(n\) here denotes the number of unknowns and \(m\) denotes depending on the context the number of previous iterates considered, the number of fixed point evaluations or the size of the Krylov subspace.}
-\label{tab:comparison_fft_galerkin_fem}
+\label{tab:mem_nr_func_eval_obs}
   % \setlength{\tabcolsep}{1pt}
   \centering
     \begin{tabular}{l cc p{10.5cm}}
@@ -1527,7 +1535,7 @@ One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} an
     & & & \textbullet Improved stability over fixed-point.\\
     \hline
     \multirow{3}{*}{\makecell[l]{Broyden-like family\\\citep{fang_two_2009}}} & \multirow{3}{*}{\makecell[c]{2 \((n\times 1)\) vectors\\2 \((n\times (m-1))\) matrices}} & \multirow{3}{*}{1} & \textbullet \(\pazocal O(nm^2)\) computation complexity (\(QR\) decomposition). \\
-    & & & \textbullet Low number of function evauations\\
+    & & & \textbullet Low number of function evaluations\\
     & & & \textbullet Superlinear convergence when \(m=1\).\\
     \hline
     \multirow{3}{*}{\makecell[l]{Broyden's method\\\citep{kelley_solving_2003}}} & \multirow{3}{*}{\makecell[c]{Up to\\ \((m+2) (n\times 1)\) matrices}} & \multirow{3}{*}{1} & \textbullet \(\pazocal O(n)\) computation complexity.\\
@@ -1550,7 +1558,7 @@ One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} an
 
 \begin{table}[htbp]
   \caption{Summary of the update formulas for the solution methods of non-linear systems of equations.}
-\label{tab:comparison_fft_galerkin_fem}
+\label{tab:form_nonlin_methods}
   % \setlength{\tabcolsep}{1pt}
   \centering
     \begin{tabular}{l c}
@@ -1598,3 +1606,5 @@ One can mention the Airola-Nevanlinna family of methods \citep{fang_two_2009} an
   \hline\hline
   \end{tabular}
 \end{table}
+
+\newpage\null\thispagestyle{blank}\newpage

@@ -1,20 +1,33 @@
 \chapter{Thermo-mechanical problem}
 \label{chapter:thermo_mechanical_problem}
 
-In the following chapter, the general framework presented in chapter~\ref{} is applied to the complete thermo-mechanical analysis.
-Chapters~\ref{} and \ref{} concerning the standalone mechanical and thermal problems provide a guide for the developments that follow.
-This coupling is a so-called volume coupling, as in each point of the domain, the two fields are coupled.
-In contrast, surface-coupled problems, e.g., fluid-structure interactions problems, include problems where there is coupling only at the interface between the fluid and the structural domain.
+The full thermo-mechanical analysis is conducted in the subsequent chapter using the overall framework discussed in Chapter~\ref{ch:continuum_mechanics}.
+The independent mechanical and thermal problems discussed in the Chapters~\ref{ch:mechanical_problem} and \ref{ch:thermal_problem} serve as a roadmap for the developments that come next.
+Since the two fields are related at every point of the domain, this coupling is referred to as a volume coupling.
+In contrast, surface-coupled issues, such as those involving fluid-structure interactions, encompass situations where coupling only occurs at the boundary between the fluid and the structural domain.
+The thermomechanical potential is the typical methodology for finite deformation thermomechanical analysis \citep{danowski_computational_2014}.
 
-The standard approach to finite deformation thermomechanical analysis is the thermomechanical potential \cite{}.
-It is already included in the description of continuum thermodynamics in Chapter~\ref{}, where the Helmholtz free-energy is allowed to depend on the temperature \(\theta\).
-Thus, the temperature is directly included in the constitutive law.
-Following the setup of finite strain plasticity in the general non-isothermal case, in addition to the plastic intermediate configuration, a thermal intermediate configuration has to be considered \cite{}, i.e.,
+
+
+\subsection{Thermo-mechanical constitutive initial value problem}
+
+The following set of equations in the material configuration set up a constitutive model based on internal variables in the complete thermo-mechanical scenario, taking into account all quantities relevant to both the mechanical and the thermal domain
+    \begin{gather}
+        \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
+        s = - \frac{\partial \psi}{\partial \theta},\\
+        \psi = \psi(\mat F,\theta, \mat \alpha),\label{eq:thermo_mech_helmholtz_free_energy}\\
+        \dot{\bm \alpha} = f(\mat F, \theta, \bm g_0,\bm \alpha),\\
+        \bm q_0 = g(\bm F, \theta, \bm g_0, \bm \alpha).
+    \end{gather}
+
+% It is already mentioned in Chapter~\ref{ch:continuum_mechanics}, that the Helmholtz free energy is permitted to vary with temperature (\theta\).
+% So, the temperature is directly incorporated into the constitutive equation.
+In addition to the plastic intermediate configuration that must be taken into account after the establishment of finite strain plasticity in the general non-isothermal situation, a thermal intermediate configuration must also be considered, i.e.,
 \begin{equation}
   \bm F = \bm F^t\,\bm F^e\,\bm F^p.
 \end{equation}
 
-In contrast to thermal deformations, which are solely volumetric, the volume remains constant during plastic deformations for most metals.
+The volume is constant during plastic deformations for the majority of metals, unlike thermal deformations, which are only volumetric.
 Hence, plastic deformations are assumed isochoric, \(J^p = \operatorname{det}\bm F^p=1\), yielding the following split for the jacobian of the deformation
 \begin{equation}
   J = J^t J^e.
@@ -27,19 +40,8 @@ Combining the last two equations, the elastic volumetric deformation \(J^e\), ca
 \begin{equation} \label{eq:jacobian_elasatic_temp}
   J^e  = J^e(\theta) = J/J^t.
 \end{equation}
-Consequently, the additional thermal intermediate configuration can be omitted and volumetric deformations are described only \(J^e\).
-Thus, if thermal stresses arise due to a temperature change, elastic strains balance the body which implicitly correspond to the thermal strains according to Equation~\eqref{eq:jacobian_elasatic_temp}.
-
-\subsection{Thermo-mechanical constitutive initial value problem}
-
-In the full thermo-mechanical case, considering all quantities related to both the mechanical and the thermal domain, a constitutive model based on internal variables is established by the following set of equations
-    \begin{gather}
-        \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
-        s = - \frac{\partial \psi}{\partial \theta},\\
-        \psi = \psi(\mat F,\theta, \bm g_0,\mat \alpha),\label{eq:thermo_mech_helmholtz_free_energy}\\
-        \dot{\bm \alpha} = f(\mat F, \theta, \bm g_0,\bm \alpha),\\
-        \frac{1}{\theta}\bm q_0 = g(\bm F, \theta, \bm \alpha).
-    \end{gather}
+As a result, the additional thermal intermediate configuration can be dropped, leaving only the volumetric deformations to be considered.
+Elastic strains balance the body, which implicitly match the thermal strains, according to Equation~\eqref{eq:jacobian_elasatic_temp}, if thermal stresses develop as a result of a temperature change.
 
 The Helmholtz free energy \(\psi\) in Equation~\ref{eq:thermo_mech_helmholtz_free_energy} is expressed with respect to the reference volume, so that \(\psi\) is reformulated using potential functions,to emphasize this additive decomposition, as follows
   \begin{highlight}
@@ -47,28 +49,21 @@ The Helmholtz free energy \(\psi\) in Equation~\ref{eq:thermo_mech_helmholtz_fre
     \rho_{0} \psi\left(\bm{F}, \theta, \bm{\alpha}\right):=\hat{\mathbb{U}}\left(J^e,\theta\right)+\hat{\mathbb{W}}(\bm{F}_\text{iso},\theta)+\hat{\mathbb{M}}\left(J^e, \theta\right)+\hat{\mathbb{T}}(\theta)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}, \theta\right),
     \end{equation}
   \end{highlight}
-  where in contrast to the deformation gradient \(\bm{F}\), the Jacobi-determinant \(J^{e}\) and the isochoric deformation gradient \(\bm{F}_\text{iso}\) are applied.
+  where in contrast to the deformation gradient \(\bm{F}\), the Jacobi-determinant \(J^{e}\) relative only to the elastic component and the isochoric deformation gradient \(\bm{F}_\text{iso}\) are applied.
   \(\hat{\mathbb U}\) and \(\hat{\mathbb{W}}\) can be identified with the standard hyperelastic materials potentials, with the caveat that now the material parameters can depend on the temperature, whereas
   \(\hat{\mathbb M}\) describes the thermomechanical coupling potential.
-  The potential \(\hat{\mathbb{T}}\) represents the purely thermal potential and is assumed identical to Equation~\eqref{}.
+  The potential \(\hat{\mathbb{T}}\) represents the purely thermal potential.
   Finally, \(\hat{\mathbb{K}}\) is the convex plastic potential.
 
 Based on the potential functions, the coupling of the two fields, mechanical and thermal, can be explained:
 \begin{itemize}
   \item the temperature enters the structural field via additional thermal stresses and possibly via temperature-dependent material parameters.
   Herein, \(\hat{\mathbb{M}}\) characterizes the thermomechanical coupling potential, leading to thermal stresses and thermal expansion and dilatation, whereas \(\hat{\mathbb{K}}\) being temperature-dependent and therefore enables exemplarily von Mises plasticity combined with temperature-dependent isotropic hardening and thermal softening.
-  \item the structure enters the thermal field via coupling terms, arising from \(\hat{\mathbb{M}}\) and \(\hat{\mathbb{K}}\), in addition to the purely thermal energy \(\hat{\mathbb T}\), and thus, coupling terms as the internal or mechanical dissipation \(\pazocal{D}_{\text {mech }}\) may emerge in the thermal balance equation. Furthermore, for finite deformation thermomechanical problems, where the initial domain \(\Omega_{0}\) deforms to \(\Omega\), so that \(\Omega \neq \Omega_{0}\), and a Lagrangian formulation is used, the deformation enters the thermal field additionally due to the mapping of all quantities in the balance equations to the reference configuration.
+  \item the structure enters the thermal field via coupling terms, arising from \(\hat{\mathbb{M}}\) and \(\hat{\mathbb{K}}\), and thus, coupling terms as the internal dissipation \(\pazocal{D}_{\text {int}}\) may emerge in the thermal balance equation.
+  Furthermore, for finite deformation thermomechanical problems, where the initial domain \(\Omega_{0}\) deforms to \(\Omega\), so that \(\Omega \neq \Omega_{0}\), and a Lagrangian formulation is used, the deformation enters the thermal field additionally due to the mapping of all quantities in the balance equations to the reference configuration.
 \end{itemize}
 
-The constitutive relations found for the first Piola-Kirchhoff stress tensor (Equation~\eqref{}) and the entropy (Equation~\eqref{}) are the same.
-The expression for the entropy in full can be written as
-\begin{highlight}
-  \begin{equation}
-    s = C_{V} \ln \left(\frac{\theta}{\theta_{0}}\right)-\frac{1}{\rho_{0}}\left(\frac{\partial \hat{\mathbb{U}}\left(J^e,\theta\right)}{\partial \theta} + \frac{\partial \hat{\mathbb{W}}(\bm{F}_\text{iso},\theta)}{\partial \theta} + \frac{\partial \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta}+\frac{\partial \hat{\mathbb{K}}\left(\bm \alpha, \theta\right)}{\partial \theta}\right).
-  \end{equation}
-\end{highlight}
-
-As in Chapter~\ref{}, the heat conduction law is chosen to be the Fourier heat conduction law, repeated here for the sake of clarity in the spatial description
+As in Chapter~\ref{ch:thermal_problem}, the heat conduction law is chosen to be the Fourier heat conduction law, repeated here for the sake of clarity in the spatial description
 \begin{equation}
   \bm q = - k \bm g.
 \end{equation}
@@ -85,22 +80,20 @@ Thus, the material thermo-mechanical constitutive initial value problem can be s
     \begin{equation}
         \mat F(t),\quad t\in[t_0,t_\text{end}],
     \end{equation}
-    and the history of the temperature distribution
-    \begin{equation}
-    \theta(t),\quad t\in[t_0,t_\text{end}],
-    \end{equation}
-    find the functions for $\mat P(t)$, \(s(t)\), \(\bm q_0(t)\) and $\bm \alpha(t)$ such that the constitutive equations
+    and the history of the temperature distribution and its gradient
+    \begin{gather}
+    \theta(t),\quad t\in[t_0,t_\text{end}],\\
+    \bm g_0(t), \quad t\in[t_0, t_\text{end}],
+    \end{gather}
+    find the functions for $\mat P(t)$, \(\bm q_0(t)\) and $\bm \alpha(t)$ such that the constitutive equations
     \begin{gather}
         \mat P = \rho_0 \frac{\partial \psi}{\partial \mat F},\\
-        s = C_{V} \ln \left(\frac{\theta}{\theta_{0}}\right)-\frac{1}{\rho_{0}}\left(\frac{\partial \hat{\mathbb{U}}\left(J^e,\theta\right)}{\partial \theta} + \frac{\partial \hat{\mathbb{W}}(\bm{F}_\text{iso},\theta)}{\partial \theta} + \frac{\partial \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta}+\frac{\partial \hat{\mathbb{K}}\left(\bm \alpha, \theta\right)}{\partial \theta}\right),\\
+        s = -\frac{\partial \psi}{\partial \theta},\\
         \psi =\frac{1}{\rho_0}\left( \hat{\mathbb{U}}\left(J^{e}\right)+\hat{\mathbb{W}}(\bm F_\text{iso})+\hat{\mathbb{M}}\left(J^{e}, \theta\right)+\hat{\mathbb{T}}(\theta)+\hat{\mathbb{K}}\left(\boldsymbol{\alpha}, \theta\right)\right),\\
         \bm q_0 = - k_0 \bm C^{-1} \bm g_0,\\
         \dot{\bm \alpha} = f(\mat F, \theta, \bm g_0 ,\bm \alpha),
     \end{gather}
-    are satisfied for every $t\in [t_0, t_\text{end}]$, where
-    \begin{gather}
-    \hat{\mathbb T}(\theta) = - C_{\mathrm{V}}\left[\left(\theta-\theta_{0}\right)-\theta \ln \left(\frac{\theta}{\theta_{0}}\right)\right].
-    \end{gather}
+    are satisfied for every $t\in [t_0, t_\text{end}]$.
     \end{problem}
 
 \subsection{Weak equilibrium. The principle of virtual work}
@@ -110,9 +103,9 @@ The strong equations that enforce the equilibrium of a body can be writen using 
   \rho_0 \ddot{\bm u} = \operatorname{div}_0\bm P + \bm b_0, \quad & \text{in $\Omega_0$},\\
    \rho_0 \dot e = \bm P :\dot{\bm F} + \rho_0 r -\operatorname{div}_0 \bm q_0, \quad & \text{in  $\Omega_0$}.
 \end{align}
-Following an approach entirely similar to the ones presented in Chapters~\ref{} and \ref{}, the weak form of the linear momentum and energy balance equations can be found to be
+Following an approach entirely similar to the ones presented in Chapters~\ref{ch:mechanical_problem} and \ref{ch:thermal_problem}, the weak form of the linear momentum and energy balance equations can be found to be
 \begin{problem}[Weak form of the linear momentum and energy balance equations (material version).]
-IIn a material description, the body is in mechanical and energetic equilibrium if and only if the First Piola-Kirchhoff stress field, \(\bm P(t)\), the heat flux vector \(\bm q_0(t)\), satisfy
+IIn a material description, the body is in mechanical equilibrium and energetic balance if and only if the First Piola-Kirchhoff stress field, \(\bm P(t)\), the heat flux vector \(\bm q_0(t)\), satisfy
     \begin{gather}
         \int_{\Omega_0} [\mat P(t):\nabla_0 \bm \eta - (\bm b_0(t) - \rho_0 \ddot{\bm u}(t))\cdot \bm \eta]\ud v - \int_{\partial\Omega_0} \bm t_0(t)\cdot \bm \eta\ud a = 0,\quad \forall \bm \eta \in \mathscr{V}_{u,0},\\
           \int_{\Omega_0}   \left[\left(\rho_0\dot e (t)- \bm P(t):\dot{\bm F}(t)- \rho_0r(t)\right) \xi - \bm q_0(t)\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} h_0(t) \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,0},
@@ -130,7 +123,7 @@ IIn a material description, the body is in mechanical and energetic equilibrium 
 \subsection{Mechanical constitutive initial boundary value problem}
 
 It is now possible to pose the thermo-mechanical constitutive initial value problem in its weak form.
-Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time, as presented in Figure \ref{}.
+Assume that a body $\mathscr{B}$ is made from a generic material, characterized by a given constitutive model, whose internal variables are known at the initial time.
 In addition, it is assumed that the interior of the body was subjected to a prescribed history of body forces, $\bm b(\bm X, t)$, and a prescribed history of heat sources, $r(\bm X,t)$, $t\in[t_0, t_\text{end}]$, and to the following boundary conditions:
 \begin{itemize}
     \item \textbf{Natural (or Neumann) boundary condition:}
@@ -145,7 +138,7 @@ In addition, it is assumed that the interior of the body was subjected to a pres
     \end{itemize}
 \end{itemize}
 
-It is also convenient to define the set of kinematically admissible displacements and admissible temperature distributions of $\mathscr{B}$ as the set of all sufficiently regular displacement and temperature functions that satisfy the correspondin essential boundary conditions \citep{de2011computational},
+It is also convenient to define the set of kinematically admissible displacements and admissible temperature distributions of $\mathscr{B}$ as the set of all sufficiently regular displacement and temperature functions that satisfy the corresponding essential boundary conditions \citep{de_souza_neto_computational_2008},
 \begin{highlight}[innertopmargin=-5pt]
     \begin{multline}
         \mathscr{K}_u\equiv \{\bm u:\Omega_0\times \mathscr{R}\to \mathscr{U}\;|\;\bm u(\bm X,t) = \bm u_\text{presc} (\bm X,t),\\ \bm X\in\partial \Omega_\text{motion,0},\quad t\in [t_0,t_\text{end}]\}.\quad
@@ -155,47 +148,27 @@ It is also convenient to define the set of kinematically admissible displacement
     \end{multline}
 \end{highlight}
 
-To obtain the thermo-mechanical initial boundary value problem, express the internal specific energy of the system using its specific Helmholtz free energy, yielding
-\begin{equation} \label{eq:derivative_specific_energy_form_helmholtz}
-  \dot e \equiv \dot \psi + s\dot \theta + \dot s\theta.
-\end{equation}
-Considering Equation~\eqref{} for the entropy, its time derivative is
-\begin{equation} \label{eq:derivative_entropy_thermo_mechanical}
-\dot{s}= C_{\mathrm{V}} \frac{1}{\theta} \dot{\theta}- \frac{1}{\rho_0\theta}\pazocal H^\text{ep},
-\end{equation}
-where the definition of \(\hat{\mathbb T}\) (Equation~\eqref{}) and the Gough-Joule effect, \(\pazocal H^\text{ep}\) is defined to be
-\begin{highlight}
-\begin{multline}
-\pazocal H^\text{ep} = \theta\left(
-\frac{\partial^{2} \hat{\mathbb{U}}\left(J^{e}, \theta\right)}{\partial \theta \partial J^{e}} \dot J^{e}+\frac{\partial^{2} \hat{\mathbb{U}}\left(J^{e}, \theta\right)}{\partial \theta^{2}} \dot{\theta}+\right.
-\left.+\frac{\partial^{2} \hat{\mathbb{W}}\left(\bm F_\text{iso}, \theta\right)}{\partial \theta^{2}} \dot{\theta}+\frac{\partial^{2} \hat{\mathbb{W}}\left(\bm F_\text{iso}, \theta\right)}{\partial \theta \partial \bm F_\text{iso}} : \dot{\bm F}_\text{iso}\right.\\
-\left.+\frac{\partial^{2} \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta \partial J^{e}} \dot J^{e}+\frac{\partial^{2} \hat{\mathbb{M}}\left(J^{e}, \theta\right)}{\partial \theta^{2}} \dot{\theta}+\right.
-\left.+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, \theta\right)}{\partial \theta^{2}} \dot{\theta}+\frac{\partial^{2} \hat{\mathbb{K}}\left(\boldsymbol{\alpha}_{k}, \theta\right)}{\partial \theta \partial \boldsymbol{\alpha}_{k}} * \dot{\bm\alpha}_{k}\right).
-\end{multline}
-\end{highlight}
-
-Applying the chain-rule, one finds for \(\dot\psi\)
+Using the definition of Helmholtz's energy (Equation~\ref{eq:def_helmholtz_free_energy}), the balance of energy (Equation~\eqref{eq:strong_energy_eq}) can be written as
 \begin{equation}
-  \dot \psi = \frac{\partial \psi}{\partial \bm F}:\dot{\bm F} + \frac{\partial \psi}{\partial \theta}\dot\theta + \frac{\partial \psi}{\partial \bm \alpha}*\dot{\bm \alpha},
+  \rho_0\dot \psi + \rho_0 \dot \theta s + \rho_0 \theta \dot s = \bm P:\dot{\bm F} + \rho_0 r - \operatorname{div}\bm q_0.
 \end{equation}
-which can be rewritten considering the constitutive relations for the first Piola-Kirchhoff stress tensor (Equation~\eqref{}) and the entropy (Equation~\eqref{}), and the definition of the thermodynamical forces (Equation~\eqref{}) as
-\begin{equation} \label{eq:time_derivative_psi}
-  \dot \psi = \frac{1}{\rho_0} \bm P:\dot{\bm F} -s\dot{\theta} - \bm A*\bm \alpha.
-\end{equation}
-Combining Equation~\eqref{eq:time_derivative_psi} and the expression found for the mechanical dissipation \(\pazocal D_\text{mech}\) in Equation~\eqref{} yields
-\begin{highlight}
-  \begin{equation}
-    \pazocal D_\text{mech} = \rho_0\bm A *\bm \alpha,
-  \end{equation}
-\end{highlight}
-and thus \(\dot\psi\) can be expressed as
-\begin{equation} \label{eq:dot_psi_dissipation}
-  \dot \psi = \frac{1}{\rho_0} \bm P:\dot{\bm F} -s\dot{\theta} -\frac{1}{\rho_0}\pazocal D_\text{mech}.
-\end{equation}
-
-Combining Equations~\eqref{derivative_specific_energy_form_helmholtz}, Equation~\eqref{eq:derivative_entropy_thermo_mechanical} and Equation~\eqref{eq:dot_psi_dissipation} yields
+Applying the chain rule to \(\dot s\) yields
 \begin{equation}
-  \dot e = \frac{1}{\rho_0}\bm P:\dot{\bm F} - \frac{1}{\rho_0}\pazocal D_\text{mech} - C_\mathrm{V}\dot \theta - \frac{1}{\rho_0}\pazocal H^\text{ep}.
+  \dot s = \frac{\partial s}{\partial \theta}\dot \theta + \frac{\partial s}{\partial J^e }: \dot{J^e} + \frac{\partial s}{\partial \bm F_\text{iso}}: \dot{\bm F}_\text{iso} + \frac{\partial s}{\partial \bm \alpha}*\dot{\bm \alpha},
+\end{equation}
+Applying Equation~\eqref{eq:def_cv_partial} regarding the specific heat at constant volume and defining \(\pazocal H^\text{ep}\) as
+\begin{equation}
+    \pazocal H^\text{ep} = - \rho_0\theta\left(\frac{\partial^2 \hat{\mathbb U}}{\partial J^e\partial \theta}: \dot{J^e} + \frac{\partial^2 \hat{\mathbb W}}{\partial \bm{F}_\text{iso}\partial \theta}: \dot{\bm{F}}_\text{iso} + \frac{\partial^2 \hat{\mathbb M}}{\partial J^e\partial \theta}: \dot{J^e} + \frac{\partial^2 \hat{\mathbb K}}{\partial \bm \alpha \partial \theta}*\dot{\bm \alpha} \right)
+\end{equation}
+reveals
+\begin{equation}
+  \rho_0 (\dot \psi +  \dot \theta s) - \bm P:\dot{\bm F} + \rho_0 C_V\dot \theta - \pazocal H^\text{ep} = \rho_0 r - \operatorname{div}\bm q_0.
+\end{equation}
+The quantitiy denoted by \(\pazocal H^\text{ep}\) is the so-called Gough-Joule effect or thermo-elastoplastic heating (or cooling) effect.
+According to Equation~\eqref{eq:def_int_dissipation}, the term \(\bm P:\dot{\bm F} - \rho_0(\dot \psi + \dot \theta s)\) is precisely the internal dissipation \(\pazocal D_\text{int}\).
+Accounting also for the constitutive law chosen for the heat flux, i.e., Fourier's law (Equation~\eqref{eq:def_fourier_law}), one finally obtains
+\begin{equation}
+  \rho_0 C_V \dot \theta = \rho_0 r + k\operatorname{div} \bm g_0 + \pazocal D_\text{int} + \pazocal H^\text{ep}.
 \end{equation}
 
 So the weak form of the thermo-mechanical constitutive initial boundary value problem can be stated in a spatial description as follows
@@ -206,7 +179,7 @@ and in the material description as
         \int_{\Omega_0} [\mat P(t):\nabla_0 \bm \eta - (\bm b_0(t)-\rho_0\ddot{\bm u}(t))\cdot \bm \eta]\ud v - \int_{\partial\Omega_0} \bm t_0(t)\cdot \bm \eta\ud a = 0,\quad \forall \bm \eta \in \mathscr{V}_{u,0},
         \end{equation}
         \begin{multline}
-        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta(t) -\pazocal D_\text{mech}(t) - \pazocal H^\text{ep}(t) - \rho_0 r(t)\right) \xi - \bm q_0(t)\cdot \nabla_0 \xi\right]\ud v\\ - \int_{\partial\Omega_0} h_0(t) \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,0},
+        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta(t) - \pazocal D_\text{int}(t) - \pazocal H^\text{ep}(t) - \rho_0 r(t)\right) \xi + k \bm g_0(t)\cdot \nabla_0 \xi\right]\ud v\\ - \int_{\partial\Omega_0} h_0(t) \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,0},
     \end{multline}
     where the space of virtual displacements at time $t$ is defined by
     \begin{equation}
@@ -216,14 +189,14 @@ and in the material description as
     \begin{equation}
     \mathscr{V}_{\theta,0} \equiv \left\{\xi:\Omega_0\to \mathscr{R}\;|\; \xi =  0\quad \text{in}\quad \partial\Omega_\text{temperature,0}\right\},
     \end{equation}
-    and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material mechanical constitutive initial value problem.
+    and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material thermomechanical constitutive initial value problem.
 \end{problem}
 
 \section{Time descretization} \label{sec:time_discretization}
 
-In the context of thermo-mechanical problems, a generic path-dependent model is a model in which the thermodynamical state does not depend only on the instantaneous deformation and temperature states but also on their history.
-Under these conditions, the solution of the constitutive initial value problem for a given set of initial conditions is usually not known for complex strain, $\mat F(t)$, or temperature paths, \(\theta(t)\), paths.
-Thus, as in the domain of a strictly mechanical problem, there is a need to use an appropriate numerical algorithm to integrate the rate constitutive equations.
+In the context of thermo-mechanical problems, a general path-dependent model is one that considers both the instantaneous deformation and temperature states as well as their history.
+Under these circumstances, for complex strain, $\bm F(t)$, or temperature paths, $\theta(t)$, the solution of the constitutive initial value problem for a given set of initial conditions is typically unknown.
+Therefore, it is necessary to employ a suitable numerical approach to integrate the rate constitutive equations, just as it would be in the case of a strictly mechanical problem.
 
 Attending to the thermo-mechanical constitutive initial boundary value problem and considering the time increment $[t_n, t_{n+1}]$, this approach is comprised by the following requirements:
 \begin{itemize}
@@ -243,10 +216,10 @@ Attending to the thermo-mechanical constitutive initial boundary value problem a
     where $\hat{\bm \alpha}$ is the incremental constitutive function for the set of internal variables.
 
     \item \textbf{Mechanical dissipation.}
- Considering a time increment $[t_n, t_{n+1}]$ and given the set $\bm \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ and the temperature distribution \(\theta_{n+1}\) at time $t_{n+1}$ determines the mechanical dissipation \(\pazocal D_\text{mech}\) as
+ Considering a time increment $[t_n, t_{n+1}]$ and given the set $\bm \alpha_n$ of internal variables at $t_n$, the deformation gradient $\mat F_{n+1}$ and the temperature distribution \(\theta_{n+1}\) at time $t_{n+1}$ determines the mechanical dissipation \(\pazocal D_\text{int}\) as
     \begin{highlight}
     \begin{equation}
-    \pazocal D_{\text{mech},n+1} = \hat{\pazocal D}_\text{mech}(\bm F_{n+1}, \theta_{n+1}, \bm \alpha_n).
+    \pazocal D_{\text{int},n+1} = \hat{\pazocal D}_\text{int}(\bm F_{n+1}, \theta_{n+1}, \bm \alpha_n).
     \end{equation}
     \end{highlight}
 
@@ -267,8 +240,8 @@ Making use of the aforementioned time discretization, one can state the weak for
         \int_{\Omega_0} [\hat{\mat P}(\mat F(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n):\nabla_0 \bm \eta - (\bm b_{0,n+1}-\rho_0\ddot{\bm u}_{n+1})\cdot \bm \eta]\ud v\\ - \int_{\partial\Omega_0} \bm t_{0,n+1}\cdot \bm \eta\ud a = 0,\quad \forall \bm \eta \in \mathscr{V}_{u,n+1},
         \end{multline}
         \begin{multline}
-        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta_{n+1} -\hat{\pazocal D}_\text{mech}(\bm F(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n) - \hat{\pazocal H}^\text{ep}(\bm{F}(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n)- \rho_0 r_{n+1} \right) \xi\right.\\
-        \left. - \bm q_{0,n+1}\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} \hat h_{0,n+1} \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,n+1},
+        \int_{\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\dot\theta_{n+1} -\hat{\pazocal D}_\text{int}(\bm F(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n) - \hat{\pazocal H}^\text{ep}(\bm{F}(\bm u_{n+1}), \theta_{n+1}, \bm \alpha_n)- \rho_0 r_{n+1} \right) \xi\right.\\
+        \left. - \bm g_{0,n+1}\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} \hat h_{0,n+1} \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,n+1},
     \end{multline}
     where
     \begin{gather}
@@ -277,10 +250,10 @@ Making use of the aforementioned time discretization, one can state the weak for
     \end{gather}
 \end{problem}
 
-\section{Finite Element Method} \label{sec:fem}
+\section{Finite Element Method} \label{sec:fem_mech}
 
 It is now possible to apply the finite element method to discretize spatial the incremental thermo-mechanical initial boundary value problem.
-The approach is entirely similar to the one present in the context of the strictly mechanical (see Section~\ref{}) and strictly thermal (see Section~\ref{}) problems.
+The approach is entirely similar to the one present in the context of the strictly mechanical (see Section~\ref{sec:fem_mech}) and strictly thermal (see Section~\ref{sec:fem_therm}) problems.
 As such, some details are omitted.
 
 \subsection{Interpolation}
@@ -302,25 +275,25 @@ The global shape functions used to interpolate between the nodal values of the d
 
 \subsection{Spatial discretization} \label{sec:spatial_discretization}
 
-The application of finite element discretization to the mechanical part of the incremental thermo-mechanical constitutive initial boundary value problem is exactly the same as the one presented in Section~\ref{} for the strictly mechanical problem, as the the equation to be discretized is the same
+The application of finite element discretization to the mechanical part of the incremental thermo-mechanical constitutive initial boundary value problem is exactly the same as the one presented in Section~\ref{sec:spatial_discretization_mech} for the strictly mechanical problem, as the the equation to be discretized is the same
 On the other hand, applying the discretization to the thermal part of the incremental thermo-mechanical constitutive initial boundary value problem, yields
 \begin{highlight}[innertopmargin=-5pt]
     \begin{multline}
-    \int_{^h\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\mathbf N^{g,\theta} \dot{\bm\uptheta}_{n+1} -\hat{\pazocal D}_\text{mech} - \hat{\pazocal H}^\text{ep}- \rho_0 r_{n+1} \right) \cdot \mathbf N^{g,\theta}\bm{\upxi} - \bm q_{0,n+1}\cdot \mathbf H^{g,\theta} \bm{\upxi}\right]\ud v \\- \int_{^h\partial\Omega_0} h_{0,n+1} \mathbf N^{g,\theta}\bm{\upxi}\ud a = 0,\quad \forall \bm{\upxi} \in {}^h\mathscr{V}_{\theta}, \label{eq:thermo_mech_thermo_fem_disc}
+    \int_{^h\Omega_0}   \left[\left(\rho_0C_\mathrm{V}\mathbf N^{g,\theta} \dot{\bm\uptheta}_{n+1} -\hat{\pazocal D}_\text{int} - \hat{\pazocal H}^\text{ep}- \rho_0 r_{n+1} \right) \cdot \mathbf N^{g,\theta}\bm{\upxi} - \mathbf H^{g,\theta} {\bm\uptheta}_{n+1} \cdot \mathbf H^{g,\theta} \bm{\upxi}\right]\ud v \\- \int_{^h\partial\Omega_0} h_{0,n+1} \mathbf N^{g,\theta}\bm{\upxi}\ud a = 0,\quad \forall \bm{\upxi} \in {}^h\mathscr{V}_{\theta}, \label{eq:thermo_mech_thermo_fem_disc}
     \end{multline}
 \end{highlight}
-where $\mathbf H^{g,\theta}$ is the discrete global gradient operator for scalars, defined in Equation~\eqref{}.
+where $\mathbf H^{g,\theta}$ is the discrete global gradient operator for scalars, defined in Equation~\eqref{eq:discrete_grad_op}.
 
 Equation \eqref{eq:thermo_mech_thermo_fem_disc} can be rewritten as
 \begin{multline}
-  \left\{\int_{^h\Omega_0}   \left[{\mathbf N^{g,\theta}}^T \left(\rho_0C_\mathrm{V}\mathbf N^{g,\theta}\dot{\bm \uptheta}_{n+1} -\hat{\pazocal D}_\text{mech} - \hat{\pazocal H}^\text{ep}- \rho_0 r_{n+1} \right) - {\mathbf H^{g,\theta}}^T\bm q_{0,n+1} \right]\ud v\right. \\ \left.- \int_{\partial{}^h\Omega_0} {\mathbf N^{g,\theta}}^T h_{0,n+1}\ud a\right\}^T \bm \upxi= 0,\quad \forall \bm{\upxi} \in {}^h\mathscr{V}_{\theta}, \label{eq:thermo_mech_thermo_fem_disc}
+  \left\{\int_{^h\Omega_0}   \left[{\mathbf N^{g,\theta}}^T \left(\rho_0C_\mathrm{V}\mathbf N^{g,\theta}\dot{\bm \uptheta}_{n+1} -\hat{\pazocal D}_\text{int} - \hat{\pazocal H}^\text{ep}- \rho_0 r_{n+1} \right) - {\mathbf H^{g,\theta}}^T\mathbf H^{g,\theta} {\bm\uptheta}_{n+1} \right]\ud v\right. \\ \left.- \int_{\partial{}^h\Omega_0} {\mathbf N^{g,\theta}}^T h_{0,n+1}\ud a\right\}^T \bm \upxi= 0,\quad \forall \bm{\upxi} \in {}^h\mathscr{V}_{\theta}, \label{eq:thermo_mech_thermo_fem_disc}
 \end{multline}
 and, since it must be satisfied for any $\bm \upxi \in {}^h \mathscr{V}_\theta$, the incremental discretized thermo-mechanical constitutive initial boundary value problem can thus be stated in the material description as
 \begin{problem}[Material incremental discretized thermo-mechanical initial BVP.]
 GGiven the set of internal variables $\bm \alpha_n$ at $t_n$, the prescribed body and traction force fields $\bm b_{0,n+1}$ and $\bm t_{0,n+1}$, as well as, the prescribed heat sources and heat flux fields \(\bm r_{0,n+1}\) and \(h_{0,n+1}\), and both the prescribed deformation gradient $\mat F_{n+1}$ and the prescribed temperature \(\theta_{n+1}\) at $t_{n+1}$, find the kinematically admissible nodal displacement field $\bm u_{n+1}\in {^h\mathscr{K}_{u,n+1}}$ and the admissible nodal temperature field \(\theta_{n+1}\in{^h\mathscr{K}_{\theta,n+1}}\) such that the body $\mathscr{B}$ is in mechanical and energetic equilibrium
 \begin{gather}
     \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \\
-    \mathbf C \dot{\bm \uptheta}_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0,
+    \mathbf C \dot{\bm \uptheta}_{n+1} + \mathbf K {\bm \uptheta}_{n+1} + \mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0,
 \end{gather}
 where $\mathbf f_u^\text{\;int}$ e $\mathbf f^\text{\;ext}_{u,n+1}$ are the mechanical global vectors of internal and external forces defined as
 \begin{align}
@@ -329,8 +302,7 @@ where $\mathbf f_u^\text{\;int}$ e $\mathbf f^\text{\;ext}_{u,n+1}$ are the mech
 \end{align}
 and $\mathbf f_\theta^\text{\;int}$ e $\mathbf f^\text{\;ext}_{\theta,n+1}$ the thermal global vectors of internal and external forces defined as
 \begin{multline}
-    \mathbf f_\theta^\text{\;int} \equiv \left[\int_{^h\Omega_0}{\mathbf N^{g,\theta}}^T \hat{\mathcal D}_\text{mech}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n) +{\mathbf N^{g,\theta}}^T\hat{\pazocal H}^\text{ep}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n)\right.\\
-     \left. {\mathbf H^{g,\theta}}^T\bm q_0(\bm F(\bm u_{n+1}), \theta_{n+1})\right] \ud v,
+    \mathbf f_\theta^\text{\;int} \equiv \left[\int_{^h\Omega_0}{\mathbf N^{g,\theta}}^T \hat{\pazocal D}_\text{int}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n) +{\mathbf N^{g,\theta}}^T\hat{\pazocal H}^\text{ep}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n)\right] \ud v,
 \end{multline}
 \begin{equation}
     \mathbf f^\text{\;ext}_{\theta,n+1} \equiv \int_{^h\Omega_0}{\mathbf N^{g,\theta}}^T \mathbf r_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{heat,0}}{\mathbf N^{g,\theta}}^T h_{0,n+1}\ud a.
@@ -338,9 +310,12 @@ and $\mathbf f_\theta^\text{\;int}$ e $\mathbf f^\text{\;ext}_{\theta,n+1}$ the 
 The mass matrix $\mathbf M$ and the thermal capacitance matrix \(\mathbf C\) are defined by
 \begin{align}
   \mathbf M &= \int_{{}^h\Omega_0} \rho_0 {\mathbf{N}^{g,u}}^T\mathbf{N}^{g,u} \ud v,\\
-  \mathbf C &= \int_{{}^h\Omega_0} \rho_0C_\mathrm{V} {\mathbf{N}^{g,\theta}}^T\mathbf{N}^{g,\theta} \ud v.
+  \mathbf C &= \int_{{}^h\Omega_0} \rho_0C_\mathrm{V} {\mathbf{N}^{g,\theta}}^T\mathbf{N}^{g,\theta} \ud v,\\
+  \mathbf K &= \int_{{}^h\Omega_0} {\mathbf H^{g,\theta}}^T\mathbf H^{g,\theta} \ud v.
 \end{align}
 \end{problem}
+
+\pagebreak
 
 The global vectors for the internal and external forces are usually obtained by assemblage of their elemental counterparts as
 \begin{gather}
@@ -359,8 +334,7 @@ where the mechanical elemental vectors in the material description are defined a
 and the thermal vectors, also in the material description, are
 \begin{highlight}[innertopmargin=-5pt]
 \begin{multline}
-    \mathbf f_\theta^\text{\;int} \equiv \left[\int_{^h\Omega_0^{(e)}}{\mathbf N^{\theta}}^T \hat{\mathcal D}_\text{mech}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n) +{\mathbf N^{\theta}}^T\hat{\pazocal H}^\text{ep}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n)\right.\\
-     \left. {\mathbf H^{\theta}}^T\bm q_0(\bm F(\bm u_{n+1}), \theta_{n+1})\right] \ud v,
+    \mathbf f_\theta^\text{\;int} \equiv \left[\int_{^h\Omega_0^{(e)}}{\mathbf N^{\theta}}^T \hat{\pazocal D}_\text{int}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n) +{\mathbf N^{\theta}}^T\hat{\pazocal H}^\text{ep}(\mat F(\bm u_{n+1}), \theta_{n+1} \bm \alpha_n)\right] \ud v,
 \end{multline}
 \begin{equation}
     \mathbf f^\text{\;ext}_{\theta,n+1} \equiv \int_{^h\Omega_0^{(e)}}{\mathbf N^{\theta}}^T \mathbf r_{0,n+1}\ud v + \int_{\partial^h\Omega_\text{heat,0}^{(e)}}{\mathbf N^{\theta}}^T h_{0,n+1}\ud a.
@@ -371,7 +345,8 @@ The elemental mechanical interpolation of the matrices $\mathbf N^u$, $\mathbf B
 In a similar manner, the global mass and capacitance matrices are also usually obtained by assemblage of their elemental counterparts as
 \begin{align}
   \mathbf M &\equiv \assemble_{e=1}^{n_\text{elem}} \mathbf M^{(e)},\\
-  \mathbf C &\equiv \assemble_{e=1}^{n_\text{elem}} \mathbf C^{(e)},
+  \mathbf C &\equiv \assemble_{e=1}^{n_\text{elem}} \mathbf C^{(e)},\\
+  \mathbf K &\equiv \assemble_{e=1}^{n_\text{elem}} \mathbf K^{(e)},
 \end{align}
 where the elemental mass matrices in the material description are defined as
 \begin{highlight}
@@ -379,43 +354,47 @@ where the elemental mass matrices in the material description are defined as
     \mathbf M^{(e)} = \int_{^h\Omega^{(e)}} \rho_0 {\mathbf N^u}^T\mathbf N^u\ud v,
   \end{equation}
 \end{highlight}
-and the elemental thermal capacitance matrices, also in the material description, are defined as
+the elemental thermal capacitance matrices as
 \begin{highlight}
   \begin{equation}
     \mathbf C^{(e)} = \int_{^h\Omega^{(e)}} \rho_0 C_\mathrm{V} {\mathbf N^\theta}^T\mathbf N^\theta\ud v,
   \end{equation}
 \end{highlight}
+and the elemental thermal stiffness matrix as
+\begin{highlight}
+\begin{equation}
+\mathbf K^{(e)} = \int_{^h\Omega^{(e)}} {\mathbf H^{\theta}}^T\mathbf H^{\theta}\ud v.
+\end{equation}
+\end{highlight}
 
-\section{Linearisation}
-
-The equilibrium equation, Equation \eqref{eq:equilibrium_spatial} in a spatial description and Equation \eqref{eq:equilibrium_material} in a material description, is generally nonlinear due to geometrical and/or material nonlinearities.
-The Newton-Raphson Method is an efficient and robust iterative scheme with a quadratic convergence rate often used to solve the equilibrium equation at each time increment, $t_n$.
-The residual of the fully discretized balance of linear momentum is defined for an iteration step \(i\) of the Newton-Raphson method as
-\begin{equation}
-\mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{M} \ddot{\mathbf u}_{n+1}^{i}+\mathbf f^\text{\;int} (\mathbf{u}_{n+1}^{i})-\mathbf{f}_{n+1}^\text{\;ext}.
-\end{equation}
-A Taylor expansion about the current solution \(\mathbf{u}_{n+1}^{i}\) is performed, discarding all terms of  higher order than one, yielding the linearised form
-\begin{equation}
-\operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{r}(\mathbf{u}_{n+1}^{i})+\underbrace{\left.\frac{\partial \mathbf{r}(\mathbf{u}_{n+1})}{\partial \mathbf{u}_{n+1} }\right|^{i} }_{\mathbf{K}(\mathbf{u}_{n+1}^{i})} \delta \mathbf{u}.
-\end{equation}
-with the dynamic effective tangential stiffness matrix \(\mathbf{K}(\mathbf{u}_{n+1}^{i})\).
-The linearisation of the internal forces included in \(\mathbf{K}\) is known as the tangential stiffness matrix \(\mathbf{K}_T\), which is defined as
-\begin{equation}
-\mathbf{K}_{T}^{i}=\left.\frac{\partial \mathbf{f}^{\text{\;int}} }{\partial \mathbf{u}_{n+1}}\right|^{i}.
-\end{equation}
-Equilibrium is achieved if
-\begin{equation}
-\operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i}) = \mathbf{0},
-\end{equation}
-so that a linear system of equation is given by
-\begin{equation}
-\mathbf{K}(\mathbf{u}_{n+1}^{i}) \delta \mathbf{u}=-\mathbf{r}\left(\mathbf{u}_{n+1}^{i}\right).
-\end{equation}
-Thus, a new solution of the displacement increment \(\delta \mathbf{u}\) for current iteration step \(i+1\) is determined, and the final displacement solution of time step \(n+1\) is obtained via updating
-\begin{equation}
-\mathbf{u}_{n+1}^{i+1}=\mathbf{u}_{n+1}^{i}+\delta \mathbf{u}.
-\end{equation}
-A solution of \(t_{n+1}\) is found, i.e. an equilibrium state is reached and \(\mathbf{u}_{n+1}=\mathbf{u}_{n+1}^{i+1}\), if prescribed, user-defined convergence criteria are fulfilled.
-
-
-Correção do TPC de DT
+% \section{Linearisation}
+%
+% The equilibrium equation, Equation \eqref{eq:equilibrium_spatial} in a spatial description and Equation \eqref{eq:equilibrium_material} in a material description, is generally nonlinear due to geometrical and/or material nonlinearities.
+% The Newton-Raphson Method is an efficient and robust iterative scheme with a quadratic convergence rate often used to solve the equilibrium equation at each time increment, $t_n$.
+% The residual of the fully discretized balance of linear momentum is defined for an iteration step \(i\) of the Newton-Raphson method as
+% \begin{equation}
+% \mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{M} \ddot{\mathbf u}_{n+1}^{i}+\mathbf f^\text{\;int} (\mathbf{u}_{n+1}^{i})-\mathbf{f}_{n+1}^\text{\;ext}.
+% \end{equation}
+% A Taylor expansion about the current solution \(\mathbf{u}_{n+1}^{i}\) is performed, discarding all terms of  higher order than one, yielding the linearised form
+% \begin{equation}
+% \operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i})=\mathbf{r}(\mathbf{u}_{n+1}^{i})+\underbrace{\left.\frac{\partial \mathbf{r}(\mathbf{u}_{n+1})}{\partial \mathbf{u}_{n+1} }\right|^{i} }_{\mathbf{K}(\mathbf{u}_{n+1}^{i})} \delta \mathbf{u}.
+% \end{equation}
+% with the dynamic effective tangential stiffness matrix \(\mathbf{K}(\mathbf{u}_{n+1}^{i})\).
+% The linearisation of the internal forces included in \(\mathbf{K}\) is known as the tangential stiffness matrix \(\mathbf{K}_T\), which is defined as
+% \begin{equation}
+% \mathbf{K}_{T}^{i}=\left.\frac{\partial \mathbf{f}^{\text{\;int}} }{\partial \mathbf{u}_{n+1}}\right|^{i}.
+% \end{equation}
+% Equilibrium is achieved if
+% \begin{equation}
+% \operatorname{Lin} \mathbf{r}(\mathbf{u}_{n+1}^{i}) = \mathbf{0},
+% \end{equation}
+% so that a linear system of equation is given by
+% \begin{equation}
+% \mathbf{K}(\mathbf{u}_{n+1}^{i}) \delta \mathbf{u}=-\mathbf{r}\left(\mathbf{u}_{n+1}^{i}\right).
+% \end{equation}
+% Thus, a new solution of the displacement increment \(\delta \mathbf{u}\) for current iteration step \(i+1\) is determined, and the final displacement solution of time step \(n+1\) is obtained via updating
+% \begin{equation}
+% \mathbf{u}_{n+1}^{i+1}=\mathbf{u}_{n+1}^{i}+\delta \mathbf{u}.
+% \end{equation}
+% A solution of \(t_{n+1}\) is found, i.e. an equilibrium state is reached and \(\mathbf{u}_{n+1}=\mathbf{u}_{n+1}^{i+1}\), if prescribed, user-defined convergence criteria are fulfilled.
+%

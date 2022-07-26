@@ -1,4 +1,4 @@
-\chapter{Continuum Mechanics and Finite Element Method}
+\chapter{Continuum Mechanics and Finite Element Method} \label{ch:continuum_mechanics}
 
 This chapter deals with the concepts needed to described the behavior of a solid undergoing large deformation, as well as, the conservation principles that ensure its mechanical equilibrium.
 It also presents a succint overview of the Finite Element Method as a tool to solve mechanical initial value equilibrium problem.
@@ -307,7 +307,7 @@ According to Cauchy's theorem the relation between the heat flux across a surfac
 \end{highlight}
 where \(\bm q\) is the heat flux vector.
 
-\section{Fundamental conservation principles}
+\section{Fundamental conservation principles} \label{sec:fundamental_conservation_princ}
 
 In Continuum Mechanics. there is a set of conservation principles and thermodynamic laws, that irrespective of the quantities used to describe the mechanical behavior of a body undergoing large deformations must always be satisfied.
 
@@ -352,7 +352,7 @@ The same symbol, \(f\), is used for a function \(f\) defined on \(\Omega\) and t
 
 Equations \eqref{eq:material_equilibrium} and \eqref{eq:spatial_equilibrium} are the so-called strong, point-wise or local equilibrium equations, as they enforce the mechanical equilibrium at every material particle of the body.
 
-\subsection{First principle of thermodynamics}
+\subsection{First principle of thermodynamics} \label{sec:first_principle_thermo}
 
 Let \(e\) be the internal energy per unit mass, \(r\) the heat supply per unit mass and \(\bm q\) the heat flux, then the first principle of thermodynamics pertaining to the balance of energy can be written in the spatial description as
 \begin{highlight}
@@ -420,7 +420,7 @@ From the definition of the specific Helmholtz free energy
 and defining the temperature field gradient as $\bm g=\nabla \theta$, it is possible to establish the so-called Clausius-Duhem inequality in the spatial description as
 \begin{highlight}
     \begin{equation}
-        \underbrace{\mat \sigma:\mat D - \rho\left(\dot \psi +s\dot \theta\right)}_{\pazocal D_\text{mech}} \underbrace{-\frac{1}{\theta}\vect q\cdot \vect g }_{\pazocal D_\text{cond}}\geq 0, \label{eq:clasius_duhem_eq}
+        \underbrace{\mat \sigma:\mat D - \rho\left(\dot \psi +s\dot \theta\right)}_{\pazocal D_\text{int}} \underbrace{-\frac{1}{\theta}\vect q\cdot \vect g }_{\pazocal D_\text{cond}}\geq 0, \label{eq:clasius_duhem_eq}
     \end{equation}
 \end{highlight}
 where the identity
@@ -430,18 +430,18 @@ where the identity
 is used.
 
 From a physical point of view, the Clausius-Duhem inequality states that the energy dissipation per unit deformed volume is always non-negative.
-Moreover the terms in the inequalitiy can be splited into the mechanical internal dissipation \(\pazocal D_\text{mech}\) and the dissipation due to heat conduction \(\pazocal D_\text{cond}\).
+Moreover the terms in the inequalitiy can be splited into the internal dissipation \(\pazocal D_\text{int}\) and the dissipation due to heat conduction \(\pazocal D_\text{cond}\).
 From
 \begin{equation}
 \hat s = \bm \sigma :\bm D - \rho \left(\dot \psi  +s \dot \theta\right) -\frac{1}{\theta}\bm q\cdot\bm g,
 \end{equation}
-assuming that the process leads to an uniform temperature distribution, yields for the mechanical dissipation \(\pazocal D_\text{mech}\),
-\begin{equation}
-\pazocal D_\text{mech} = \hat{s}|_{\text{$\theta$ uniform} }= \bm \sigma:\bm D - \rho \left(\dot \psi + s \dot \theta\right),
+assuming that the process leads to an uniform temperature distribution, yields for the internal dissipation \(\pazocal D_\text{int}\),
+\begin{equation} \label{eq:def_int_dissipation}
+\pazocal D_\text{int} = \hat{s}|_{\text{$\theta$ uniform} }= \bm \sigma:\bm D - \rho \left(\dot \psi + s \dot \theta\right),
 \end{equation}
-since conduction is excluded and only mechanical and temperature transient effects remain.
-If on the other hand, only conduction effects are retained, i.e., assuming the process to be isothermic, isochoric and isovolumetric, the dissipation due to conduction, \(\pazocal D_\text{cond}\), is obtained as \jvc{Not 100\% on this}
-\begin{equation}
+since conduction is excluded.
+If on the other hand, only conduction effects are retained, the dissipation due to conduction, \(\pazocal D_\text{cond}\), is obtained as
+\begin{equation} \label{eq:dissipation_conduction}
 \pazocal D_\text{cond} = - \frac{1}{\theta} \bm q\cdot \bm g.
 \end{equation}
 
@@ -456,7 +456,7 @@ where \(\bm g_0 = \nabla_0 \theta\), aplying the Piola transformation, and as
 multiplying it by $J$ and attending to the definition of the Kirchhoff stress tensor, where the left hand side represents now the energy dissipation per unit reference volume.
 
 
-\section{Mechanical constitutive initial value problem}
+\section{Thermomechanical constitutive initial value problem} \label{sec:thermomechanical_constitutive}
 
 In Continuum Mechanics, a constitutive model is a set of equations, also called constitutive equations, establishing the stress-strain relation for some material.
 Before going further, it is important to define a thermokinetic process of a body $\mathscr{B}$ as

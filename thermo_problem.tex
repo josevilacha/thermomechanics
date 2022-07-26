@@ -1,16 +1,16 @@
-\chapter{Thermo field}
+\chapter{Thermal field} \label{ch:thermal_problem}
 
 For the development of the thermomechanical models, the temperature field needs to be considered.
 This section provides an overview of the governing equations required to describe a temperature field with the finite element method (FEM).
-The procedure to establish a fully discrete system of equations for the themal field is comparable to the one for the structural field in chapter~\ref{}.
-Furthermore, the basics of nonlinear continuum thermodynamics have already been featured in chapter~\ref{}.
+The procedure to establish a fully discrete system of equations for the themal field is comparable to the one for the structural field in Chapter~\ref{ch:mechanical_problem}.
+Furthermore, the basics of nonlinear continuum thermodynamics have already been featured in Chapter~\ref{ch:continuum_mechanics}.
 Consequently, the detailed derivation are skipped in this chapter.
 
 % In a first step, the balance equations for the thermal field will be established. Then, in a second step the thermal initial boundary value problem (IBVP) will be presented followed by the numerical solution technique. Latter requires a weak form of the thermal balance equation which will be fully discretised using the FEM for space discretisation and the finite difference method for time discretisation. To finish, the residual and the tangential system matrix will be introduced to enable the application of a Newton-Raphson method.
 
 \section{Governing equations}
 
-Based on the general model presented in Section~\ref{}, the balance equations for the temperature field are obtained as a special case by neglecting all mechanical terms.
+Based on the general model presented in Section~\ref{sec:fundamental_conservation_princ}, the balance equations for the temperature field are obtained as a special case by neglecting all mechanical terms.
 Hence, the energy balance equation (Equation~\eqref{eq:first_principle_thermo}), now in material description, reduces to
 \begin{equation} \label{eq:strong_energy_eq}
 \rho_0\ e=-\operatorname{div}_0 \bm q_0+\rho_0 r \quad \text { in } \Omega_0,
@@ -22,14 +22,17 @@ A purely thermal analysis is independent of the deformation, so that reference a
 
 \section{Thermal constitutive initial value problem}
 
-From Section~\ref{}, discarding all variables related to the mechanical problem, the general thermal constitutive initial value problem is
+From Section~\ref{sec:thermomechanical_constitutive}, discarding all variables related to the mechanical problem, the general thermal constitutive initial value problem is
 \begin{problem}[General thermal constitutive intial value problem.]
-GGiven the initial value of the internal variables \(\bm \alpha(t_0)\) and the history of the temperature distribution
-\[\theta(t),\quad t\in[t_0, t_\text{end}],\]
-find the function for $\bm q_0(t)$, \(s(t)\) and \(\bm \alpha(t)\) such that the constitutive equations
+GGiven the initial value of the internal variables \(\bm \alpha(t_0)\) and the history of the temperature distribution and its gradient
+\begin{gather}
+\theta(t),\quad t\in[t_0, t_\text{end}],\\
+\bm g_0(t), \quad t\in[t_0, t_\text{end}],
+\end{gather}
+find the function for $\bm q_0(t)$, and \(\bm \alpha(t)\) such that the constitutive equations
 \begin{gather}
     s = -\frac{\partial \psi}{\partial \theta},\label{eq:entropy_constitutive_relation}\\
-    \psi = \psi(\theta),\\
+    \psi = \psi(\theta, \bm \alpha),\\
     \dot{\bm \alpha} = f(\theta, \bm g_0, \bm \alpha),\\
     \frac{1}{\theta}\bm q_0 = g(\theta, \bm g_0, \bm \alpha).
 \end{gather}
@@ -43,76 +46,80 @@ As a first step, the specific heat \(C_{V}\) is established and defined accordin
 \begin{equation}
 C_{\mathrm{V}}=\frac{\partial e}{\partial \theta}.
 \end{equation}
-The index \((\cdot)_\mathrm{V}\) denotes that \(C_\mathrm{V}\) is measured at constant volume.
+The index \((\cdot)_\mathrm{V}\) denotes that \(C_\mathrm{V}\) is measured at constant volume \footnote{According to \cite{cengel_thermodynamics_2011} the specific heat at constant volume and constant pressure for solids can be suitable assumed to be equal.}.
 Its dimensions are energy over temperature, i.e., \(\mathrm{[E/\Theta]}\), and using the International System of Units (SI), \(C_{V}\) is expressed in joule per kelvin.
 Using Equation~\ref{eq:def_helmholtz_free_energy}, the specific heat at constant volume can be written as
 \begin{equation} \label{eq:def_cv_partial}
 C_{\mathrm{V}}=-\frac{\partial^{2} \psi}{\partial \theta^{2}} \theta=\frac{\partial s}{\partial \theta} \theta.
 \end{equation}
-In general, the heat capacity depends on the deformation and on the temperature.
-A substance whose specific volume (or density) is constant is called an incompressible substance.
-This incompressibilty or constant-volume assumption should be taken to imply that the energy associated with the volume change is negligible compared with other forms of energy.
-For the application to elastomers, see for instance Netz [96], the heat capacity \(C_{V}\) can be assumed to depend only on the temperature, and the partial derivatives in Equation~\eqref{eq:def_cv_partial} turn into exact derivatives, yielding
-\begin{equation}
-  C_\mathrm{V} = \frac{\ud s}{\ud \theta}\theta.
-\end{equation}
-Furthermore, for the application to metals, a constant specific heat capacity (i.e. \(C_{\mathrm{V}}=\) const.) is a valid assumption, utilised e.g. in Adam and Ponthot [1], Ghadiani [48], Ibrahimbegovic and Chorfi [61], and Simo and Miehe [122].
-Accordingly, the heat capacity is also assumed to be constant (i.e. \(C_{\mathrm{V}}= \mathrm{const}\).), since focus in this work is on the application to metals.
-Thus, the entropy can be written as
-\begin{highlight}
-\begin{equation}
-s(\theta) = C_\mathrm{V}\ln\left(\frac{\theta}{\theta_0}\right),
-\end{equation}
-\end{highlight}
-after integration, where \(\theta_{0}\) and \(C_{\mathrm{V}}\) denote the constant initial temperature and the constant specific heat, respectively.
-
-Given the constituive relation for the entropy (Equation~\eqref{eq:entropy_constitutive_relation}), the Helmholtz free energy per unit reference volume is found to be
-\begin{highlight}
-\begin{equation}
-\psi(\theta)=- C_{\mathrm{V}}\left[\left(\theta-\theta_{0}\right)-\theta \ln \left(\frac{\theta}{\theta_{0}}\right)\right],
-\end{equation}
-\end{highlight}
-Subsequently, the time derivative of the entropy is
-\begin{equation}
-\dot{s}(\theta)=\frac{\partial s}{\partial \theta} \dot{\theta}=-\frac{\partial^{2} \psi}{\partial \theta^{2}} \dot{\theta}=C_{\mathrm{V}} \frac{1}{\theta} \dot{\theta}.
-\end{equation}
+% In general, the heat capacity depends on the deformation and on the temperature.
+% A substance whose specific volume (or density) is constant is called an incompressible substance.
+% This incompressibilty or constant-volume assumption should be taken to imply that the energy associated with the volume change is negligible compared with other forms of energy.
+% For the application to elastomers, see for instance Netz [96], the heat capacity \(C_{V}\) can be assumed to depend only on the temperature, and the partial derivatives in Equation~\eqref{eq:def_cv_partial} turn into exact derivatives, yielding
+% \begin{equation}
+%   C_\mathrm{V} = \frac{\ud s}{\ud \theta}\theta.
+% \end{equation}
+Furthermore, for the application to metals, a constant specific heat capacity (i.e. \(C_{\mathrm{V}}=\) const.) is a valid assumption, utilised e.g. in \cite{adam_thermomechanical_2005}, \cite{ghadiani2005multiphasic}, \cite{ibrahimbegovic_covariant_2002}, and \cite{simo_associative_1992}.
+% Accordingly, the heat capacity is also assumed to be constant (i.e. \(C_{\mathrm{V}}= \mathrm{const}\).), since focus in this work is on the application to metals.
+% Thus, the entropy can be written as
+% \begin{highlight}
+% \begin{equation}
+% s(\theta) = C_\mathrm{V}\ln\left(\frac{\theta}{\theta_0}\right),
+% \end{equation}
+% \end{highlight}
+% after integration, where \(\theta_{0}\) and \(C_{\mathrm{V}}\) denote the constant initial temperature and the constant specific heat, respectively.
+%
+% Given the constituive relation for the entropy (Equation~\eqref{eq:entropy_constitutive_relation}), the Helmholtz free energy per unit reference volume is found to be
+% \begin{highlight}
+% \begin{equation}
+% \psi(\theta)=- C_{\mathrm{V}}\left[\left(\theta-\theta_{0}\right)-\theta \ln \left(\frac{\theta}{\theta_{0}}\right)\right],
+% \end{equation}
+% \end{highlight}
+% Subsequently, the time derivative of the entropy is
+% \begin{equation}
+% \dot{s}(\theta)=\frac{\partial s}{\partial \theta} \dot{\theta}=-\frac{\partial^{2} \psi}{\partial \theta^{2}} \dot{\theta}=C_{\mathrm{V}} \frac{1}{\theta} \dot{\theta}.
+% \end{equation}
 
 \paragraph{Law for the heat flux}
-As previously mentioned, in a purely thermal analysis the deformation is neglected, consequently the material and spatial heat flux coincide, that is \(\bm q_0 \equiv \bm q\), which is also valid for the material and spatial gradient, hence \(\nabla_0 \theta = \nabla \theta\).
-To satisfy the dissipation inequality due to conduction (Equation~\eqref{}), a constitutive law for the heat flux has to be chosen associating the heat flux \(\bm q_0\) with its dual variable \(\bm g_0\) and the temperature \(\theta\).
-Accordingly, so-called Fourier's law, which is linear and isotropic is utilised, which is defined as
+
+Since deformation is not taken into account in purely thermal analyses, the material's heat flux and the heat flux in space coincide, or \(\bm q_0 \equiv \bm q\).
+This relationship also holds true for both the material gradient and the spatial gradient, therefore \(\nabla_0 \theta \equiv \nabla \theta\).
+A constitutive law for the heat flow must be determined that links the heat flux \(\bm q_0\) with its dual variable \(\bm g_0\) and the temperature \(\theta\) in order to meet the dissipation inequality due to conduction (Equation~\eqref{eq:dissipation_conduction}).
+In light of this, the so-called Fourier's law, which is linear and isotropic and is stated as
 \begin{highlight}
-\begin{equation}
+\begin{equation} \label{eq:def_fourier_law}
   \bm q_0=-k \bm g_0.
 \end{equation}
 \end{highlight}
-Herein, the thermal conductivity \(k\) is assumed constant and positive that is \(k \geq 0\).
-Thus, heat is conducted in the direction of decreasing temperatures.
-Apart from Fourier's law, different constitutive laws for the heat flux are available in the literature, as e.g. Duhamel's law of heat conduction (see e.g. \cite{}Holzapfel [58]) which uses a positive semi-definite second-order tensor \(k\) instead of the constant conductivity \(k\).
-If Duhamel's law is restricted to thermally isotropic behaviour (i.e. no preferred direction), the conductivity tensor reduces to \(k=k \boldsymbol{I}\).
-If a constant heat conductivity \(k=\) const. is assumed, Fourier's law is recovered as a special form of Duhamel's law.
-Moreover, e.g. in Holzapfel and Simo [59] and Sherief and Abd El-Latief [117], a variable conductivity \((k \neq \mathrm{const}\) is assumed in the context of elastomers).
-In Bargmann and Steinmann [13] and Bargmann et al. [14], three different constitutive laws for the heat flux \(\bm q\) are proposed based on the Green-Naghdi's non-classical theory.
-Nevertheless, for the present work Fourier's law yields physical results and hence is exclusively considered in this work.
+The thermal conductivity \(k\) is considered to be constant and positive in this context, that is \(k \geq 0\).
+Heat is therefore transferred in the direction of decreasing temperatures.
+In addition to Fourier's law, there are several constitutive laws for the heat flux that may be found in the literature.
+One such rule is Duhamel's law of heat conduction (see e.g. \cite{holzapfel_nonlinear_2000}), which swaps the scalar constant conductivity for a positive semi-definite second-order tensor.
+The conductivity tensor simplifies to \(\bm k=k \bm I\) if Duhamel's law is constrained to thermally isotropic behavior (i.e. no preferred direction).
+Fourier's law is recovered as a particular case of Duhamel's law if a constant heat conductivity is assumed.
+But in the current work, Fourier's law is the only one taken into account since it is a simple law that yields physical effects.
 
 \paragraph{"Standard" thermal constitutive description}
 No extra internal variables \(\bm \alpha\) are considered in the present description of the thermal problem.
-Thus, the thermal constitutive initial value problem given the standard assumptions laid out above accepts a closed form solution, i.e., the functions for \(\bm q\) and \(s\) are known from the outset.
+Thus, the thermal constitutive initial value problem given the standard assumptions laid out above accepts a closed form solution.
 
 \begin{problem}["Standard" thermal constitutive description]
-GGiven the history of the temperature distribution
-\[\theta(t),\quad t\in[t_0, t_\text{end}],\]
-compute the functions for $\bm q_0(t)$ and \(s(t)\) at every $t\in [t_0, t_\text{end}]$ using the constitutive equations
+GGiven the history of the temperature distribution and its gradient
 \begin{gather}
-    s =C_{\mathrm{V}} \ln \left(\frac{\theta}{\theta_{0}}\right),\\
+  \theta(t), \quad t\in [t_0, t_\text{end}],\\
+  \bm g_0(t), \quad t \in [t_0, t_\text{end}],
+\end{gather}
+compute the $\bm q_0(t)$ and \(s(t)\) at every $t\in [t_0, t_\text{end}]$ using the constitutive equations
+\begin{gather}
+    s = - \frac{\partial \psi}{\partial \theta},\\
     \bm q_0 = -k\bm g_0.
 \end{gather}
 \end{problem}
 
 \section{Weak energy balance equation}
 
-The solution of the thermal problem using the FEM requires the use of the weak form of the energy balance equation.
-Applying to the governing equation (Equation~\eqref{eq:strong_energy_eq}) in the strong form, a variational approach, multiplying it by the virtual temperatures \(\xi\) followed by integration by parts, one can find the energy balance equation in its weak form.
+The weak form of the energy balance equation must be used in order to solve the thermal issue using the FEM.
+The energy balance equation may be found by taking the governing equation (Equation~\eqref{eq:strong_energy_eq}) in its strong form, using a variational strategy, multiplying it by the virtual temperatures \(\xi\), and then integrating by parts.
 \begin{problem}[Weak energy balance equation]
 TThere is energy balance in the body if and only if the temperature distribution satisfies
     \begin{equation}
@@ -123,7 +130,7 @@ TThere is energy balance in the body if and only if the temperature distribution
 
 \section{The thermal initial boundary value problem}
 
-Following the same approach as in Section~\ref{}, it is now possible to introduce the the thermal initial boundary value problem.
+Following the same approach as in Section~\ref{sec:mechanical_constitutive_problem}, it is now possible to introduce the the thermal initial boundary value problem.
 Assume that the internal variables governing the body \(\mathcal B\) are known at the initial time \(t_0\).
 In addition, assume that the heat generated in the interior of the body is prescribed, \(r(\bm X, t)\), \(t\in[t_0, t_\text{end}]\), as well as,
 \begin{itemize}
@@ -131,26 +138,58 @@ In addition, assume that the heat generated in the interior of the body is presc
   \item \textbf{Essential (or Dirichlet) boundary condition.} The boundary portion \(\partial \Omega_\text{temperature,0}\) of \(\mathcal B\) is subject to a prescribed temperature history, \(\theta_\text{presc}(\bm X, t)\), \(\bm X \in \partial \Omega_\text{temperature,0}\), \(t\in [t_0,t_\text{end}]\).
 \end{itemize}
 
-As before the admissible temperature distributions for the body \(\mathcal B\) are all sufficiently regular temperature fields that satisfy the essential boundary condition,
+The body's allowable temperature distributions, as before, are all the sufficiently regular temperature fields that meet the necessary boundary condition, i.e.,
 \begin{equation}
   \mathscr K_\theta = \{\theta:\Omega_0 \times \mathbb R \to \mathbb R\,|\,\theta(\bm X, t) = \theta_\text{presc}(\bm X, t),\quad \bm X\in \partial \Omega_\text{temperature,0},\quad t\in[t_0, t_\text{end}]\}.
 \end{equation}
 
-Combining the weak energy balance equations with the "standard" thermal constitutive description, the weak form of the "standard" thermal constitutive initial boundary value problem can be stated as follows
- \begin{problem}["Standard" thermal initial BVP.]
-     FFind an admissible temperature distribution, $\theta \in \mathscr{K}_\theta$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ is in energetic equilibrium
+Heat convection and radiation are the natural boundary conditions for the thermal problem studied in this work.
+The prescribed heat at the boundary in the first case is given as
+\begin{equation} \label{eq:heat_convection}
+  h_\text{presc,0}(\bm X, t) = h_c(T(\bm X, t) - T_\infty),\quad \mathbf X \in \partial \Omega_{\text{convection,0}}\subseteq \partial\Omega_{\text{heat,0}}
+\end{equation}
+with \(h_c\) denoting the coefficient of heat transfer by covection and \(T_\infty\) is the temperature of the environment.
+The appropriate statement for heat transmission by radiation is
+\begin{equation}
+  h_\text{presc, 0} (\bm X, t) =  \epsilon \sigma T^4,\quad \mathbf X \in \partial \Omega_{\text{radiation,0}}\subseteq \partial\Omega_{\text{heat,0}}
+\end{equation}
+where \(\sigma=\SI{5.670373(21)e-8}{\watt\meter^{-2}\kelvin^{-4}}\) is Boltzman's constant and \(\epsilon\) is the emissivity factor.
+
+
+Using the definition of Helmholtz's energy (Equation~\ref{eq:def_helmholtz_free_energy}), the balance of energy (Equation~\eqref{eq:strong_energy_eq}) can be written as
+\begin{equation}
+  \rho_0\dot \psi + \rho_0 \dot \theta s + \rho_0 \theta \dot s = \rho_0 r - \operatorname{div}\bm q_0.
+\end{equation}
+Applying the chain rule to \(\dot s\) yields
+\begin{equation}
+  \rho_0 \dot \psi + \rho_0 \dot \theta s + \rho_0 \theta \frac{\partial s}{\partial \theta}\dot \theta  = \rho_0 r - \operatorname{div}\bm q_0.
+\end{equation}
+Applying Equation~\eqref{eq:def_cv_partial} regarding the specific heat at constant volume reveals
+\begin{equation}
+  \rho_0 (\dot \psi +  \dot \theta s) + \rho_0 C_V\dot \theta = \rho_0 r - \operatorname{div}\bm q_0.
+\end{equation}
+According to Equation~\eqref{eq:def_int_dissipation}, the term \(\dot \psi + \dot \theta s\) is precisely the internal dissipation \(\pazocal D_\text{int}\), which for a strictly thermal process is zero.
+Accounting also for the constitutive law chosen for the heat flux, i.e., Fourier's law (Equation~\eqref{eq:def_fourier_law}), one finally obtains
+\begin{equation}
+  \rho_0 C_V \dot \theta = - \rho_0 r + k\operatorname{div} \bm g_0.
+\end{equation}
+
+The the weak form of the thermal constitutive initial boundary value problem can thus be stated as follows
+ \begin{problem}[Thermal initial BVP.]
+     FFind an admissible temperature distribution, $\theta \in \mathscr{K}_\theta$, such that for every $t\in [t_0,t_\text{end}]$, the body $\mathscr{B}$ satisfies energy conservation
          \begin{equation}
-         \int_{\Omega_0}   \left[\left(C_\mathrm{V} \dot \theta - \rho_0 r\right) \xi +k\bm g_0\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} h_0 \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,0},
+         \int_{\Omega_0}   \left[\left(\rho_0 C_\mathrm{V} \dot \theta - \rho_0 r\right) \xi +k\bm g_0\cdot \nabla_0 \xi\right]\ud v - \int_{\partial\Omega_0} h_0 \xi\ud a = 0,\quad \forall \xi \in \mathscr{V}_{\theta,0},
      \end{equation}
      where the space of virtual temperature distributions at time $t$ is defined by
      \begin{equation}
-         \mathscr{V}_{\theta,0} \equiv \left\{\xi:\Omega_0\to \mathbb R\;|\;\xi = 0\quad \text{in}\quad \partial\Omega_\text{temperature,0}\right\}.
+         \mathscr{V}_{\theta,0} \equiv \left\{\xi:\Omega_0\to \mathbb R\;|\;\xi = 0\quad \text{in}\quad \partial\Omega_\text{temperature,0}\right\}
      \end{equation}
+     and at each point of $\mathscr{B}$.
  \end{problem}
 
-\section{Finite Element Method}
+\section{Finite Element Method} \label{sec:fem_therm}
 
-Following a procedure entirely similar to the one described in Section~\ref{}, the global shape functions can be conveniently assembled in the so-called global interpolation matrix as
+Following a procedure entirely similar to the one described in Section~\ref{sec:fem_mech}, the global shape functions can be conveniently assembled in the so-called global interpolation vector as
 \begin{equation}
 \mathbf{N}^{g}(\boldsymbol{X}) \equiv\left[N_1^g(\bm X), N_2^g(\bm X), \dots, N^g_{n_\text{points}}(\bm X)\right].
 \end{equation}
@@ -168,7 +207,7 @@ such that the value of the temperature inside the descretized domain \(^h\Omega_
 
 It is also convenient to defined the discrete gloabal gradient operator \(\mathbf H^g\).
 For instance, in a 2D problem, where cartesian coordinates are employed, this discrete operator is defined as
-\begin{equation}
+\begin{equation} \label{eq:discrete_grad_op}
   \mathbf H^g\equiv \left[
   \begin{array}{cccc}
     \displaystyle{\frac{\partial N^g_1}{\partial X}} & \displaystyle{\frac{\partial N^g_2}{\partial X}} & \dots & \displaystyle{\frac{\partial N^g_{n_\text{points}}}{\partial X}} \\[10pt]
@@ -177,7 +216,7 @@ For instance, in a 2D problem, where cartesian coordinates are employed, this di
   \right].
 \end{equation}
 
-Applying the aforementioned finite element discretization to the "standard" thermal initial BVP yields
+Applying the aforementioned finite element discretization to the  thermal initial BVP yields
 \begin{highlight}
 \begin{equation}
   \int_{^h\Omega_0}   \left[\left(C_\mathrm{V} \dot \theta - \rho_0 r\right)  \mathbf N^g\bm \upxi +k\bm g_0\cdot \mathbf H^g \bm \upxi\right]\ud v - \int_{^h\partial\Omega_0} h_0 \mathbf N^g\bm \upxi\ud a = 0,\quad \forall \bm \upxi \in {}^h\mathscr{V}_{\theta,0},
@@ -188,8 +227,8 @@ which can be rewritten
   \left\{\int_{^h\Omega_0}   \left[(\mathbf N^g)^T\left(C_\mathrm{V} \dot \theta - \rho_0 r\right) +k(\mathbf H^g)^T\mathbf H^g \bm \uptheta \right]\ud v - \int_{^h\partial\Omega_0} (\mathbf N^g)^T h_0 \ud a \right\}^T\bm \upxi= 0,\quad \forall \bm \upxi \in {}^h\mathscr{V}_{\theta,0},
 \end{equation}
 where the relation \(\bm g_0 = \mathbf H^g \bm \uptheta\) is employed.
-Since Equation~\eqref{eq:thermo_variational_lemma} must be satisfied for any \(\bm \upxi\in {}^h\mathscr V_{\theta,0}\), the discretized "standard" thermal initial boundary value problem can be statted as
-\begin{problem}[Discretized "standard" thermal initial BVP.]
+Since Equation~\eqref{eq:thermo_variational_lemma} must be satisfied for any \(\bm \upxi\in {}^h\mathscr V_{\theta,0}\), the discretized  thermal initial boundary value problem can be statted as
+\begin{problem}[Discretized  thermal initial BVP.]
 GGiven the prescribed heat sources and heat fluxes $r(\bm X, t)$ and $h_0(\bm X, t)$ find the admissible nodal temperatures $\theta(t)\in {^h\mathscr{K}_{\theta}}$ such that the body $\mathscr{B}$ is in energetic equilibrium
 \begin{equation}
     \mathbf C \dot{ \bm\uptheta}(t) +\mathbf K\bm\uptheta(t)-\mathbf f^\text{\;ext}(t)=\mathbf 0, \label{eq:equilibrium_material}
@@ -204,3 +243,5 @@ and $\mathbf f^\text{\;ext}(t)$ is the global vector of external forces defined 
     \mathbf f^\text{\;ext}(t) &\equiv \int_{^h\Omega_0} \rho{\mathbf N^g}^T r(\bm X, t)\ud v + \int_{\partial^h\Omega_\text{heat,0}}{\mathbf N^g}^T h_0(\bm X, t)\ud a.
 \end{align}
 \end{problem}
+
+\newpage\null\thispagestyle{blank}\newpage
