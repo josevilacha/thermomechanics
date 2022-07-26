@@ -15,7 +15,7 @@ For the sake of clarity, the discretized equations of the thermo-mechanical prob
     \mathbf M \ddot{\mathbf u}_{n+1} +\mathbf f_u^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{u,n+1}=\mathbf 0, \label{eq:mech_problem} \\
     \mathbf C \dot{\bm \uptheta}_{n+1} + \mathbf K \bm \uptheta_{n+1} +\mathbf f_\theta^\text{\;int}(\bm \uptheta_{n+1}, \mathbf u_{n+1})-\mathbf f^\text{\;ext}_{\theta,n+1}=\mathbf 0. \label{eq:therm_problem}
 \end{gather}
-The complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{chapter:thermo_mechanical_problem}.
+The complete definition of the material incremental discretized thermo-mechanical initial boundary value problem can be found in Chapter~\ref{ch:thermo_mechanical_problem}.
 
 As only partitioned approaches are considered, the thermal and mechanical problems are solved separately, i.e., Equation~\eqref{eq:mech_problem} is solved considering a fixed temperature, and Equation~\eqref{eq:therm_problem} is solved assuming a fixed configuration.
 To ease the discussion, consider the existence of two functions \(\pazocal U_{n+1}\) and \(\pazocal T_{n+1}\) that represent these solution procedures at timestep \(n+1\).
@@ -26,7 +26,7 @@ These so-called mechanical and thermal solvers satisfy
   \pazocal T\colon \mathscr K_{u,n+1}\to \mathscr K_{\theta, n+1},\quad \bm \uptheta = \pazocal T_{n+1}(\mathbf u).
 \end{gather}
 \end{highlight}
-See Chapter~\ref{chapter:thermo_mechanical_problem} for detailed information on them.
+See Chapter~\ref{ch:thermo_mechanical_problem} for detailed information on them.
 In the following, the subscripts on the solvers will be dropped to avoid clutter.
 
 The goal now is to consider functions, built from \(\pazocal U\) and \(\pazocal T\), whose roots are also the solutions to the thermo-mechanical problem (Equations~\eqref{eq:mech_problem} and \eqref{eq:therm_problem}).
