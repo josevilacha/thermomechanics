@@ -272,7 +272,7 @@ Directly using \eqref{eq:absolute_residual_criterion} yields an absolute converg
 with $\epsilon_\mathrm{abs}>0$ as an absolute convergence tolerance, with convergence being achieved when the above condition is satisfied.
 However, since the absolute value of the $r^{k, i} $'s can change by orders of magnitude during one simulation, an absolute measure is not appropriate in all situations.
 A relative measure solves this problem by setting the residual in relation with the current coupling iterate values as
-\begin{equation}
+\begin{equation} \label{eq:def_res_used}
 \frac{\left\|\mathbf{r}^{k}\right\|_{l^{2}}}{\left\|\mathbf{x}^{k}\right\|_{l^{2}}}<\epsilon_\mathrm{rel}.
 \end{equation}
 
@@ -1505,11 +1505,12 @@ One can mention the Eirola-Nevanlinna family of methods \citep{fang_two_2009} an
 \section{Summary}
 
 The overview provided in this chapter centered on implicit techniques for partitioned multi-physics coupled applications.
-The problem can be slightly reformulated as a system of nonlinear equations, where the residual represents the difference between the input and output after the fixed-point procedure has been applied. This allows the problem to be solved using a variety of methods that have been described in the literature.
+The problem can be slightly reformulated as a system of nonlinear equations, where the residual represents the difference between the input and output after the fixed-point procedure has been applied.
+This allows the problem to be solved using a variety of methods described in the literature to tackle system of nonlinear equations.
 The key issues in the current application are the memory requirements of the numerical technique due to a potential high number of unknowns and the number of residual evaluations, as each assessment necessitates a significant computational effort.
 Table~\ref{tab:mem_nr_func_eval_obs} provides information on the memory requirements, the number of function evaluations per nonlinear iteration, and some pertinent observations for each technique under consideration.
 
-Except for the MMPE and SVD-MPE approaches, all the methods discussed in the present chapter are analyzed in the next chapter (Chapter~\ref{ch:}).
+Except for the MMPE and SVD-MPE approaches, the computational performance of all the methods discussed in the present chapter are analyzed in the next chapter (Chapter~\ref{ch:val_acc_techniques}).
 As seen in Table~\ref{tab:form_nonlin_methods}, where the update formulae for the methods are compiled, their implementation is made simpler by the similarities in the update formula for the value of the unknown variable at each nonlinear iteration.
 
 
@@ -1606,5 +1607,7 @@ As seen in Table~\ref{tab:form_nonlin_methods}, where the update formulae for th
   \hline\hline
   \end{tabular}
 \end{table}
+
+\FloatBarrier
 
 \newpage\null\thispagestyle{blank}\newpage

@@ -1,135 +1,81 @@
 \chapter{Introduction}
 
+This report is concerned with computational techniques for the numerical simulation of thermomechanical problems.
+The purpose of this study and its goals are explained in the current introductory chapter.
+A summary of the document is also provided.
+
 \section{Motivation}
 
-The present work presents a partitioned thermomechanical solver.
 
-The current work focuses on the developement of an implicit partitioned thermomechanical solver.
+Thermomechanics is widely acknowledged as a crucial physical phenomenon in engineering applications and a highly sought effect in computational models.
+Thermomechanical interaction is key to adequately describe a large variety of technological processes, including sintering and material removal procedures.
+To include it in a numerical simulation toolbox, the problem has to be correctly formulated in a thermodynamically consistent way.
+Having achieved an appropriate formulation of the problem, the Finite Element Method can be used to solve it.
 
-It presents a comprehensive dissertation on the thermodynamically consistent continuum mechanics.
-It follows with the strictly mechanical problem, the strictly thermal problem and the full thermomechanical problem.
-The corresponding intial value problems for the constitutive problem are introduced, as is the weak formulation of the relevant conservation and balance principles and their spatial and temporal discretization.
-
-It follows a validation of the thermal solver.
-The mechanical solver is not validated as it is part of the LINKS code used as the basis for the current developments.
-Appropriate references are used in DIN 1992 and the NAFEMS benchmarks.
-There is a good agreement between the numerical results and the references.
-
-It follows a thorough investigation on the available approaches to solve coupled problems, with a special focus on thermomechanical problems.
-A large sweep of the literature is performed, with the main classes of solution procdures being the monolithic approaches and the partitioned approaches.
-The partioned approaches can be further divided into loosely coupled or explicit and strongly coupled or implicit.
-Given the requirements put forth the most promising solution is determined to be a strongly coupled or implicit partitioned scheme.
-
-Having performed this choice the following step is to understand the implicit methods available.
-Recasting the problem as a system of nonlinear equations, where the residual is the difference bewteen the initial input and its output after applying the fixed-point.
-This approach leads to the consideration of a large family of methods for the solution of nonlinear equations.
-These are presented in detail for the solution of coupled multi-physics systems.
-These are the fixed-point method, the underrelaxation method, the Aitken relaxation, the Broyden-like family of methods, the Newton-Krylov methods and the polynomial vector extrapolation methods, MPE and RRE, in cycling mode.
-
-The validation of the thermomechanical solver and the implicit solution methodsm, as well as their comparison, is performed using to examples, whose results are present in the literature.
-The expansion of an infinitely long thick-walled thermoelastic cylinder, and the necking of circular thermoelastoplastic bar.
-The numerical results agree with the references provided confidence in the solution developed.
-Regarding the comparison of the different implicit techniques, the best performing are the Broyden-like methods with \(\beta=-1\), Type I update and \(s=1\), corresponding to the good Broyden method, and \(s=2\).
-These are both computationally efficient with few calls to the residual function and not very memory intensive.
-The Aitken relaxation being the simplest and the least memory intensive also performs well.
-The other methods considered, including the Newton-GMRES and the MPE in cycling mode, display a worse performance.
-There is however a caveat regarding the Newton-Krylov methods regarding the possible use of global strategies such as line search given the accurate estimate for the Jacobian of the residual.
-Moreover, it has been determined that most computationally demanding portion of the implicit partitioned schemes is the solution of the mechanical and thermal problems, with the manipulation concerning solely the coupling solver taking a very minute portion of the total computational time.
-
-
-
-% The goal of computational micromechanics of materials is to establish a link between the mechanical response of two interacting scales in heterogeneous media, commonly referred to as the macro and micro-scale.
-% It generally involves the numerical solution of the mechanical equilibrium of a periodic unit cell.
-% It is a boundary value problem defined on a representative microscale sample that involves local constitutive laws, balance equations, and, most typically, periodic boundary conditions.
-% The solution of this problem plays a pivotal role in bridging the two scales considered.
-% The effective macroscopic response is then extracted from the solution of the local problem for a given macroscopic excitation.
-
-Many processes use temperature.
-There is a tigh connection between the thermal and the mechanical fields.
-
-Having properly formulated the thermomechanical problem in a thermodynamically consistent way the problem can be solved using the Finite Element Method for the spatial discretizaiton and some other thing for the time discritization.
-
-A thermal solver can be easily implemented to solve solely thermal problems.
-
-To solve the fully thermal problem there are two common approaches, the monolithic approach where the balance equations considered after the discretization are the balance of mechanical and conservation of energy, and a partitioned approach, where the problems are solved speratly.
-Whithin this scheme, one can still find loosley or explicit approach or a strongly coupled or implicit approach.
-Both strategies can be found in the literature, having both their benifits and drawbacks.
-
-% 
-% For virtually all cases of practical relevance, the local problem must be solved approximately by discretizing the microstructure and the unknown microscopic fields.
-% Such a unit-cell thereby provides a representative geometrical representation of the microstructure - which is often complex.
-% An accurate representation of reality, therefore, necessitates a high-resolution numerical method, which remains efficient in three dimensions.
-% The prevailing technique employed for this purpose is the Finite Element Method.
-% However, the ever-increasing desire to use finely discretized unit cells, even in 3D, calls for more efficient methods.
-% In particular, advances in experimental characterization of microstructures by high-resolution images triggers the need for efficient solvers that use these images directly as computational grids.
-% A regular grid in combination with periodic boundary conditions naturally promotes solvers based on the Fast Fourier Transform (FFT) \citep{zeman_finite_2017, de_geus_finite_2017}.
-% An attractive competitor to the Finite Element Method was developed by \cite{moulinec_fast_1994, moulinec_fft-based_1995}.
-% It employs the Fast Fourier Transform (FFT) to obtain a significant gain in efficiency compared to Finite Elements, both in terms of speed and in terms of memory footprint.
-% In the meantime extensions and different FFT-based approaches have been proposed.
-% This work pretends to give an overview of the relevant literature on FFT-based homogenization procedures.
-% 
-% The improvements in efficiency obtained using the FFT-based procedures are of special relevance in the context of the data-driven design of materials, where the number of mechanical simulations needed to populate the database can be very large.
-% Structural and material design is a highly iterative process where an optimal design for a chosen set of quantities of interest and a given set of restrictions is sought.
-% For the particular case of material systems design, the high dimensionality of the engineering design space is striking when considering the overwhelming amount of possible combinations that lead to different materials \citep{bessa_framework_2017}, which often result in suboptimal and/or unexplored solutions.
+After the spatial discretization obtained by the FEM has been provided, the complete thermomechanical problem can still be solved by employing two strategies: a monolithic approach or a partitioned approach.
+In the former, the discretized equations representing the momentum balance and energy conservation are solved simultaneously.
+In the latter, the problems are solved independently, solving the mechanical problem at a fixed temperature and then the thermal problem at a fixed configuration, taking the so-called isothermal split as an example.
+With this last scheme, one can still find the loosely or explicit approaches and the strongly coupled or implicit approaches as alternatives.
+Each of these strategies has its benefits and drawbacks, with the particular choice of one over the others depending on the particulars of the development environment.
 
 \section{Computational Framework}
 
 All the numerical simulations based on the Finite Element Method (FEM) are held in the in-house Fortran (IBM Mathematical Formula Translation System) program LINKS (Large Strain Implicit Non-linear Analysis of Solids Linking Scales), a multi-scale finite element code for implicit infinitesimal and finite strain analyses of hyperelastic and elastoplastic solids, that is continuously developed by the CM2S research group (Computational Multi-Scale Modeling of Solids and Structures) at the Faculty of Engineering of University of Porto.
 
-In the present work, the author contributed to the addition of a suitable coupling environment for partitioned solution of coupled fields, as well as, a thermal solver based on the Finite Elements Method.
+In the present work, the author contributes to the addition of a suitable coupling environment for the partitioned solution of coupled fields and a thermal solver based on the Finite Elements Method.
+Appropriate nonlinear solvers are also added as implicit solution strategies for the coupled thermomechanical problem.
 
 \section{Objectives}
 
 The main goals of this work are:
 \begin{itemize}
-    \item To describe in a thermodynamically consitent way the thermomechanical problem;
+    \item To describe in a thermodynamically consistent way the thermomechanical problem;
     \item To develop and validate a thermal solver based on the Finite Element Method;
     \item To provide a thorough overview of the available methods for the solution of coupled problems, in particular, the thermomechanical problem;
-    \item To validate the thermomechanical solver and compare the available strongly coupled partitioned strategies available in the literature.
+    \item To validate the thermomechanical solver and compare the strongly coupled partitioned strategies available in the literature.
 \end{itemize}
 
 \section{Document structure}
 
 The remainder of this document is structured as follows:
 
-\paragraph{Chapter \ref{ch:continuum_mechanics}}
-In Chapter~\ref{ch:continuum_mechanics} provides a detailed description of a thermodynamical consistent continuum mechanics.
-It includes the conservation and balance principles, dissipation inequalities and constitutive stuff.
+\paragraph{Chapter \ref{ch:continuum_mechanics} - Continuum Thermomechanics}\mbox{}\\
+This chapter covers the notions required to explain how a solid responds to thermal and mechanical loads under large deformations, including the conservation laws that guarantee mechanical equilibrium and energy conservation.
+Additionally, the application of thermodynamics with internal variables is discussed, along with the resulting inferences about the constitutive behavior of the material that makes up the solid.
 
-\paragraph{Chapter \ref{ch:mechanical_problem}}
-In Chapter~\ref{ch:mechanical_problem} presents the strictly mechanical problem including the intial value constitutive problem, the weak form of the momentum balance equation.
-The mechanical intial value boundary value problem.
-And discritize version using the Finite Element Method.
+\paragraph{Chapter \ref{ch:mechanical_problem} - Mechanical problem}\mbox{}\\
+This chapter presents the strictly mechanical problem, including the constitutive initial value problem, the weak form of the momentum balance equations, and the corresponding mechanical initial boundary value problem.
+A brief description of the application of the Finite Element Method to this problem is also included.
 
-\paragraph{Chapter \ref{ch:thermal_problem}}
-In Chapter~\ref{ch:thermal_problem} presents the strictly thermal problem including the constitutive law for the heat flux, the weak form of the energy equation, including its conduction.
-The corresponding initial value boundary value problem.
+\paragraph{Chapter \ref{ch:thermal_problem} - Thermal problem}\mbox{}\\
+This chapter presents the strictly thermal problem, including the constitutive law for the heat flux, the weak form of the energy conservation equation, and the corresponding thermal initial boundary value problem.
+A brief description of the application of the Finite Element Method to this problem is also included.
 
-\paragraph{Chapter \ref{ch:thermo_mechanical_problem}}
-In Chapter~\ref{ch:thermo_mechanical_problem} presents the fully thermo-mechanical problem including the constitutive law for the heat flux, the weak form of the energy equation, including its conduction.
-The corresponding initial value boundary value problem.
+\paragraph{Chapter \ref{ch:thermo_mechanical_problem} - Thermomechanical problem}\mbox{}\\
+This chapter presents the thermomechanical problem, including the constitutive initial value thermomechanical problem, the weak form of the energy conservation equation and the momentum balance equations, and the corresponding thermomechanical initial boundary value problem.
+A brief description of the application of the Finite Element Method to this problem is also included.
 
-\paragraph{Chapter \ref{}}
-In Chapter~\ref{} present the validation for the thermal solver using as references the \cite{DINEN1991_1_2} and \cite{NAFEMSbenchmarks}.
+\paragraph{Chapter \ref{ch:val_therm_solver} - Validation results for the thermal solver}\mbox{}\\
+This chapter details the validation results for the thermal solver using as references the \cite{DINEN1991_1_2} and \cite{NAFEMSbenchmarks}.
 It includes both transient effects and boundary conditions such as natural convection and radiation.
 
-\paragraph{Chapter \ref{}}
-In Chapter~\ref{} presents an overview of the solution procedures for coupled problems.
-It includes monolithic schemes, as well as, partitioned schemes, both explicit and implicit approaches.
-An evaluation and discussion of the different methods is provided.
+\paragraph{Chapter \ref{ch:sol_proc_coupl_fields} - Solution procedures for coupled fields}\mbox{}\\
+This chapter presents an overview of the solution procedures for coupled problems.
+It includes monolithic schemes and partitioned schemes, both explicit and implicit approaches.
+An evaluation and discussion of the different methods are provided.
 
-\paragraph{Chapter \ref{}}
-In Chapter~\ref{} a thorough description of the available implicit methods is provided.
-It rests on the recasting of the problem as a simple root-finding problem for a set of nonlinear equations.
-The methods presented are the fixed-point method, the underrelaxation method, the Aitken relaxation, the Broyden-like family of methods, the Newton-Krylov methods, and the polynomial vection extrapolation methods in cycling mode.
-Number of function of function evaluations, memory requirements, computational complexity and ease of implementation.
+\paragraph{Chapter \ref{chapter:implicit_meth} - Implicit solution methods for coupled fields}\mbox{}\\
+This chapter provides a thorough description of the available implicit methods.
+It rests on recasting the problem as a simple root-finding problem for a set of nonlinear equations.
+The methods presented are the fixed-point method, the underrelaxation method, the Aitken relaxation, the Broyden-like family of methods, the Newton-Krylov methods, and the polynomial vector extrapolation methods in cycling mode.
+The number of residual evaluations, the memory requirements, the computational complexity, and the ease of implementation are all discussed for each approach.
 
-\paragraph{Chapter \ref{}}
-In Chapter~\ref{} validation is provided for the thermomechanical solver and the implicit schemes explored in this work.
-The efficiency of the best methods of each class of implicit methods described are compared as a function of the coupling strength.
+\paragraph{Chapter \ref{ch:val_acc_techniques} - Numerical results for the implicit coupling schemes}\mbox{} \\
+This chapter covers the validation results for the thermomechanical solver and the implicit schemes explored in this work.
+Each class of implicit methods is examined for efficiency, including as a function of coupling strength, and the best methods in each category are contrasted.
+The use of polynomial predictors is also explored.
 
-\paragraph{Chapter \ref{chapter:conclusions}}
-In Chapter~\ref{chapter:conclusions} the conclusions reached in this work are present and some future directions of research are suggested.
-
+\paragraph{Chapter \ref{chapter:conclusions}}\mbox{}\\
+This chapter presents the conclusions reached in this work, and some future research directions are suggested.
 
 \newpage\null\thispagestyle{blank}\newpage

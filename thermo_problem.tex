@@ -1,10 +1,10 @@
 \chapter{Thermal field} \label{ch:thermal_problem}
 
 For the development of the thermomechanical models, the temperature field needs to be considered.
-This section provides an overview of the governing equations required to describe a temperature field with the finite element method (FEM).
-The procedure to establish a fully discrete system of equations for the themal field is comparable to the one for the structural field in Chapter~\ref{ch:mechanical_problem}.
+This section provides an overview of the governing equations required to describe a temperature field, including their spatial discretization using the finite element method (FEM).
+The procedure to establish a fully discrete system of equations for the themal field is comparable to the one for the mechanical field in Chapter~\ref{ch:mechanical_problem}.
 Furthermore, the basics of nonlinear continuum thermodynamics have already been featured in Chapter~\ref{ch:continuum_mechanics}.
-Consequently, the detailed derivation are skipped in this chapter.
+Consequently, a detailed derivation is skipped in this chapter.
 
 % In a first step, the balance equations for the thermal field will be established. Then, in a second step the thermal initial boundary value problem (IBVP) will be presented followed by the numerical solution technique. Latter requires a weak form of the thermal balance equation which will be fully discretised using the FEM for space discretisation and the finite difference method for time discretisation. To finish, the residual and the tangential system matrix will be introduced to enable the application of a Newton-Raphson method.
 
@@ -243,5 +243,3 @@ and $\mathbf f^\text{\;ext}(t)$ is the global vector of external forces defined 
     \mathbf f^\text{\;ext}(t) &\equiv \int_{^h\Omega_0} \rho{\mathbf N^g}^T r(\bm X, t)\ud v + \int_{\partial^h\Omega_\text{heat,0}}{\mathbf N^g}^T h_0(\bm X, t)\ud a.
 \end{align}
 \end{problem}
-
-\newpage\null\thispagestyle{blank}\newpage

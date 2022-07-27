@@ -1,42 +1,42 @@
-\chapter{Conclusion and Future Works}
+\chapter{Conclusion and Future Works} \label{ch:conclusions}
 
-The present work presents a partitioned thermomechanical solver.
+The current work focuses on computational techniques for the numerical simulation of thermomechanical problems.
+It presents a comprehensive dissertation on the thermodynamically consistent description of continuum of thermomechanics.
+It follows with the strictly mechanical problem, the strictly thermal problem, and the complete thermomechanical problem.
+The corresponding initial value problems for the constitutive problem are introduced, as is the weak formulation of the relevant conservation and balance principles and their spatial and temporal discretization.
 
-The current work focuses on the developement of an implicit partitioned thermomechanical solver.
-
-It presents a comprehensive dissertation on the thermodynamically consistent continuum mechanics.
-It follows with the strictly mechanical problem, the strictly thermal problem and the full thermomechanical problem.
-The corresponding intial value problems for the constitutive problem are introduced, as is the weak formulation of the relevant conservation and balance principles and their spatial and temporal discretization.
-
-It follows a validation of the thermal solver.
+It follows the validation of the thermal solver.
 The mechanical solver is not validated as it is part of the LINKS code used as the basis for the current developments.
-Appropriate references are used in DIN 1992 and the NAFEMS benchmarks.
+Appropriate references are used in \cite{DINEN1991_1_2} and the \cite{NAFEMSbenchmarks}.
 There is a good agreement between the numerical results and the references.
 
-It follows a thorough investigation on the available approaches to solve coupled problems, with a special focus on thermomechanical problems.
-A large sweep of the literature is performed, with the main classes of solution procdures being the monolithic approaches and the partitioned approaches.
-The partioned approaches can be further divided into loosely coupled or explicit and strongly coupled or implicit.
-Given the requirements put forth the most promising solution is determined to be a strongly coupled or implicit partitioned scheme.
+It follows a thorough investigation of the available approaches to solving coupled problems, with a particular focus on thermomechanical problems.
+A large sweep of the literature is performed, with the main classes of solution procedures being monolithic and partitioned approaches.
+The partitioned approaches can be further divided into loosely coupled or explicit and strongly coupled or implicit.
+Given the requirements, the most promising solution is determined to be a strongly coupled or implicit partitioned scheme.
+They can take advantage of existing software, provide accurate results that agree with a monolithic approach, are not memory intensive, are easy to implement, and use convergence acceleration techniques. They are competitive from a computational efficiency standpoint.
 
-Having performed this choice the following step is to understand the implicit methods available.
-Recasting the problem as a system of nonlinear equations, where the residual is the difference bewteen the initial input and its output after applying the fixed-point.
+Having performed this choice, the following step is understanding the implicit methods available.
+Recasting the problem as a system of nonlinear equations, where the residual is the difference between the initial input and its output after applying the fixed-point corresponding to the isothermal split.
 This approach leads to the consideration of a large family of methods for the solution of nonlinear equations.
 These are presented in detail for the solution of coupled multi-physics systems.
-These are the fixed-point method, the underrelaxation method, the Aitken relaxation, the Broyden-like family of methods, the Newton-Krylov methods and the polynomial vector extrapolation methods, MPE and RRE, in cycling mode.
+These are the fixed-point method, the underrelaxation method, the Aitken relaxation, the Broyden-like family of methods, the Newton-Krylov methods, and the polynomial vector extrapolation methods MPE and RRE in cycling mode.
+It is also demonstrated that a global technique, like line search, may be used.
+Predictor usage is discussed too as a simple strategy for enhancing the effectiveness of implicit approaches.
 
-The validation of the thermomechanical solver and the implicit solution methodsm, as well as their comparison, is performed using to examples, whose results are present in the literature.
-The expansion of an infinitely long thick-walled thermoelastic cylinder, and the necking of circular thermoelastoplastic bar.
-The numerical results agree with the references provided confidence in the solution developed.
-Regarding the comparison of the different implicit techniques, the best performing are the Broyden-like methods with \(\beta=-1\), Type I update and \(s=1\), corresponding to the good Broyden method, and \(s=2\).
+The validation of the thermomechanical solver and the implicit solution methods, as well as their comparison, is performed using examples with reference results in the literature: the expansion of an infinitely long, thick-walled thermoelastic cylinder and the necking of a circular thermoelastoplastic bar.
+The numerical results agree with the references providing confidence in the solution developed.
+Regarding the comparison of the different implicit techniques, the best performing are the Broyden-like methods with \(\beta=-1\), Type I update, and \(s=1\), corresponding to the good Broyden method, and \(s=2\).
 These are both computationally efficient with few calls to the residual function and not very memory intensive.
-The Aitken relaxation being the simplest and the least memory intensive also performs well.
+The Aitken relaxation, the simplest and the least memory intensive, also performs well.
 The other methods considered, including the Newton-GMRES and the MPE in cycling mode, display a worse performance.
-There is however a caveat regarding the Newton-Krylov methods regarding the possible use of global strategies such as line search given the accurate estimate for the Jacobian of the residual.
-Moreover, it has been determined that most computationally demanding portion of the implicit partitioned schemes is the solution of the mechanical and thermal problems, with the manipulation concerning solely the coupling solver taking a very minute portion of the total computational time.
+There is, however, a caveat regarding the Newton-Krylov methods regarding the possible use of global strategies such as line search given the accurate estimate for the Jacobian of the residual.
+Moreover, it has been determined that the most computationally demanding portion of the implicit partitioned schemes is the solution of the mechanical and thermal problems, with the manipulation concerning solely the coupling solver taking a very minute part of the total computational time.
 
-\section{Future Works}
+\section{Future research and challenges}
 
-Future works include the used of global strategies creating a more robust procedure.
-The inclusion of more methods for the solutin of nonlinear problems.
-Experimentation with solving the monolithic scheme using the implicit methods presented which are Jacobian free.
-The development of a thermomechanical constitutive model for a semi-crystalline polymer.
+The main challenges and directions for future research in the context of the solution of the thermomechanical problem are:
+\begin{itemize}
+  \item The use of global strategies creating a more robust procedure;
+  \item Experimentation with solving the monolithic scheme using the implicit methods presented, Jacobian free.
+\end{itemize}

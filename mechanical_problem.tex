@@ -131,7 +131,7 @@ and in the material description as
     and at each point of $\mathscr{B}$, the First Piola-Kirchhoff stress tensor is the solution of material mechanical constitutive initial values problem.
 \end{problem}
 
-\section{Time descretization} \label{sec:time_discretization}
+\section{Time discretization for the constitutive equations} \label{sec:time_discretization}
 
 Given a generic path-dependent model, i.e., a model in which the stress state does not depend only on the instantaneous deformation state but also on the deformation history, the solution of the constitutive initial value problem for a given set of initial conditions is usually not known for complex strain paths $\mat F(t)$.
 Thus, there is a need to use an appropriate numerical algorithm to integrate the rate constitutive equations.
@@ -380,8 +380,13 @@ where $\vect \zeta_i$ and $w_i$, $i=1,\dots,n_\text{GP}$ are the positions and w
     j(\vect \zeta) = \text{det}\,\left(\frac{\partial \vect x}{\partial \vect \zeta}\right).
 \end{equation}
 
-\jvc{Note on time integration.}
+\section{Time discretization}
 
+The space-discrete time-continuous equilibrium equations can be integrated by employing an adequate and robust time discretization scheme.
+In the present work the time integration method employed is an implicit linear multistep (LMS) method, the so-called generalised-\(\alpha\) method, originally proposed by \cite{chung1993time}.
+It rests on the discretisation of the time domain into subintervals with duration \(\Delta t=t_{m+1}-t_n\), such that the time derivatives are approximated by appropriate finite differences and the equilibrium equations are satisfied at the discrete time step \(t_{n+1}\).
+
+\newpage\null\thispagestyle{blank}\newpage
 
 % \section{Linearisation}
 %
